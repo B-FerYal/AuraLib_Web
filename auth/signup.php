@@ -25,7 +25,7 @@ $err     = [];
 $success = false;
 
 if (isset($_POST['signup'])) {
-    if (!isset($_POST['csrf_token'])  $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    if (!isset($_POST['csrf_token'])||$_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $err[] = "Requête invalide. Veuillez réessayer.";
     }
 
@@ -34,8 +34,8 @@ if (isset($_POST['signup'])) {
     $lname  = isset($_POST['lname'])  ? trim(mysqli_real_escape_string($conn, $_POST['lname'])) : '';
     $email  = isset($_POST['email'])  ? trim(mysqli_real_escape_string($conn, $_POST['email'])) : '';
     $phone  = isset($_POST['phone'])  ? trim(mysqli_real_escape_string($conn, $_POST['phone'])) : '';
-    $pass1  = $_POST['pass1'] ?? '';
-    $pass2  = $_POST['pass2'] ?? '';
+    $pass1 = isset($_POST['pass1']) ? $_POST['pass1'] : '';
+$pass2 = isset($_POST['pass2']) ? $_POST['pass2'] : '';
 
     if (empty($fname)||empty($lname)||empty($email)||empty($Gender)||empty($phone)||empty($pass1)||empty($pass2)) {
         $err[] = t('error_required');
@@ -49,7 +49,7 @@ if (isset($_POST['signup'])) {
     if (empty($err) && $pass1 !== $pass2) {
         $err[] = t('error_match');
     }
-    if (empty($err) && (strlen($pass1) < 8  !preg_match('/[A-Z]/', $pass1) || !preg_match('/[0-9]/', $pass1))) {
+    if (empty($err) && (strlen($pass1) < 8 || !preg_match('/[A-Z]/', $pass1) || !preg_match('/[0-9]/', $pass1))) {
         $err[] = "Mot de passe : min 8 caractères, 1 majuscule, 1 chiffre.";
     }
     if (empty($err)) {
