@@ -1,0 +1,325 @@
+/* ════════════════════════════════════════════════════════
+   AURALIB — dark-mode.css  (version corrigée)
+   Problème : fond #0F0D08 trop noir → texte illisible
+   Solution : fond brun chaud #1C1610 + texte #F0E8D8
+════════════════════════════════════════════════════════ */
+
+/* ── Transition douce ── */
+html.dark *, html.dark *::before, html.dark *::after {
+    transition: background-color .3s ease, border-color .3s ease, color .3s ease, box-shadow .3s ease;
+}
+
+/* ════ 1. VARIABLES ════════════════════════════════════ */
+html.dark {
+    --page-bg:     #1C1610;
+    --page-bg2:    #241C12;
+    --page-white:  #2C2418;
+    --page-text:   #F0E8D8;
+    --page-muted:  #A89880;
+    --page-border: #3E3228;
+    --nav-bg:      #140E08;
+    --gold:        #C4A46B;
+    --cream:       #1C1610;
+    --cream2:      #241C12;
+    --taupe-deep:  #C4A46B;
+    --white:       #2C2418;
+    --text-main:   #F0E8D8;
+    --border:      #3E3228;
+    --blue-bg:     #0F1E30;
+    --amber-bg:    #281A00;
+}
+
+/* ════ 2. BODY ════════════════════════════════════════ */
+html.dark body {
+    background: #1C1610 !important;
+    color: #F0E8D8 !important;
+}
+
+/* ════ 3. TEXTES GÉNÉRIQUES ══════════════════════════ */
+html.dark h1, html.dark h2, html.dark h3,
+html.dark h4, html.dark h5, html.dark h6 {
+    color: #F0E8D8 !important;
+}
+html.dark p { color: #C4B89A !important; }
+html.dark span:not(.badge):not(.nav-logo-text):not(.gold-text):not(.white-text):not(.type-badge):not(.pill):not(.cart-badge):not(.lang-flag):not(.nav-username) {
+    color: inherit;
+}
+
+/* ════ 4. NAVBAR ═════════════════════════════════════ */
+html.dark .admin-nav {
+    background: #140E08 !important;
+    border-bottom-color: rgba(196,164,107,.25) !important;
+}
+
+/* ════ 5. HERO ═══════════════════════════════════════ */
+html.dark .hero {
+    background: linear-gradient(180deg, #140E08 0%, #1C1610 100%) !important;
+    border-bottom-color: rgba(196,164,107,.15) !important;
+}
+html.dark .hero h1 { color: #F0E8D8 !important; }
+html.dark .hero p  { color: #A89880 !important; }
+
+/* ════ 6. BARRE DE RECHERCHE ════════════════════════ */
+html.dark .search-container {
+    background: #2C2418 !important;
+    border: 1px solid #3E3228 !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,.3) !important;
+}
+html.dark #search {
+    background: #2C2418 !important;
+    color: #F0E8D8 !important;
+}
+html.dark #search::placeholder { color: #5A4C3C !important; }
+
+/* ════ 7. FILTRES & PILLS ════════════════════════════ */
+html.dark .pill {
+    background: rgba(196,164,107,.08) !important;
+    border-color: rgba(196,164,107,.22) !important;
+    color: #C4A46B !important;
+}
+html.dark .pill.active {
+    background: #C4A46B !important;
+    color: #1C1208 !important;
+    border-color: #C4A46B !important;
+}
+html.dark .filter-link        { color: #6A5C4C !important; }
+html.dark .filter-link.active { color: #F0E8D8 !important; border-bottom-color: #C4A46B !important; }
+html.dark .filter-link:hover  { color: #C4A46B !important; }
+
+/* ════ 8. CARTES LIVRES — CORRECTION PRINCIPALE ════ */
+html.dark .book-card {
+    background: #2C2418 !important;
+    border-color: #3E3228 !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,.3) !important;
+}
+html.dark .book-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,.4) !important;
+    border-color: rgba(196,164,107,.35) !important;
+}
+/* Textes dans les cartes livres */
+html.dark .book-title         { color: #C4A46B !important; }
+html.dark .book-author        { color: #A89880 !important; }
+html.dark .book-price         { color: #F0E8D8 !important; }
+html.dark .book-card p        { color: #C4B89A !important; }
+html.dark .book-info          { background: transparent !important; }
+html.dark .book-info *        { color: #F0E8D8 !important; }
+html.dark .book-info .book-title  { color: #C4A46B !important; }
+html.dark .book-info .book-author { color: #A89880 !important; }
+/* Badges type sur cartes */
+html.dark .type-badge { border: 1px solid rgba(196,164,107,.2) !important; }
+html.dark .tb-emprunt { background: #0F1E30 !important; color: #7EB3E8 !important; border-color: #1A3550 !important; }
+html.dark .tb-achat   { background: #281A00 !important; color: #D4A030 !important; border-color: #402800 !important; }
+html.dark .tb-both    { background: rgba(196,164,107,.14) !important; color: #C4A46B !important; }
+
+/* Boutons action */
+html.dark .btn-buy {
+    background: #C4A46B !important;
+    color: #1C1208 !important;
+    border: none !important;
+}
+html.dark .btn-borrow {
+    background: transparent !important;
+    border: 1px solid #C4A46B !important;
+    color: #C4A46B !important;
+}
+html.dark .btn-voir {
+    background: #342C20 !important;
+    color: #F0E8D8 !important;
+    border-color: #3E3228 !important;
+}
+
+/* ════ 9. MODAL CHOIX ═══════════════════════════════ */
+html.dark .modal-overlay { background: rgba(0,0,0,.7) !important; }
+html.dark .modal          { background: #2C2418 !important; border: 1px solid #3E3228 !important; }
+html.dark .modal-header-design { background: #140E08 !important; }
+html.dark .modal-body-content  { background: #2C2418 !important; color: #F0E8D8 !important; }
+html.dark .opt-card { background: #342C20 !important; border-color: #3E3228 !important; }
+html.dark .opt-card .opt-name   { color: #F0E8D8 !important; }
+html.dark .opt-card .opt-detail { color: #A89880 !important; }
+html.dark .modal-close-text     { color: #A89880 !important; }
+
+/* ════ 10. FORMULAIRES & INPUTS ════════════════════ */
+html.dark .form-card,
+html.dark .auth-card,
+html.dark .login-card,
+html.dark .signup-card,
+html.dark .dash-card,
+html.dark .l-section {
+    background: #2C2418 !important;
+    border-color: #3E3228 !important;
+}
+html.dark .form-card h3,
+html.dark .dash-card h4 {
+    color: #C4A46B !important;
+    border-bottom-color: #3E3228 !important;
+}
+html.dark .form-group input,
+html.dark .form-group select,
+html.dark input[type="text"],
+html.dark input[type="email"],
+html.dark input[type="password"],
+html.dark input[type="tel"],
+html.dark input[type="search"],
+html.dark textarea,
+html.dark select,
+html.dark .form-control {
+    background: #342C20 !important;
+    border-color: #3E3228 !important;
+    color: #F0E8D8 !important;
+}
+html.dark .form-group input:focus,
+html.dark input[type="text"]:focus,
+html.dark input[type="email"]:focus,
+html.dark input[type="password"]:focus,
+html.dark select:focus {
+    border-color: #C4A46B !important;
+    background: #3A3024 !important;
+}
+html.dark input[readonly]     { background: #241C12 !important; color: #6A5C4C !important; }
+html.dark ::placeholder       { color: #5A4C3C !important; }
+html.dark label,
+html.dark .form-group label   { color: #A89880 !important; }
+/* ════ 11. PROFIL PAGE ══════════════════════════════ */
+html.dark .profile-hero       { background: #140E08 !important; border-color: rgba(196,164,107,.2) !important; }
+html.dark .hero-info h1       { color: #C4A46B !important; }
+html.dark .hero-info p        { color: rgba(255,255,255,.45) !important; }
+html.dark .stats-row .stat-card { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .stat-num           { color: #F0E8D8 !important; }
+html.dark .stat-lbl           { color: #A89880 !important; }
+html.dark .tabs               { border-bottom-color: #3E3228 !important; }
+html.dark .tab-btn            { color: #6A5C4C !important; }
+html.dark .tab-btn.active     { color: #F0E8D8 !important; border-bottom-color: #C4A46B !important; }
+html.dark .tab-btn:hover      { color: #F0E8D8 !important; }
+html.dark .info-field         { background: #342C20 !important; border-color: #3E3228 !important; }
+html.dark .info-field label   { color: #A89880 !important; }
+html.dark .info-field span    { color: #F0E8D8 !important; }
+html.dark .borrow-item        { border-bottom-color: #342C20 !important; }
+html.dark .borrow-title       { color: #F0E8D8 !important; }
+html.dark .borrow-date        { color: #A89880 !important; }
+html.dark .notif-item         { border-bottom-color: #342C20 !important; }
+html.dark .notif-text         { color: #C4B89A !important; }
+html.dark .notif-time         { color: #6A5C4C !important; }
+html.dark .section-lbl        { color: #A89880 !important; border-bottom-color: #3E3228 !important; }
+
+/* Quick action buttons profil */
+html.dark .qa-btn {
+    background: #2C2418 !important;
+    border-color: #3E3228 !important;
+    color: #F0E8D8 !important;
+}
+html.dark .qa-btn:hover      { border-color: #C4A46B !important; background: #342C20 !important; }
+html.dark .qa-label          { color: #F0E8D8 !important; }
+html.dark .qa-sub            { color: #A89880 !important; }
+
+/* ════ 12. TABLEAUX ════════════════════════════════ */
+html.dark .table-wrap,
+html.dark .table-card,
+html.dark .mini-table  { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .table-header { color: #C4A46B !important; border-bottom-color: #3E3228 !important; background: transparent !important; }
+html.dark .tc-head      { border-bottom-color: #3E3228 !important; }
+html.dark .tc-title     { color: #F0E8D8 !important; }
+html.dark thead tr      { background: #241C12 !important; }
+html.dark th            { color: #A89880 !important; border-bottom-color: #3E3228 !important; background: #241C12 !important; }
+html.dark td            { color: #F0E8D8 !important; border-bottom-color: #342C20 !important; }
+html.dark tbody tr:hover td    { background: #32281C !important; }
+html.dark .data-table th       { background: #241C12 !important; color: #A89880 !important; }
+html.dark .data-table td       { border-bottom-color: #342C20 !important; color: #F0E8D8 !important; }
+html.dark .data-table tr:hover td { background: #32281C !important; }
+html.dark .empty-row td        { color: #6A5C4C !important; }
+/* ════ 13. ADMIN SIDEBAR & HEADER ══════════════════ */
+html.dark .admin-sidebar,
+html.dark .sidebar { background: #0E0A06 !important; }
+html.dark .admin-header,
+html.dark .topbar {
+    background: #1C1610 !important;
+    border-bottom-color: #3E3228 !important;
+}
+html.dark .page-title          { color: #C4A46B !important; }
+html.dark .adm-sc,
+html.dark .adm-sc .stat-num   { color: #F0E8D8 !important; }
+html.dark .f-select,
+html.dark .filter-select,
+html.dark .srch-input,
+html.dark .search-input {
+    background: #342C20 !important;
+    border-color: #3E3228 !important;
+    color: #F0E8D8 !important;
+}
+html.dark .pag-btn {
+    background: #2C2418 !important;
+    border-color: #3E3228 !important;
+    color: #F0E8D8 !important;
+}
+html.dark .pag-btn:hover       { border-color: #C4A46B !important; color: #C4A46B !important; }
+html.dark .pag-btn.active      { background: #C4A46B !important; border-color: #C4A46B !important; color: #1C1208 !important; }
+html.dark .notif-btn           { background: #2C2418 !important; border-color: #3E3228 !important; }
+
+/* ════ 14. PANIER & COMMANDES ══════════════════════ */
+html.dark .panier-item,
+html.dark .cart-summary,
+html.dark .commande-card,
+html.dark .order-card {
+    background: #2C2418 !important;
+    border-color: #3E3228 !important;
+}
+html.dark .item-title  { color: #C4A46B !important; }
+html.dark .item-author { color: #A89880 !important; }
+html.dark .total-label { color: #F0E8D8 !important; }
+html.dark .total-amount { color: #C4A46B !important; }
+
+/* ════ 15. PAGE NOTIFICATIONS ══════════════════════ */
+html.dark .notif-page .notif-card { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .notif-card.unread      { background: #342C1C !important; border-left-color: #C4A46B !important; }
+html.dark .notif-card.type-danger  { background: #32201C !important; border-left-color: #f87171 !important; }
+html.dark .notif-card.type-warning { background: #30281A !important; border-left-color: #fbbf24 !important; }
+html.dark .notif-card.type-success { background: #1C2E20 !important; border-left-color: #4ade80 !important; }
+html.dark .notif-titre             { color: #F0E8D8 !important; }
+html.dark .notif-message           { color: #C4B89A !important; }
+html.dark .filter-bar .fpill       { background: #2C2418 !important; border-color: #3E3228 !important; color: #A89880 !important; }
+html.dark .filter-bar .fpill.active { background: #140E08 !important; border-color: #140E08 !important; color: #C4A46B !important; }
+
+/* ════ 16. AUTH PAGES ══════════════════════════════ */
+html.dark .auth-card h2,
+html.dark .login-title,
+html.dark .signup-title { color: #C4A46B !important; }
+
+/* ════ 17. BADGES ══════════════════════════════════ */
+html.dark .badge-green { background: #0E2218 !important; color: #4ade80 !important; }
+html.dark .badge-amber { background: #281C00 !important; color: #fbbf24 !important; }
+html.dark .badge-red   { background: #220E0E !important; color: #f87171 !important; }
+html.dark .badge-gray  { background: #2A2418 !important; color: #9ca3af !important; }
+
+/* ════ 18. ALERTES ═════════════════════════════════ */
+html.dark .alert-success { background: #0E2218 !important; border-color: #1A4030 !important; color: #4ade80 !important; }
+html.dark .alert-error   { background: #220E0E !important; border-color: #401818 !important; color: #f87171 !important; }
+
+/* ════ 19. DROPDOWNS ═══════════════════════════════ */
+html.dark .lang-menu,
+html.dark .profile-dropdown {
+    background: #2C2418 !important;
+    border-color: #3E3228 !important;
+    box-shadow: 0 12px 32px rgba(0,0,0,.5) !important;
+}
+html.dark .lang-item:hover,
+html.dark .dd-item:hover { background: rgba(196,164,107,.12) !important; }
+html.dark .dd-email       { color: rgba(255,255,255,.35) !important; }
+html.dark .dd-fullname    { color: #F0E8D8 !important; }
+/* ════ 20. DIVS HARDCODÉS EN BLANC ═════════════════ */
+html.dark [style*="background: white"],
+html.dark [style*="background:#fff"],
+html.dark [style*="background: #fff"],
+html.dark [style*="background:#FFFDF9"],
+html.dark [style*="background:#F5F0E8"],
+html.dark [style*="background: #F5F0E8"],
+html.dark [style*="background: #FFFDF9"] { background: #2C2418 !important; }
+
+html.dark [style*="color: #2D2419"],
+html.dark [style*="color:#2D2419"],
+html.dark [style*="color: #2C1F0E"],
+html.dark [style*="color:#2C1F0E"]       { color: #F0E8D8 !important; }
+
+/* ════ 21. SCROLLBAR ═══════════════════════════════ */
+html.dark ::-webkit-scrollbar       { width: 8px; }
+html.dark ::-webkit-scrollbar-track { background: #1C1610; }
+html.dark ::-webkit-scrollbar-thumb { background: #3E3228; border-radius: 4px; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #C4A46B; }
