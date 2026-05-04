@@ -53,12 +53,19 @@ $result = $conn->query($query);
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --taupe: #2C1F0E; --gold: #D4A942; --cream: #F9F5EE; --white: #ffffff; --sidebar-w: 260px; --success: #27ae60; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--cream); margin: 0; display: flex; }
-        .main-content { flex: 1; margin-left: var(--sidebar-w); padding: 40px; min-height: 100vh; }
+       body {
+    display: block; /* ❌ نحيو flex كامل */
+}
 
-        /* البطاقات العلوية */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
-        .stat-card { background: var(--white); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); border-left: 5px solid var(--gold); }
+.main-content {
+    width: 100%;
+    margin: 0;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}       .stat-card { background: var(--white);width: 100%; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); border-left: 5px solid var(--gold); }
         .stat-card.profit { border-left-color: var(--success); }
         .stat-label { font-size: 12px; text-transform: uppercase; color: #999; letter-spacing: 1px; font-weight: 600; }
         .stat-value { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--taupe); margin-top: 10px; }

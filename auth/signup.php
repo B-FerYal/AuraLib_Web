@@ -105,11 +105,13 @@ body {
     font-family: <?= $font ?>, sans-serif;
     min-height: 100vh;
     display: flex;
-    align-items: center;
+   align-items: flex-start;
+padding-top: 60px;
+padding-bottom: 60px;
     justify-content: center;
     padding: 20px;
     position: relative;
-    overflow: hidden;
+    overflow: auto;
     background: #1a1208;
 }
 
