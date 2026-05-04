@@ -58,8 +58,14 @@ $result = $conn->query($query);
 }
 
 .main-content {
-    width: 100%;
-    margin: 0;
+    flex: 1;
+    margin-left: var(--sidebar-w); /* إذا عندك sidebar */
+    
+    max-width: 1200px;   /* ✔️ يحدد العرض */
+    margin-right: auto;
+    margin-left: auto;   /* ✔️ يخليه في الوسط */
+
+    padding: 40px 20px;  /* ✔️ espace من الجهتين */
 }
 .stats-grid {
     display: grid;
