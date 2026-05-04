@@ -53,9 +53,14 @@ $result = $conn->query($query);
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --taupe: #2C1F0E; --gold: #D4A942; --cream: #F9F5EE; --white: #ffffff; --sidebar-w: 260px; --success: #27ae60; }
+<<<<<<< HEAD
        body {
     display: block; /* ❌ نحيو flex كامل */
 }
+=======
+        body { font-family: 'Inter', sans-serif; background-color: var(--cream); margin: 0; display: flex; }
+        .main-content { flex: 1; margin-left: 0; padding: 40px; min-height:100vh; }
+>>>>>>> 5ff8029 (Mise à jour admin_dashboard pour ma collègue)
 
 .main-content {
     flex: 1;

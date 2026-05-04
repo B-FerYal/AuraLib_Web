@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['total'])) {
         // 1. إنشاء سجل في جدول الطلبات (commande)
         $conn->query("
             INSERT INTO commande(id_user, statut, date_commande)
+
             VALUES($id_user, 'en_attente', NOW())
         ");
 
@@ -50,8 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['total'])) {
             // ملاحظة: تأكد أن جدول commande_item يحتوي الآن على عمود id_doc بدلاً من id_livre
             $stmt_item = $conn->prepare("
                 INSERT INTO commande_item(id_commande, id_doc, quantite, prix)
+
+
                 VALUES(?, ?, ?, ?)
+                
             ");
+            
             $stmt_item->bind_param("iiid", $id_commande, $id_doc, $quantite, $prix);
             
             if (!$stmt_item->execute()) {

@@ -52,7 +52,7 @@ $result = $conn->query("
     <style>
         :root { --taupe:#2C1F0E; --gold:#D4A942; --cream:#F9F5EE; --white:#fff; --sidebar-w:260px; }
         body { font-family:'Inter',sans-serif; background:var(--cream); display:flex; margin:0; }
-        .main-wrapper { flex:1; margin-left:var(--sidebar-w); padding:40px; }
+        .main-wrapper { flex:1; margin-left:0; padding:40px; }
         .container { background:var(--white); border-radius:20px; padding:30px; box-shadow:0 4px 20px rgba(0,0,0,.04); }
         h2 { font-family:'Playfair Display',serif; color:var(--taupe); font-size:26px; margin-bottom:20px; }
 
