@@ -48,7 +48,11 @@ $lus      = $total - $non_lus;
 <title>Messages — AuraLib Admin</title>
 <style>
 .adm-wrap  { display:flex; min-height:100vh; }
+<<<<<<< HEAD
 .adm-main  { flex:1; margin-left:0; padding:100px 100px 100px; }
+=======
+.adm-main  { flex:1; margin-left:0px; padding:100px 100px 100px; }
+>>>>>>> 1b4a8db (Mise à jour all_orders pour ma collègue)
 
 .page-title { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:var(--page-text,#2C1F0E); margin-bottom:4px; display:flex; align-items:center; gap:12px; }
 .page-sub   { font-size:13px; color:var(--page-muted,#9A8C7E); margin-bottom:28px; }
@@ -123,7 +127,11 @@ html.dark .msg-card.unread { background:#2A2418; }
 </style>
 
 <div class="adm-wrap">
+<<<<<<< HEAD
    
+=======
+  
+>>>>>>> 1b4a8db (Mise à jour all_orders pour ma collègue)
 
     <div class="adm-main">
         <div class="page-title">
