@@ -11,7 +11,7 @@ html.dark *, html.dark *::before, html.dark *::after {
 
 /* ════ 1. VARIABLES ════════════════════════════════════ */
 html.dark {
-    --page-bg:     #1C1610;
+    --page-bg:     #1C1610;s
     --page-bg2:    #241C12;
     --page-white:  #2C2418;
     --page-text:   #F0E8D8;
