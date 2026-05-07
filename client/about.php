@@ -16,7 +16,6 @@ include "../includes/header.php";
     padding: 0;
 }
 
-/* All inner sections share the same centered width */
 .about-inner {
     max-width: 1200px;
     margin: 0 auto;
@@ -24,7 +23,7 @@ include "../includes/header.php";
 }
 
 /* ═══════════════════════════════════════════════════════
-   HERO — full viewport, photo background
+   HERO
 ═══════════════════════════════════════════════════════ */
 .about-hero-section {
     position: relative;
@@ -40,7 +39,6 @@ include "../includes/header.php";
     margin: 0;
 }
 
-/* Photo layer */
 .about-hero-section::before {
     content: '';
     position: absolute;
@@ -53,7 +51,6 @@ include "../includes/header.php";
     z-index: 0;
 }
 
-/* Dark vignette on top */
 .about-hero-section::after {
     content: '';
     position: absolute;
@@ -100,11 +97,7 @@ include "../includes/header.php";
     letter-spacing: -1.5px;
     text-shadow: 0 3px 30px rgba(0,0,0,0.65);
 }
-
-.about-hero-content h1 em {
-    color: #D4A853;
-    font-style: italic;
-}
+.about-hero-content h1 em { color: #D4A853; font-style: italic; }
 
 .about-hero-content p {
     font-family: 'Cormorant Garamond', serif;
@@ -118,7 +111,6 @@ include "../includes/header.php";
     text-shadow: 0 2px 14px rgba(0,0,0,0.65);
 }
 
-/* Scroll indicator */
 .hero-scroll-hint {
     position: absolute;
     bottom: 30px;
@@ -144,19 +136,16 @@ include "../includes/header.php";
     background: linear-gradient(to bottom, rgba(196,164,107,0.85), transparent);
     animation: pulse 2.2s ease-in-out infinite;
 }
-@keyframes pulse {
-    0%,100% { opacity: 0.4; }
-    50%      { opacity: 1; }
-}
+@keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
 
 /* ═══════════════════════════════════════════════════════
-   CONTENT SECTIONS — same wide layout as hero
+   BODY
 ═══════════════════════════════════════════════════════ */
 .about-body {
     background: var(--page-bg, #F5F0E8);
     padding: 80px 0;
 }
-/* ── Stats band ── */
+
 .stats-band {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -167,11 +156,7 @@ include "../includes/header.php";
     overflow: hidden;
     margin-bottom: 80px;
 }
-.stat-item {
-    background: #FFFDF9;
-    padding: 36px 24px;
-    text-align: center;
-}
+.stat-item { background: #FFFDF9; padding: 36px 24px; text-align: center; }
 .stat-item .num {
     font-family: 'Cormorant Garamond', serif;
     font-size: 52px;
@@ -190,9 +175,7 @@ include "../includes/header.php";
     color: #7A6A55;
 }
 
-/* ── Section ── */
 .section { margin-bottom: 80px; }
-
 .section-tag {
     font-family: 'Lato', sans-serif;
     font-size: 10px;
@@ -220,7 +203,6 @@ include "../includes/header.php";
     max-width: 760px;
 }
 
-/* ── Divider ── */
 .divider {
     display: flex;
     align-items: center;
@@ -233,21 +215,17 @@ include "../includes/header.php";
     letter-spacing: 2.5px;
     text-transform: uppercase;
 }
-.divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: #DDD5C8;
-}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #DDD5C8; }
 
-/* ── Feature cards — icon left, text right ── */
+/* ══════════════════════════════════════════════════════
+   FEAT CARDS — icône SVG luxury (cercle doré comme dashboard)
+══════════════════════════════════════════════════════ */
 .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 22px;
     margin-bottom: 80px;
 }
-
 .feat-card {
     background: #FFFDF9;
     border: 1px solid #DDD5C8;
@@ -259,22 +237,33 @@ include "../includes/header.php";
     align-items: flex-start;
     gap: 22px;
 }
-.feat-card:hover {
-    border-top-color: #C4A46B;
-    transform: translateY(-4px);
-}
-.feat-icon {
-    width: 62px;
-    height: 62px;
-    min-width: 62px;
-    border-radius: 14px;
-    background: rgba(196,164,107,0.10);
+.feat-card:hover { border-top-color: #C4A46B; transform: translateY(-4px); }
+
+/* Icône SVG luxury — même style que dashboard */
+.feat-icon-wrap {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    border-radius: 50%;
+    background: rgba(196,164,107,.1);
+    border: 1px solid rgba(196,164,107,.28);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 30px;
     flex-shrink: 0;
+    transition: background .2s;
 }
+.feat-card:hover .feat-icon-wrap { background: rgba(196,164,107,.2); }
+.feat-icon-wrap svg {
+    width: 22px;
+    height: 22px;
+    stroke: #C4A46B;
+    fill: none;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 .feat-text { flex: 1; }
 .feat-card h3 {
     font-family: 'Cormorant Garamond', serif;
@@ -292,7 +281,9 @@ include "../includes/header.php";
     margin: 0;
 }
 
-/* ── Values grid — icon + title inline, desc below ── */
+/* ══════════════════════════════════════════════════════
+   VALUES GRID — icône SVG luxury
+══════════════════════════════════════════════════════ */
 .values-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -306,21 +297,40 @@ include "../includes/header.php";
     padding: 28px 24px;
     transition: transform .2s, border-color .2s;
 }
-.value-card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(196,164,107,0.5);
-}
+.value-card:hover { transform: translateY(-3px); border-color: rgba(196,164,107,.5); }
+
 .value-header {
     display: flex;
     align-items: center;
     gap: 14px;
     margin-bottom: 12px;
 }
-.value-card .vi {
-    font-size: 36px;
-    line-height: 1;
+
+/* Icône value — même cercle doré */
+.val-icon-wrap {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    border-radius: 50%;
+    background: rgba(196,164,107,.1);
+    border: 1px solid rgba(196,164,107,.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    transition: background .2s;
 }
+.value-card:hover .val-icon-wrap { background: rgba(196,164,107,.2); }
+.val-icon-wrap svg {
+    width: 20px;
+    height: 20px;
+    stroke: #C4A46B;
+    fill: none;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 .value-card h4 {
     font-family: 'Cormorant Garamond', serif;
     font-size: 22px;
@@ -336,7 +346,8 @@ include "../includes/header.php";
     line-height: 1.7;
     margin: 0;
 }
-/* ── How it works ── */
+
+/* ── Steps ── */
 .steps {
     display: flex;
     gap: 0;
@@ -353,13 +364,7 @@ include "../includes/header.php";
     background: #DDD5C8;
     z-index: 0;
 }
-.step {
-    flex: 1;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-    padding: 0 16px;
-}
+.step { flex: 1; text-align: center; position: relative; z-index: 1; padding: 0 16px; }
 .step-num {
     width: 60px;
     height: 60px;
@@ -375,20 +380,8 @@ include "../includes/header.php";
     justify-content: center;
     margin: 0 auto 18px;
 }
-.step h4 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #1A1008;
-    margin: 0 0 8px;
-}
-.step p {
-    font-family: 'Lato', sans-serif;
-    font-size: 13px;
-    color: #6A5840;
-    line-height: 1.7;
-    margin: 0;
-}
+.step h4 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: #1A1008; margin: 0 0 8px; }
+.step p  { font-family: 'Lato', sans-serif; font-size: 13px; color: #6A5840; line-height: 1.7; margin: 0; }
 
 /* ── CTA Banner ── */
 .cta-banner {
@@ -410,67 +403,55 @@ include "../includes/header.php";
     font-family: 'Cormorant Garamond', serif;
     font-size: 22px;
     font-style: italic;
-    font-weight: 400;
     color: rgba(255,255,255,0.65);
     margin: 0 0 32px;
     line-height: 1.7;
 }
-.cta-btns {
-    display: flex;
-    gap: 14px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-.btn-gold {
-    background: #C4A46B;
-    color: #1A1008;
-    padding: 14px 32px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-family: 'Lato', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    transition: background .2s;
-}
+.cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.btn-gold { background: #C4A46B; color: #1A1008; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-family: 'Lato', sans-serif; font-weight: 700; font-size: 15px; transition: background .2s; }
 .btn-gold:hover { background: #D4B47B; }
-.btn-outline-w {
-    background: transparent;
-    color: rgba(255,255,255,0.7);
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 14px 32px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-family: 'Lato', sans-serif;
-    font-size: 15px;
-    transition: border-color .2s, color .2s;
-}
+.btn-outline-w { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 14px 32px; border-radius: 10px; text-decoration: none; font-family: 'Lato', sans-serif; font-size: 15px; transition: border-color .2s, color .2s; }
 .btn-outline-w:hover { border-color: #C4A46B; color: #C4A46B; }
+
+/* ── Dark mode overrides ── */
+html.dark .about-body    { background: #1A1610; }
+html.dark .stat-item     { background: #2C2418; }
+html.dark .stat-item .lbl { color: #A89880; }
+html.dark .feat-card,
+html.dark .value-card    { background: #2C2418; border-color: #3E3228; }
+html.dark .feat-card h3,
+html.dark .value-card h4 { color: #F0E8D8; }
+html.dark .feat-card p,
+html.dark .value-card p  { color: #A89880; }
+html.dark .section h2    { color: #F0E8D8; }
+html.dark .section p     { color: #C4B89A; }
+html.dark .step-num      { background: #2C2418; }
+html.dark .step h4       { color: #F0E8D8; }
+html.dark .step p        { color: #A89880; }
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
-    .about-inner        { padding: 0 30px; }
-    .two-col            { grid-template-columns: 1fr; }
-    .values-grid        { grid-template-columns: 1fr 1fr; }
-    .stats-band         { grid-template-columns: repeat(2, 1fr); }
+    .about-inner { padding: 0 30px; }
+    .two-col     { grid-template-columns: 1fr; }
+    .values-grid { grid-template-columns: 1fr 1fr; }
+    .stats-band  { grid-template-columns: repeat(2, 1fr); }
     .about-hero-content h1 { font-size: 50px; }
     .about-hero-content p  { font-size: 20px; }
 }
 @media (max-width: 600px) {
-    .about-inner        { padding: 0 20px; }
-    .values-grid        { grid-template-columns: 1fr; }
-    .steps              { flex-direction: column; gap: 24px; }
-    .steps::before      { display: none; }
+    .about-inner { padding: 0 20px; }
+    .values-grid { grid-template-columns: 1fr; }
+    .steps       { flex-direction: column; gap: 24px; }
+    .steps::before { display: none; }
     .about-hero-content h1 { font-size: 38px; }
-    .feat-card          { flex-direction: column; }
-    .cta-banner         { padding: 40px 24px; }
+    .feat-card   { flex-direction: column; }
+    .cta-banner  { padding: 40px 24px; }
 }
 </style>
 
 <div class="about-root">
 
-    <!-- ══════════════════════════════════════════════
-         HERO — full screen photo
-    ══════════════════════════════════════════════ -->
+    <!-- ══ HERO ══ -->
     <section class="about-hero-section">
         <div class="about-hero-content">
             <div class="badge-pill">✦ À propos de nous</div>
@@ -483,12 +464,11 @@ include "../includes/header.php";
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════════
-         BODY — same width as hero
-    ══════════════════════════════════════════════ -->
+    <!-- ══ BODY ══ -->
     <div class="about-body">
         <div class="about-inner">
-<!-- Stats -->
+
+            <!-- Stats -->
             <div class="stats-band">
                 <?php
                 $nb_docs     = $conn->query("SELECT COUNT(*) c FROM documents")->fetch_assoc()['c'] ?? 0;
@@ -512,65 +492,130 @@ include "../includes/header.php";
 
             <div class="divider">Ce que nous proposons</div>
 
-            <!-- Features -->
+            <!-- ══════════════════════════════════════════
+                 FEAT CARDS — icônes SVG luxury doré
+            ══════════════════════════════════════════ -->
             <div class="two-col">
+
+                <!-- Emprunt gratuit -->
                 <div class="feat-card">
-                    <div class="feat-icon">📖</div>
+                    <div class="feat-icon-wrap">
+                        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="10" y1="8" x2="16" y2="8"/><line x1="10" y1="12" x2="16" y2="12"/><line x1="10" y1="16" x2="13" y2="16"/></svg>
+                    </div>
                     <div class="feat-text">
                         <h3>Emprunt gratuit &amp; simple</h3>
                         <p>Empruntez n'importe quel document disponible pour 14 jours, gratuitement. Renouvelez en un clic si vous avez besoin de plus de temps.</p>
                     </div>
                 </div>
+
+                <!-- Achat en ligne -->
                 <div class="feat-card">
-                    <div class="feat-icon">🛒</div>
+                    <div class="feat-icon-wrap">
+                        <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </div>
                     <div class="feat-text">
                         <h3>Achat en ligne sécurisé</h3>
                         <p>Achetez vos livres préférés directement depuis le catalogue. Ajoutez au panier, validez votre commande et suivez sa livraison.</p>
                     </div>
                 </div>
+
+                <!-- Recherche -->
                 <div class="feat-card">
-                    <div class="feat-icon">🔍</div>
+                    <div class="feat-icon-wrap">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </div>
                     <div class="feat-text">
                         <h3>Recherche intelligente</h3>
                         <p>Trouvez n'importe quel document par titre, auteur, ISBN ou catégorie. Les résultats apparaissent instantanément.</p>
                     </div>
                 </div>
+
+                <!-- Multilingue + dark mode -->
                 <div class="feat-card">
-                    <div class="feat-icon">🌙</div>
+                    <div class="feat-icon-wrap">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
                     <div class="feat-text">
                         <h3>Interface multilingue &amp; dark mode</h3>
                         <p>Disponible en français, anglais et arabe. Le mode sombre s'active en un clic et reste mémorisé entre vos visites.</p>
                     </div>
                 </div>
+
             </div>
 
             <div class="divider">Nos valeurs</div>
-<!-- Values -->
+
+            <!-- ══════════════════════════════════════════
+                 VALUES GRID — icônes SVG luxury doré
+            ══════════════════════════════════════════ -->
             <div class="values-grid">
+
+                <!-- Accessibilité -->
                 <div class="value-card">
-                    <div class="value-header"><div class="vi">🔓</div><h4>Accessibilité</h4></div>
+                    <div class="value-header">
+                        <div class="val-icon-wrap">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/><circle cx="12" cy="16" r="1" fill="#C4A46B" stroke="none"/></svg>
+                        </div>
+                        <h4>Accessibilité</h4>
+                    </div>
                     <p>Le savoir ne doit pas avoir de barrière. Emprunt gratuit pour tous.</p>
                 </div>
+
+                <!-- Excellence -->
                 <div class="value-card">
-                    <div class="value-header"><div class="vi">✨</div><h4>Excellence</h4></div>
+                    <div class="value-header">
+                        <div class="val-icon-wrap">
+                            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <h4>Excellence</h4>
+                    </div>
                     <p>Une interface soignée, rapide et pensée pour l'expérience utilisateur.</p>
                 </div>
+
+                <!-- Sécurité -->
                 <div class="value-card">
-                    <div class="value-header"><div class="vi">🔒</div><h4>Sécurité</h4></div>
+                    <div class="value-header">
+                        <div class="val-icon-wrap">
+                            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h4>Sécurité</h4>
+                    </div>
                     <p>Vos données personnelles sont protégées et ne sont jamais partagées.</p>
                 </div>
+
+                <!-- Inclusion -->
                 <div class="value-card">
-                    <div class="value-header"><div class="vi">🌍</div><h4>Inclusion</h4></div>
+                    <div class="value-header">
+                        <div class="val-icon-wrap">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        </div>
+                        <h4>Inclusion</h4>
+                    </div>
                     <p>Disponible en 3 langues pour toucher le plus grand nombre.</p>
                 </div>
+
+                <!-- Diversité -->
                 <div class="value-card">
-                    <div class="value-header"><div class="vi">📚</div><h4>Diversité</h4></div>
+                    <div class="value-header">
+                        <div class="val-icon-wrap">
+                            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        </div>
+                        <h4>Diversité</h4>
+                    </div>
                     <p>Livres, thèses, articles, journaux — tout type de document en un seul endroit.</p>
                 </div>
+
+                <!-- Rapidité -->
                 <div class="value-card">
-                    <div class="value-header"><div class="vi">⚡️</div><h4>Rapidité</h4></div>
+                    <div class="value-header">
+                        <div class="val-icon-wrap">
+                            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        </div>
+                        <h4>Rapidité</h4>
+                    </div>
                     <p>Empruntez ou achetez en moins de 3 clics, sans file d'attente.</p>
                 </div>
+
             </div>
 
             <div class="divider">Comment ça marche</div>
@@ -604,7 +649,7 @@ include "../includes/header.php";
                 <h2>Prêt à explorer notre catalogue ?</h2>
                 <p>Rejoignez des centaines de lecteurs qui font confiance à AuraLibre chaque jour.</p>
                 <div class="cta-btns">
-                    <a href="/MEMOIR/client/library.php" class="btn-gold">📚 Explorer le catalogue</a>
+                    <a href="/MEMOIR/client/library.php" class="btn-gold">Explorer le catalogue</a>
                     <?php if (!isset($_SESSION['id_user'])): ?>
                     <a href="/MEMOIR/auth/signup.php" class="btn-outline-w">Créer un compte gratuit</a>
                     <?php endif; ?>
