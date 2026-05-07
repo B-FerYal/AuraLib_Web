@@ -1,17 +1,31 @@
-/* ════════════════════════════════════════════════════════
-   AURALIB — dark-mode.css  (version corrigée)
-   Problème : fond #0F0D08 trop noir → texte illisible
-   Solution : fond brun chaud #1C1610 + texte #F0E8D8
-════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════════
+   AURALIB — dark-mode.css  v2.0  ✦  Enhanced & Pro Edition
+   Palette : brun encre profond · or patiné · crème parchemin
+   Auteur   : AURALIB Design System
+   Thème    : Bibliothèque de luxe · Art déco · Typographie soignée
+   ══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Transition douce ── */
-html.dark *, html.dark *::before, html.dark *::after {
-    transition: background-color .3s ease, border-color .3s ease, color .3s ease, box-shadow .3s ease;
+/* ────────────────────────────────────────────────────────────────────────
+   §0 · TRANSITIONS GLOBALES
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark *,
+html.dark *::before,
+html.dark *::after {
+    transition:
+        background-color .28s cubic-bezier(.4,0,.2,1),
+        border-color     .28s cubic-bezier(.4,0,.2,1),
+        color            .22s cubic-bezier(.4,0,.2,1),
+        box-shadow       .28s cubic-bezier(.4,0,.2,1),
+        opacity          .22s ease,
+        transform        .22s cubic-bezier(.4,0,.2,1);
 }
 
-/* ════ 1. VARIABLES ════════════════════════════════════ */
+/* ────────────────────────────────────────────────────────────────────────
+   §1 · DESIGN TOKENS — Variables CSS
+   Hiérarchie : bg-surface-0 (plus profond) → bg-surface-4 (plus clair)
+   ──────────────────────────────────────────────────────────────────────── */
 html.dark {
-    --page-bg:     #1C1610;s
+    --page-bg:     #1C1610;
     --page-bg2:    #241C12;
     --page-white:  #2C2418;
     --page-text:   #F0E8D8;
