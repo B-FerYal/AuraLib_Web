@@ -1,0 +1,815 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   AURALIB — PREMIUM CSS
+   Font: Poppins | Theme: Dark Cinema / Streaming-Inspired
+════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── CSS Variables ──────────────────────────────────────────────────────── */
+:root {
+    --font-main:      'Poppins', sans-serif;
+
+    /* Palette */
+    --clr-bg:         #0a0c10;
+    --clr-surface:    #111318;
+    --clr-surface-2:  #181b22;
+    --clr-border:     #1e222d;
+
+    --clr-accent:     #e8a045;      /* warm gold — like a library lamp */
+    --clr-accent-2:   #c0392b;      /* deep crimson for badges */
+    --clr-gold-light: #f0c060;
+
+    --clr-text:       #e8eaf0;
+    --clr-muted:      #8891a8;
+    --clr-white:      #ffffff;
+
+    /* Hero */
+    --hero-height:    560px;
+
+    /* Cards */
+    --card-w:         165px;
+    --card-cover-h:   240px;
+    --card-radius:    10px;
+
+    /* Transitions */
+    --ease-smooth:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ─── Global Reset & Base ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--clr-bg);
+    color: var(--clr-text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+
+img { display: block; max-width: 100%; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HERO SLIDER
+════════════════════════════════════════════════════════════════════════════ */
+
+.hero-slider-section {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: var(--clr-bg);
+}
+
+.hero-slider {
+    position: relative;
+    width: 100%;
+    height: var(--hero-height);
+    overflow: hidden;
+}
+
+/* ─── Individual Slide ───────────────────────────────────────────────────── */
+/* ─── Individual Slide ───────────────────────────────────────────────────── */
+.hero-slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center top;
+    opacity: 0;
+    transform: scale(1.04);
+    transition: opacity 0.9s var(--ease-smooth),
+                transform 0.9s var(--ease-smooth);
+    z-index: 1; /* الصورة في الخلفية */
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute; /* تأكد من وجود هذا السطر */
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.hero-slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 12, 16, 1), transparent);
+    z-index: 2;
+}
+
+.hero-slide.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+
+/* ─── Gradient Overlay ───────────────────────────────────────────────────── */
+.h/* 1. نخبر المتصفح أن طبقة الضباب الأسود لا تعترض الضغطات */
+.hero-slide-overlay {
+    pointer-events: none !important; 
+    z-index: 2;
+}
+
+/* 2. نرفع طبقة المحتوى (الأزرار والنصوص) للفوق */
+.hero-slide-content {
+    position: relative;
+    z-index: 99 !important; /* رقم عالي باش يجي فوق كلش */
+    pointer-events: auto !important;
+}
+
+/* 3. نأكد أن الزر نفسه قابل للتفاعل */
+.btn-hero-primary {
+    position: relative;
+    z-index: 100;
+    cursor: pointer !important;
+}
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    background: var(--clr-accent);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 0 16px rgba(232, 160, 69, 0.4);
+}
+
+.hero-title {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 10px;
+    color: var(--clr-white);
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+
+.hero-author {
+    font-size: 0.95rem;
+    color: var(--clr-gold-light);
+    font-weight: 500;
+    margin-bottom: 14px;
+}
+
+.hero-desc {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: rgba(232, 234, 240, 0.78);
+    max-width: 480px;
+    margin-bottom: 28px;
+}
+
+/* ─── CTA Buttons ────────────────────────────────────────────────────────── */
+.btn-hero-primary {
+    background: var(--clr-accent);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.88rem;
+    padding: 10px 24px;
+    border-radius: 6px;
+    border: none;
+    transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+    box-shadow: 0 4px 20px rgba(232, 160, 69, 0.35);
+}
+.btn-hero-primary:hover {
+    background: var(--clr-gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(232, 160, 69, 0.5);
+    color: #000;
+}
+
+.btn-hero-secondary {
+    background: rgba(255,255,255,0.08);
+    color: var(--clr-white);
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 10px 22px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(6px);
+    transition: background 0.25s, transform 0.2s;
+}
+.btn-hero-secondary:hover {
+    background: rgba(255,255,255,0.16);
+    transform: translateY(-2px);
+    color: var(--clr-white);
+}
+.btn-hero-secondary.wishlisted {
+    border-color: var(--clr-accent-2);
+    color: #ff6b6b;
+}
+
+/* ─── Floating Book Cover ────────────────────────────────────────────────── */
+.hero-book-cover-wrapper {
+    position: relative;
+    width: 190px;
+}
+.hero-book-cover {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: -12px 16px 48px rgba(0,0,0,0.7), 4px 4px 0 rgba(0,0,0,0.3);
+    transform: perspective(600px) rotateY(-8deg);
+    transition: transform 0.4s var(--ease-smooth);
+}
+.hero-book-cover-wrapper:hover .hero-book-cover {
+    transform: perspective(600px) rotateY(0deg);
+}
+.hero-book-glow {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 20px;
+    background: var(--clr-accent);
+    filter: blur(22px);
+    opacity: 0.4;
+    border-radius: 50%;
+}
+
+/* ─── Slider Controls ────────────────────────────────────────────────────── */
+.hero-ctrl {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--clr-white);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background 0.25s, transform 0.2s;
+}
+.hero-ctrl:hover {
+    background: var(--clr-accent);
+    color: #000;
+    transform: translateY(-50%) scale(1.08);
+}
+.hero-prev { left: 18px; }
+.hero-next { right: 18px; }
+
+/* ─── Dots ───────────────────────────────────────────────────────────────── */
+.hero-dots {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+}
+.hero-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.3s, width 0.3s, border-radius 0.3s;
+}
+.hero-dot.active {
+    background: var(--clr-accent);
+    width: 26px;
+    border-radius: 4px;
+}
+
+/* ─── Progress Bar ───────────────────────────────────────────────────────── */
+.hero-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    z-index: 10;
+}
+.hero-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--clr-accent);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STATS BAR
+════════════════════════════════════════════════════════════════════════════ */
+.stats-bar {
+    background: var(--clr-surface);
+    border-bottom: 1px solid var(--clr-border);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.stat-number {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--clr-accent);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.72rem;
+    color: var(--clr-muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIBRARY MAIN — CATEGORY ROWS
+════════════════════════════════════════════════════════════════════════════ */
+.library-main { background: var(--clr-bg); }
+
+/* ─── Row Header ─────────────────────────────────────────────────────────── */
+.row-header { padding: 0 4px; }
+
+.row-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--clr-white);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.row-title-accent {
+    display: inline-block;
+    width: 4px;
+    height: 22px;
+    background: var(--clr-accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.row-count {
+    font-size: 0.7rem;
+    background: var(--clr-surface-2);
+    color: var(--clr-muted);
+    border: 1px solid var(--clr-border);
+    padding: 1px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+    vertical-align: middle;
+}
+
+.see-all-link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--clr-accent);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    transition: gap 0.2s, opacity 0.2s;
+    gap: 2px;
+}
+.see-all-link:hover { opacity: 0.8; gap: 5px; }
+
+/* ─── Strip Wrapper & Controls ───────────────────────────────────────────── */
+.books-strip-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.books-strip {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 4px 20px;
+    scrollbar-width: none;      /* Firefox */
+}
+.books-strip::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+.strip-ctrl {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    background: rgba(10, 12, 16, 0.85);
+    border: 1px solid var(--clr-border);
+    color: var(--clr-white);
+    width: 38px;
+    height: 80px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s, background 0.25s;
+    backdrop-filter: blur(4px);
+}
+.books-strip-wrapper:hover .strip-ctrl { opacity: 1; }
+.strip-ctrl:hover { background: var(--clr-accent); color: #000; }
+.strip-prev { left: 0; }
+.strip-next { right: 0; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BOOK CARDS
+════════════════════════════════════════════════════════════════════════════ */
+.book-card-wrapper {
+    flex: 0 0 var(--card-w);
+    scroll-snap-align: start;
+}
+
+.book-card {
+    width: var(--card-w);
+    border-radius: var(--card-radius);
+    background: var(--clr-surface);
+    overflow: hidden;
+    transition: transform 0.35s var(--ease-smooth),
+                box-shadow 0.35s var(--ease-smooth);
+    cursor: pointer;
+}
+
+.book-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(232, 160, 69, 0.2);
+}
+
+/* ─── Cover Container ────────────────────────────────────────────────────── */
+.book-cover-container {
+    position: relative;
+    width: 100%;
+    height: var(--card-cover-h);
+    overflow: hidden;
+    background: var(--clr-surface-2);
+}
+
+.book-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s var(--ease-smooth), filter 0.4s;
+}
+.book-card:hover .book-cover {
+    transform: scale(1.08);
+    filter: brightness(0.5);
+}
+
+/* ─── Hover Overlay ──────────────────────────────────────────────────────── */
+.book-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.35s var(--ease-smooth);
+    padding: 12px;
+}
+.book-card:hover .book-overlay { opacity: 1; }
+
+.book-overlay-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.overlay-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    transition: transform 0.2s, background 0.2s;
+    cursor: pointer;
+    transform: translateY(10px);
+    opacity: 0;
+}
+.book-card:hover .overlay-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+.book-card:hover .overlay-btn:nth-child(1) { transition-delay: 0.05s; }
+.book-card:hover .overlay-btn:nth-child(2) { transition-delay: 0.10s; }
+.book-card:hover .overlay-btn:nth-child(3) { transition-delay: 0.15s; }
+
+.overlay-primary  { background: var(--clr-accent); color: #000; }
+.overlay-secondary { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+.overlay-cart     { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+.overlay-wishlisted { background: var(--clr-accent-2); color: #fff; }
+
+.overlay-btn:hover { transform: scale(1.15) !important; }
+
+/* ─── Availability Badge ─────────────────────────────────────────────────── */
+.availability-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    transform: translateY(6px);
+    opacity: 0;
+    transition: opacity 0.35s 0.1s, transform 0.35s 0.1s;
+}
+.book-card:hover .availability-badge {
+    opacity: 1;
+    transform: translateY(0);
+}
+.availability-badge.available  { background: rgba(39, 174, 96, 0.25); color: #55d98d; border: 1px solid rgba(55,180,100,0.35); }
+.availability-badge.unavailable { background: rgba(192, 57, 43, 0.2); color: #ff7675; border: 1px solid rgba(192,57,43,0.3); }
+
+/* ─── NEW Badge ──────────────────────────────────────────────────────────── */
+.new-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--clr-accent);
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(232,160,69,0.4);
+}
+
+/* ─── Card Info Area ─────────────────────────────────────────────────────── */
+.book-info {
+    padding: 10px 12px 12px;
+}
+
+.book-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--clr-text);
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.book-author {
+    font-size: 0.72rem;
+    color: var(--clr-muted);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLL TO TOP
+════════════════════════════════════════════════════════════════════════════ */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 24px;
+    z-index: 999;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--clr-accent);
+    color: #000;
+    border: none;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.35s, transform 0.35s, background 0.2s;
+    box-shadow: 0 4px 20px rgba(232,160,69,0.4);
+}
+.scroll-top-btn.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.scroll-top-btn:hover { background: var(--clr-gold-light); transform: translateY(-3px); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE ADJUSTMENTS
+════════════════════════════════════════════════════════════════════════════ */
+
+/* Tablet */
+@media (max-width: 991px) {
+    :root {
+        --hero-height: 480px;
+        --card-w: 148px;
+        --card-cover-h: 215px;
+    }
+    .hero-title { font-size: clamp(1.5rem, 5vw, 2.2rem); }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+    :root {
+        --hero-height: 420px;
+        --card-w: 135px;
+        --card-cover-h: 196px;
+    }
+    .hero-title { font-size: 1.4rem; }
+    .hero-desc  { display: none; }
+    .hero-ctrl  { width: 36px; height: 36px; font-size: 0.9rem; }
+    .hero-prev  { left: 8px; }
+    .hero-next  { right: 8px; }
+    .row-title  { font-size: 1rem; }
+    .strip-ctrl { display: none; }
+    .stat-number { font-size: 1.3rem; }
+}
+
+/* Very small screens */
+@media (max-width: 400px) {
+    :root {
+        --card-w: 120px;
+        --card-cover-h: 175px;
+    }
+}
+/* ═══════════════════════════════════════════════
+   AURALIB PROFESSIONAL CATALOG (SHELF LOGIC)
+═══════════════════════════════════════════════ */
+
+/* الشبكة الأساسية */
+/* تأكد أن الشبكة تسمح بالنزول لأسطر جديدة تلقائياً */
+.shelf-grid {
+    display: grid;
+    /* سيقوم بإنشاء أسطر جديدة تلقائياً كلما زاد عدد الكتب */
+    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); 
+    gap: 25px;
+    padding: 15px 0;
+    height: auto; /* مهم جداً لكي يتوسع القسم */
+}
+
+/* إزالة أي خاصية Overflow قد تخفي الكتب الزائدة في الحاوية الأب */
+.category-section {
+    overflow: visible !important;
+    height: auto !important;
+}
+.lib-card {
+    background: var(--clr-surface);
+    border-radius: var(--card-radius); /* 10px من المتغيرات اللي عندك */
+    overflow: hidden;
+    transition: all 0.35s var(--ease-smooth);
+    height: 350px; 
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--clr-border);
+}
+
+.lib-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--clr-accent);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+}
+
+/* توزيع 70% للغلاف */
+.lib-cover-area {
+    position: relative;
+    height: 70%; 
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--clr-surface-2);
+}
+
+.lib-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease-smooth);
+}
+
+.lib-card:hover .lib-img {
+    transform: scale(1.1);
+}
+
+/* توزيع 30% للمعلومات التقنية */
+.lib-metadata {
+    height: 30%;
+    padding: 15px 12px;
+    background: linear-gradient(180deg, var(--clr-surface-2) 0%, var(--clr-bg) 100%);
+    border-top: 1px solid var(--clr-border);
+}
+
+.lib-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: var(--clr-white);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.lib-author {
+    font-size: 0.78rem;
+    color: var(--clr-muted);
+    font-weight: 500;
+    margin: 0;
+}
+
+/* أزرار التحكم الاحترافية */
+/* ═══════════════════════════════════════════════
+   LUXURY ACTION BUTTONS (AURALIB STYLE)
+═══════════════════════════════════════════════ */
+
+.lib-actions-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 12, 16, 0.7); /* تعتيم خفيف */
+    backdrop-filter: blur(4px); /* تأثير الزجاج */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.4s var(--ease-smooth);
+}
+
+.lib-card:hover .lib-actions-overlay {
+    opacity: 1;
+}
+
+.action-group {
+    display: flex;
+    gap: 15px;
+    transform: translateY(20px);
+    transition: transform 0.4s var(--ease-smooth);
+}
+
+.lib-card:hover .action-group {
+    transform: translateY(0);
+}
+
+/* زر احترافي فخم */
+.lib-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px; /* زوايا ناعمة Pro */
+    border: 1px solid rgba(232, 160, 69, 0.3); /* حدود ذهبية شفافة */
+    background: rgba(24, 27, 34, 0.8); /* لون السطح مع شفافية */
+    color: var(--clr-accent); /* لون ذهبي */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* تأثير عند اللمس (Hover) */
+.lib-btn:hover {
+    background: var(--clr-accent); /* ينقلب للذهبي بالكامل */
+    color: var(--clr-bg); /* الأيقونة تصبح سوداء */
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 8px 20px rgba(232, 160, 69, 0.4); /* توهج ذهبي */
+    border-color: var(--clr-gold-light);
+}
+
+/* تمييز بسيط لكل زر */
+.btn-borrow:hover { border-color: #27ae60; }
+.btn-purchase:hover { border-color: var(--clr-gold-light); }
+.btn-details:hover { border-color: #3498db; }
+
+/* إضافة أنيميشن نبض خفيف للأيقونة داخل الزر */
+.lib-btn i {
+    transition: transform 0.3s ease;
+}
+
+.lib-btn:hover i {
+    transform: rotate(-10deg);
+}

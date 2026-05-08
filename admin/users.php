@@ -108,6 +108,31 @@ $result = mysqli_query($conn, $query);
         /* ===== SweetAlert thème AuraLib ===== */
         .swal2-styled.swal2-confirm { background-color: var(--primary-color) !important; }
         .swal2-styled.swal2-cancel  { background-color: var(--dark-color)    !important; }
+        /* تنسيق الـ ID ليصبح Pro */
+.id-badge {
+    background-color: #f8f9fa; /* خلفية رمادية فاتحة جداً */
+    color: var(--primary-color); /* اللون الذهبي الخاص بـ AuraLib */
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace; /* خط يوحي بالبيانات المنظمة */
+    border: 1px solid #eeebe6;
+    font-size: 13px;
+    display: inline-block;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+}
+.id-tag {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 12px;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+    letter-spacing: 1,5px;
+}
+.row-me { background-color: #fffdf0 !important; }
     </style>
 </head>
 <body>
@@ -142,8 +167,8 @@ $result = mysqli_query($conn, $query);
                 $newRoleLabel = ($newRole === 'admin') ? 'Admin' : 'Client';
                 $isMe        = ($uid === $current_admin_id);
             ?>
-            <tr id="row-<?= $uid ?>">
-                <td>#<?= $uid ?></td>
+            <tr id="row-<?= $uid ?>" class="<?= $isMe ? 'row-me' : '' ?>">
+                <td><span class="id-tag"><?= sprintf("%02d", $uid) ?></span></td>        
                 <td><strong><?= $fullname ?></strong></td>
                 <td><?= $email ?></td>
 
