@@ -39,6 +39,7 @@ if (!isset($page_title)) {
 <!DOCTYPE html>
 <html lang="<?= $lang ?? 'fr' ?>" dir="<?= ($lang ?? 'fr') === 'ar' ? 'rtl' : 'ltr' ?>">
 <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraLib | <?= htmlspecialchars($page_title) ?></title>
@@ -55,6 +56,17 @@ if (!isset($page_title)) {
         → Aucun flash blanc au chargement
         NE PAS déplacer ce script ailleurs
     -->
+        <!-- ══ DARK MODE — doit être AVANT tout autre CSS ══ -->
+    <!--
+        ÉTAPE 1 : Colle ces 2 blocs dans le <head> de includes/header.php
+        Juste AVANT la fermeture </head> ou après les Google Fonts
+    -->
+
+    <!-- 1A : Lien vers dark-mode.css -->
+    <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
+
+    <!-- 1B : Script anti-flash — applique .dark sur <html> AVANT le paint
+              NE PAS déplacer ailleurs, doit rester inline dans <head> -->
     <script>
         (function () {
             if (localStorage.getItem('auralib_theme') === 'dark') {
@@ -62,6 +74,7 @@ if (!isset($page_title)) {
             }
         })();
     </script>
+    
 
 </head>
 <body>

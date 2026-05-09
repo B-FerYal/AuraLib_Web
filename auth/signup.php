@@ -84,8 +84,13 @@ $pass2 = isset($_POST['pass2']) ? $_POST['pass2'] : '';
 <title><?= t('signup_title') ?> — AuraLib</title>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<script>(function(){if(localStorage.getItem('auralib_theme')==='dark')document.documentElement.classList.add('dark')})();</script>
 <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
+<script>
+    (function(){
+        if(localStorage.getItem('auralib_theme')==='dark')
+            document.documentElement.classList.add('dark');
+    })();
+</script>
 <style>
 :root {
     --gold:   #C4A46B;

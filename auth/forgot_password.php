@@ -100,6 +100,13 @@ if (isset($_POST['submit'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mot de passe oublié - BiblioUHBC</title>
+    <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
+<script>
+    (function(){
+        if(localStorage.getItem('auralib_theme')==='dark')
+            document.documentElement.classList.add('dark');
+    })();
+</script>
     <style>
         body { background-color: #f4f1ea; margin: 0; padding: 0; font-family: 'Lato', sans-serif; }
         .box { max-width: 400px; margin: 80px auto; padding: 35px; background: #FFFDF9; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }

@@ -84,6 +84,13 @@ $result = $conn->query("SELECT d.*, t.libelle_type FROM documents d LEFT JOIN ty
     <meta charset="UTF-8">
     <title>Administration du Catalogue — UHBC</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
+<script>
+    (function(){
+        if(localStorage.getItem('auralib_theme')==='dark')
+            document.documentElement.classList.add('dark');
+    })();
+</script>
     <style>
         :root { --primary: #3d2b1f; --bg: #f4f1ea; --secondary: #7f8c8d; --success: #27ae60; --danger: #e74c3c; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: #333; }

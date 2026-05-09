@@ -1,8 +1,9 @@
 /* ══════════════════════════════════════════════════════════════════════════
-   AURALIB — dark-mode.css  v2.0  ✦  Enhanced & Pro Edition
-   Palette : brun encre profond · or patiné · crème parchemin
-   Auteur   : AURALIB Design System
-   Thème    : Bibliothèque de luxe · Art déco · Typographie soignée
+   AURALIB — dark-mode.css  v3.0
+   Couvre : header · footer · sidebar · library · profile · about
+            admin dashboard · all_orders · gerer_documents · gerer_emprunts
+            panier · commandes · emprunts · auth pages · notifications
+   Palette : brun encre #1C1610 · or patiné #C4A46B · crème #F0E8D8
    ══════════════════════════════════════════════════════════════════════════ */
 
 /* ────────────────────────────────────────────────────────────────────────
@@ -15,168 +16,299 @@ html.dark *::after {
         background-color .28s cubic-bezier(.4,0,.2,1),
         border-color     .28s cubic-bezier(.4,0,.2,1),
         color            .22s cubic-bezier(.4,0,.2,1),
-        box-shadow       .28s cubic-bezier(.4,0,.2,1),
-        opacity          .22s ease,
-        transform        .22s cubic-bezier(.4,0,.2,1);
+        box-shadow       .28s cubic-bezier(.4,0,.2,1);
 }
 
 /* ────────────────────────────────────────────────────────────────────────
-   §1 · DESIGN TOKENS — Variables CSS
-   Hiérarchie : bg-surface-0 (plus profond) → bg-surface-4 (plus clair)
+   §1 · DESIGN TOKENS
    ──────────────────────────────────────────────────────────────────────── */
 html.dark {
-    --page-bg:     #1C1610;
-    --page-bg2:    #241C12;
-    --page-white:  #2C2418;
-    --page-text:   #F0E8D8;
-    --page-muted:  #A89880;
-    --page-border: #3E3228;
-    --nav-bg:      #140E08;
-    --gold:        #C4A46B;
-    --cream:       #1C1610;
-    --cream2:      #241C12;
-    --taupe-deep:  #C4A46B;
-    --white:       #2C2418;
-    --text-main:   #F0E8D8;
-    --border:      #3E3228;
-    --blue-bg:     #0F1E30;
-    --amber-bg:    #281A00;
+    --page-bg:      #1C1610;
+    --page-bg2:     #241C12;
+    --page-white:   #2C2418;
+    --page-text:    #F0E8D8;
+    --page-muted:   #A89880;
+    --page-border:  #3E3228;
+    --nav-bg:       #140E08;
+    --gold:         #C4A46B;
+    --cream:        #1C1610;
+    --cream2:       #241C12;
+    --white:        #2C2418;
+    --text-main:    #F0E8D8;
+    --border:       #3E3228;
+    --blue-bg:      #0F1E30;
+    --amber-bg:     #281A00;
+    color-scheme: dark;
 }
 
-/* ════ 2. BODY ════════════════════════════════════════ */
+/* ────────────────────────────────────────────────────────────────────────
+   §2 · BODY & BACKGROUND
+   ──────────────────────────────────────────────────────────────────────── */
 html.dark body {
     background: #1C1610 !important;
     color: #F0E8D8 !important;
 }
 
-/* ════ 3. TEXTES GÉNÉRIQUES ══════════════════════════ */
+/* Fond des wrappers génériques */
+html.dark .main-content,
+html.dark .content-area,
+html.dark .page-content,
+html.dark .adm-wrap,
+html.dark .adm-main,
+html.dark .emprunts-container,
+html.dark .profile-page,
+html.dark .about-body,
+html.dark .soft-bg,
+html.dark [class*="wrap"],
+html.dark [class*="container"] {
+    background: #1C1610 !important;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   §3 · TYPOGRAPHIE
+   ──────────────────────────────────────────────────────────────────────── */
 html.dark h1, html.dark h2, html.dark h3,
 html.dark h4, html.dark h5, html.dark h6 {
     color: #F0E8D8 !important;
 }
 html.dark p { color: #C4B89A !important; }
-html.dark span:not(.badge):not(.nav-logo-text):not(.gold-text):not(.white-text):not(.type-badge):not(.pill):not(.cart-badge):not(.lang-flag):not(.nav-username) {
+html.dark a { color: inherit; }
+
+/* Cas spéciaux : ne pas écraser les badges, pills, logos */
+html.dark span:not(.badge):not(.nav-logo-text):not(.gold-text):not(.white-text)
+            :not(.type-badge):not(.pill):not(.cart-badge):not(.lang-flag)
+            :not(.nav-username):not(.brand-name):not(.logo-name) {
     color: inherit;
 }
 
-/* ════ 4. NAVBAR ═════════════════════════════════════ */
-html.dark .admin-nav {
+/* ────────────────────────────────────────────────────────────────────────
+   §4 · NAVBAR (header.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .admin-nav,
+html.dark nav.admin-nav {
     background: #140E08 !important;
     border-bottom-color: rgba(196,164,107,.25) !important;
 }
+html.dark .nav-link { color: rgba(237,229,212,.55) !important; }
+html.dark .nav-link:hover { color: #F0E8D8 !important; }
+html.dark .nav-link.gold  { color: #C4A46B !important; }
 
-/* ════ 5. HERO ═══════════════════════════════════════ */
-html.dark .hero {
-    background: linear-gradient(180deg, #140E08 0%, #1C1610 100%) !important;
+html.dark .profile-trigger {
+    background: rgba(255,255,255,.04) !important;
+    border-color: rgba(196,164,107,.18) !important;
+}
+html.dark .nav-username { color: #F0E8D8 !important; }
+
+html.dark .cart-btn {
+    background: rgba(196,164,107,.12) !important;
+    border-color: rgba(196,164,107,.28) !important;
+    color: #C4A46B !important;
+}
+
+html.dark .notif-btn {
+    background: #2C2418 !important;
+    border-color: #3E3228 !important;
+}
+html.dark .notif-btn svg { stroke: #A89880 !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §5 · DROPDOWN LANGUE & PROFIL
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .lang-menu,
+html.dark .profile-dropdown {
+    background: #2C2418 !important;
+    border-color: #3E3228 !important;
+    box-shadow: 0 12px 32px rgba(0,0,0,.55) !important;
+}
+html.dark .lang-item           { color: rgba(237,229,212,.7) !important; }
+html.dark .lang-item:hover     { background: rgba(196,164,107,.12) !important; color: #F0E8D8 !important; }
+html.dark .lang-item.active    { color: #C4A46B !important; }
+html.dark .dd-head             { background: rgba(0,0,0,.22) !important; border-bottom-color: #3E3228 !important; }
+html.dark .dd-fullname         { color: #F0E8D8 !important; }
+html.dark .dd-email            { color: rgba(255,255,255,.32) !important; }
+html.dark .dd-item             { color: rgba(237,229,212,.68) !important; }
+html.dark .dd-item:hover       { background: rgba(196,164,107,.1) !important; color: #C4A46B !important; }
+html.dark .dd-logout-item      { color: rgba(255,100,100,.55) !important; }
+html.dark .dd-sep              { background: #3E3228 !important; border-color: #3E3228 !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §6 · FOOTER
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .aura-footer { background: #0A0600 !important; border-top-color: rgba(196,164,107,.18) !important; }
+html.dark .ft-brand-desc { color: rgba(237,229,212,.38) !important; }
+html.dark .ft-brand-sub  { color: rgba(196,164,107,.28) !important; }
+html.dark .ft-links a    { color: rgba(237,229,212,.4) !important; }
+html.dark .ft-links a:hover { color: #C4A46B !important; }
+html.dark .ft-copy       { color: rgba(237,229,212,.2) !important; }
+html.dark .ft-legal a    { color: rgba(237,229,212,.2) !important; }
+html.dark .ft-legal a:hover { color: #C4A46B !important; }
+html.dark .ft-divider    { border-top-color: rgba(196,164,107,.1) !important; }
+html.dark .ft-badge      { background: rgba(196,164,107,.07) !important; border-color: rgba(196,164,107,.15) !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §7 · SIDEBAR ADMIN
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .admin-sidebar,
+html.dark .sidebar {
+    background: #0E0A06 !important;
+    box-shadow: 3px 0 18px rgba(0,0,0,.4) !important;
+}
+html.dark .sidebar-brand   { border-bottom-color: rgba(255,255,255,.05) !important; }
+html.dark .brand-name      { color: #fff !important; }
+html.dark .sidebar-toggle  { background: rgba(196,164,107,.1) !important; border-color: rgba(196,164,107,.2) !important; }
+html.dark .sidebar-nav li a { color: rgba(255,255,255,.42) !important; }
+html.dark .sidebar-nav li a:hover { background: rgba(196,164,107,.07) !important; color: rgba(255,255,255,.82) !important; }
+html.dark .sidebar-nav li a.active { color: #C4A46B !important; background: rgba(196,164,107,.1) !important; }
+html.dark .logout-item a   { color: rgba(255,100,100,.45) !important; }
+html.dark .logout-item a:hover { color: rgba(255,100,100,.78) !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §8 · HERO SECTIONS (library.php, about.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .hero,
+html.dark .about-hero-section {
     border-bottom-color: rgba(196,164,107,.15) !important;
 }
-html.dark .hero h1 { color: #F0E8D8 !important; }
-html.dark .hero p  { color: #A89880 !important; }
+html.dark .hero { background: linear-gradient(180deg, #140E08 0%, #1C1610 100%) !important; }
+html.dark .hero h1,
+html.dark .hero h1 em:not([style]) { color: #F0E8D8 !important; }
+html.dark .hero p   { color: #A89880 !important; }
 
-/* ════ 6. BARRE DE RECHERCHE ════════════════════════ */
-html.dark .search-container {
+html.dark .search-section { background: #1C1610 !important; border-bottom-color: #3E3228 !important; }
+html.dark .search-input {
     background: #2C2418 !important;
-    border: 1px solid #3E3228 !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,.3) !important;
-}
-html.dark #search {
-    background: #2C2418 !important;
+    border-color: #3E3228 !important;
     color: #F0E8D8 !important;
 }
-html.dark #search::placeholder { color: #5A4C3C !important; }
+html.dark .search-input:focus { border-color: #C4A46B !important; }
+html.dark .search-input::placeholder { color: #5A4C3C !important; }
+html.dark .search-select {
+    background: #2C2418 !important;
+    border-color: #3E3228 !important;
+    color: #F0E8D8 !important;
+}
+html.dark .search-btn { background: #140E08 !important; color: #EDE5D4 !important; }
 
-/* ════ 7. FILTRES & PILLS ════════════════════════════ */
-html.dark .pill {
+/* ────────────────────────────────────────────────────────────────────────
+   §9 · PILLS & FILTRES
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .pill,
+html.dark .tag {
     background: rgba(196,164,107,.08) !important;
     border-color: rgba(196,164,107,.22) !important;
     color: #C4A46B !important;
 }
-html.dark .pill.active {
+html.dark .pill.active,
+html.dark .tag.active {
     background: #C4A46B !important;
     color: #1C1208 !important;
     border-color: #C4A46B !important;
 }
-html.dark .filter-link        { color: #6A5C4C !important; }
-html.dark .filter-link.active { color: #F0E8D8 !important; border-bottom-color: #C4A46B !important; }
-html.dark .filter-link:hover  { color: #C4A46B !important; }
+html.dark .filter-link         { color: #6A5C4C !important; }
+html.dark .filter-link.active  { color: #F0E8D8 !important; border-bottom-color: #C4A46B !important; }
+html.dark .filter-link:hover   { color: #C4A46B !important; }
+html.dark .filter-select {
+    background: #2C2418 !important;
+    border-color: #3E3228 !important;
+    color: #F0E8D8 !important;
+}
 
-/* ════ 8. CARTES LIVRES — CORRECTION PRINCIPALE ════ */
-html.dark .book-card {
+/* ────────────────────────────────────────────────────────────────────────
+   §10 · CARTES LIVRES (library.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .book-card,
+html.dark .wish-card {
     background: #2C2418 !important;
     border-color: #3E3228 !important;
     box-shadow: 0 4px 14px rgba(0,0,0,.3) !important;
 }
-html.dark .book-card:hover {
+html.dark .book-card:hover,
+html.dark .wish-card:hover {
     box-shadow: 0 8px 24px rgba(0,0,0,.4) !important;
-    border-color: rgba(196,164,107,.35) !important;
+    border-color: rgba(196,164,107,.38) !important;
 }
-/* Textes dans les cartes livres */
-html.dark .book-title         { color: #C4A46B !important; }
-html.dark .book-author        { color: #A89880 !important; }
-html.dark .book-price         { color: #F0E8D8 !important; }
-html.dark .book-card p        { color: #C4B89A !important; }
-html.dark .book-info          { background: transparent !important; }
-html.dark .book-info *        { color: #F0E8D8 !important; }
+html.dark .book-title          { color: #C4A46B !important; }
+html.dark .book-author         { color: #A89880 !important; }
+html.dark .book-body,
+html.dark .book-info,
+html.dark .wish-body           { background: transparent !important; }
+html.dark .book-body *,
+html.dark .book-info *         { color: #F0E8D8 !important; }
+html.dark .book-body .book-title,
 html.dark .book-info .book-title  { color: #C4A46B !important; }
+html.dark .book-body .book-author,
 html.dark .book-info .book-author { color: #A89880 !important; }
-/* Badges type sur cartes */
-html.dark .type-badge { border: 1px solid rgba(196,164,107,.2) !important; }
-html.dark .tb-emprunt { background: #0F1E30 !important; color: #7EB3E8 !important; border-color: #1A3550 !important; }
-html.dark .tb-achat   { background: #281A00 !important; color: #D4A030 !important; border-color: #402800 !important; }
-html.dark .tb-both    { background: rgba(196,164,107,.14) !important; color: #C4A46B !important; }
+html.dark .ctitle              { color: rgba(255,255,255,.88) !important; }
 
-/* Boutons action */
-html.dark .btn-buy {
-    background: #C4A46B !important;
-    color: #1C1208 !important;
-    border: none !important;
-}
-html.dark .btn-borrow {
-    background: transparent !important;
-    border: 1px solid #C4A46B !important;
-    color: #C4A46B !important;
-}
-html.dark .btn-voir {
-    background: #342C20 !important;
-    color: #F0E8D8 !important;
+/* Type badges */
+html.dark .type-badge          { border: 1px solid rgba(196,164,107,.2) !important; }
+html.dark .tb-emprunt          { background: #0F1E30 !important; color: #7EB3E8 !important; border-color: #1A3550 !important; }
+html.dark .tb-achat            { background: #281A00 !important; color: #D4A030 !important; border-color: #402800 !important; }
+html.dark .tb-both             { background: rgba(196,164,107,.14) !important; color: #C4A46B !important; }
+
+/* Boutons action sur cartes */
+html.dark .btn-emprunt         { background: #0F1E30 !important; color: #7EB3E8 !important; border-color: #1A3550 !important; }
+html.dark .btn-achat           { background: #C4A46B !important; color: #1C1208 !important; }
+html.dark .btn-voir,
+html.dark .wish-btn-voir       { background: #342C20 !important; color: #F0E8D8 !important; border-color: #3E3228 !important; }
+html.dark .btn-buy             { background: #C4A46B !important; color: #1C1208 !important; }
+html.dark .btn-borrow          { background: transparent !important; border-color: #C4A46B !important; color: #C4A46B !important; }
+
+/* Section headers */
+html.dark .section-head        { border-bottom-color: #3E3228 !important; }
+html.dark .section-title       { color: #F0E8D8 !important; }
+html.dark .result-count        { color: #A89880 !important; }
+html.dark .see-all             { color: #C4A46B !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §11 · MODAL (library.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .modal-overlay       { background: rgba(0,0,0,.72) !important; }
+html.dark .modal,
+html.dark #choiceModal .modal,
+html.dark #modalOverlay .modal {
+    background: #2C2418 !important;
     border-color: #3E3228 !important;
 }
-
-/* ════ 9. MODAL CHOIX ═══════════════════════════════ */
-html.dark .modal-overlay { background: rgba(0,0,0,.7) !important; }
-html.dark .modal          { background: #2C2418 !important; border: 1px solid #3E3228 !important; }
+html.dark .modal-cover         { border-bottom: none !important; }
 html.dark .modal-header-design { background: #140E08 !important; }
+html.dark .modal-body,
 html.dark .modal-body-content  { background: #2C2418 !important; color: #F0E8D8 !important; }
-html.dark .opt-card { background: #342C20 !important; border-color: #3E3228 !important; }
-html.dark .opt-card .opt-name   { color: #F0E8D8 !important; }
-html.dark .opt-card .opt-detail { color: #A89880 !important; }
-html.dark .modal-close-text     { color: #A89880 !important; }
+html.dark .modal-desc          { color: #A89880 !important; }
+html.dark .opt-card            { background: #342C20 !important; border-color: #3E3228 !important; }
+html.dark .opt-name            { color: #F0E8D8 !important; }
+html.dark .opt-detail          { color: #A89880 !important; }
+html.dark .modal-close,
+html.dark .modal-close-text    { color: #A89880 !important; }
+html.dark .modal-divider       { background: #3E3228 !important; }
 
-/* ════ 10. FORMULAIRES & INPUTS ════════════════════ */
+/* ────────────────────────────────────────────────────────────────────────
+   §12 · FORMULAIRES & INPUTS (toutes pages)
+   ──────────────────────────────────────────────────────────────────────── */
 html.dark .form-card,
 html.dark .auth-card,
+html.dark .box,
 html.dark .login-card,
 html.dark .signup-card,
 html.dark .dash-card,
-html.dark .l-section {
+html.dark .l-section,
+html.dark .container:not(.emprunts-container) {
     background: #2C2418 !important;
     border-color: #3E3228 !important;
 }
 html.dark .form-card h3,
-html.dark .dash-card h4 {
-    color: #C4A46B !important;
-    border-bottom-color: #3E3228 !important;
-}
+html.dark .dash-card h4        { color: #C4A46B !important; border-bottom-color: #3E3228 !important; }
+
 html.dark .form-group input,
 html.dark .form-group select,
 html.dark input[type="text"],
 html.dark input[type="email"],
 html.dark input[type="password"],
 html.dark input[type="tel"],
+html.dark input[type="number"],
 html.dark input[type="search"],
 html.dark textarea,
-html.dark select,
-html.dark .form-control {
+html.dark select {
     background: #342C20 !important;
     border-color: #3E3228 !important;
     color: #F0E8D8 !important;
@@ -185,155 +317,280 @@ html.dark .form-group input:focus,
 html.dark input[type="text"]:focus,
 html.dark input[type="email"]:focus,
 html.dark input[type="password"]:focus,
-html.dark select:focus {
-    border-color: #C4A46B !important;
-    background: #3A3024 !important;
-}
-html.dark input[readonly]     { background: #241C12 !important; color: #6A5C4C !important; }
-html.dark ::placeholder       { color: #5A4C3C !important; }
+html.dark select:focus         { border-color: #C4A46B !important; background: #3A3024 !important; }
+html.dark input[readonly]      { background: #241C12 !important; color: #6A5C4C !important; }
+html.dark ::placeholder        { color: #5A4C3C !important; opacity: 1; }
 html.dark label,
-html.dark .form-group label   { color: #A89880 !important; }
-/* ════ 11. PROFIL PAGE ══════════════════════════════ */
-html.dark .profile-hero       { background: #140E08 !important; border-color: rgba(196,164,107,.2) !important; }
-html.dark .hero-info h1       { color: #C4A46B !important; }
-html.dark .hero-info p        { color: rgba(255,255,255,.45) !important; }
+html.dark .form-group label    { color: #A89880 !important; }
+html.dark .required            { color: #f87171 !important; }
+
+/* Auth pages (login, signup, forgot, reset) */
+html.dark .box                 { background: #2C2418 !important; box-shadow: 0 10px 25px rgba(0,0,0,.3) !important; }
+html.dark .box h1,
+html.dark .box h2              { color: #C4A46B !important; }
+html.dark .signup-link         { color: #A89880 !important; }
+html.dark .signup-link a       { color: #C4A46B !important; }
+html.dark .forgot-pass a       { color: #A89880 !important; }
+html.dark .forgot-pass a:hover { color: #C4A46B !important; }
+html.dark .err                 { background: #220E0E !important; border-color: #401818 !important; color: #f87171 !important; }
+html.dark .success             { background: #0E2218 !important; border-color: #1A4030 !important; color: #4ade80 !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §13 · PROFIL PAGE (profile.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .profile-hero        { background: #140E08 !important; border-color: rgba(196,164,107,.2) !important; }
+html.dark .hero-info h1        { color: #C4A46B !important; }
+html.dark .hero-info p         { color: rgba(255,255,255,.45) !important; }
+html.dark .hero-role           { background: rgba(196,164,107,.1) !important; border-color: rgba(196,164,107,.25) !important; }
 html.dark .stats-row .stat-card { background: #2C2418 !important; border-color: #3E3228 !important; }
-html.dark .stat-num           { color: #F0E8D8 !important; }
-html.dark .stat-lbl           { color: #A89880 !important; }
-html.dark .tabs               { border-bottom-color: #3E3228 !important; }
-html.dark .tab-btn            { color: #6A5C4C !important; }
-html.dark .tab-btn.active     { color: #F0E8D8 !important; border-bottom-color: #C4A46B !important; }
-html.dark .tab-btn:hover      { color: #F0E8D8 !important; }
-html.dark .info-field         { background: #342C20 !important; border-color: #3E3228 !important; }
-html.dark .info-field label   { color: #A89880 !important; }
-html.dark .info-field span    { color: #F0E8D8 !important; }
-html.dark .borrow-item        { border-bottom-color: #342C20 !important; }
-html.dark .borrow-title       { color: #F0E8D8 !important; }
-html.dark .borrow-date        { color: #A89880 !important; }
-html.dark .notif-item         { border-bottom-color: #342C20 !important; }
-html.dark .notif-text         { color: #C4B89A !important; }
-html.dark .notif-time         { color: #6A5C4C !important; }
-html.dark .section-lbl        { color: #A89880 !important; border-bottom-color: #3E3228 !important; }
+html.dark .stat-num            { color: #F0E8D8 !important; }
+html.dark .stat-lbl            { color: #A89880 !important; }
+html.dark .tabs                { border-bottom-color: #3E3228 !important; }
+html.dark .tab-btn             { color: #6A5C4C !important; }
+html.dark .tab-btn.active      { color: #F0E8D8 !important; border-bottom-color: #C4A46B !important; }
+html.dark .tab-btn:hover       { color: #F0E8D8 !important; }
+html.dark .tab-badge           { background: #C4A46B !important; color: #1C1208 !important; }
+html.dark .info-field          { background: #342C20 !important; border-color: #3E3228 !important; }
+html.dark .info-field label    { color: #A89880 !important; }
+html.dark .info-field span     { color: #F0E8D8 !important; }
+html.dark .borrow-item         { border-bottom-color: #342C20 !important; }
+html.dark .borrow-title        { color: #F0E8D8 !important; }
+html.dark .borrow-date         { color: #A89880 !important; }
+html.dark .day-badge.db-ok     { background: #0E2218 !important; color: #4ade80 !important; }
+html.dark .day-badge.db-soon   { background: #281C00 !important; color: #fbbf24 !important; }
+html.dark .day-badge.db-late   { background: #220E0E !important; color: #f87171 !important; }
+html.dark .notif-item          { border-bottom-color: #342C20 !important; }
+html.dark .notif-text          { color: #C4B89A !important; }
+html.dark .notif-time          { color: #6A5C4C !important; }
+html.dark .section-lbl         { color: #A89880 !important; border-bottom-color: #3E3228 !important; }
+html.dark .qa-btn              { background: #2C2418 !important; border-color: #3E3228 !important; color: #F0E8D8 !important; }
+html.dark .qa-btn:hover        { border-color: #C4A46B !important; background: #342C20 !important; }
+html.dark .qa-label            { color: #F0E8D8 !important; }
+html.dark .qa-sub              { color: #A89880 !important; }
 
-/* Quick action buttons profil */
-html.dark .qa-btn {
-    background: #2C2418 !important;
-    border-color: #3E3228 !important;
-    color: #F0E8D8 !important;
-}
-html.dark .qa-btn:hover      { border-color: #C4A46B !important; background: #342C20 !important; }
-html.dark .qa-label          { color: #F0E8D8 !important; }
-html.dark .qa-sub            { color: #A89880 !important; }
+/* Wishlist cards */
+html.dark .wish-card           { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .wish-title          { color: #C4A46B !important; }
+html.dark .wish-author         { color: #A89880 !important; }
+html.dark .wish-cover          { background: #241C12 !important; }
+html.dark .wish-cover-placeholder { background: #140E08 !important; }
+html.dark .empty-state         { background: #2C2418 !important; border-color: #3E3228 !important; }
 
-/* ════ 12. TABLEAUX ════════════════════════════════ */
+/* ────────────────────────────────────────────────────────────────────────
+   §14 · TABLEAUX (toutes pages)
+   ──────────────────────────────────────────────────────────────────────── */
 html.dark .table-wrap,
 html.dark .table-card,
-html.dark .mini-table  { background: #2C2418 !important; border-color: #3E3228 !important; }
-html.dark .table-header { color: #C4A46B !important; border-bottom-color: #3E3228 !important; background: transparent !important; }
-html.dark .tc-head      { border-bottom-color: #3E3228 !important; }
-html.dark .tc-title     { color: #F0E8D8 !important; }
-html.dark thead tr      { background: #241C12 !important; }
-html.dark th            { color: #A89880 !important; border-bottom-color: #3E3228 !important; background: #241C12 !important; }
-html.dark td            { color: #F0E8D8 !important; border-bottom-color: #342C20 !important; }
+html.dark .table-box,
+html.dark .order-container     { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .table-header,
+html.dark .tb-head,
+html.dark .tc-head             { border-bottom-color: #3E3228 !important; background: #241C12 !important; }
+html.dark .table-header,
+html.dark .tb-title,
+html.dark .tc-title            { color: #F0E8D8 !important; }
+html.dark .data-table th,
+html.dark table th             { background: #241C12 !important; color: #A89880 !important; border-bottom-color: #3E3228 !important; }
+html.dark .data-table td,
+html.dark table td             { color: #F0E8D8 !important; border-bottom-color: #342C20 !important; }
 html.dark tbody tr:hover td    { background: #32281C !important; }
-html.dark .data-table th       { background: #241C12 !important; color: #A89880 !important; }
-html.dark .data-table td       { border-bottom-color: #342C20 !important; color: #F0E8D8 !important; }
-html.dark .data-table tr:hover td { background: #32281C !important; }
 html.dark .empty-row td        { color: #6A5C4C !important; }
-/* ════ 13. ADMIN SIDEBAR & HEADER ══════════════════ */
-html.dark .admin-sidebar,
-html.dark .sidebar { background: #0E0A06 !important; }
-html.dark .admin-header,
-html.dark .topbar {
-    background: #1C1610 !important;
-    border-bottom-color: #3E3228 !important;
-}
-html.dark .page-title          { color: #C4A46B !important; }
-html.dark .adm-sc,
-html.dark .adm-sc .stat-num   { color: #F0E8D8 !important; }
-html.dark .f-select,
-html.dark .filter-select,
-html.dark .srch-input,
-html.dark .search-input {
-    background: #342C20 !important;
-    border-color: #3E3228 !important;
-    color: #F0E8D8 !important;
-}
-html.dark .pag-btn {
-    background: #2C2418 !important;
-    border-color: #3E3228 !important;
-    color: #F0E8D8 !important;
-}
+html.dark .id-cell             { color: #C4A46B !important; }
+html.dark .client-name         { color: #F0E8D8 !important; }
+html.dark .books-detail        { color: #A89880 !important; }
+html.dark .price-cell          { color: #4ade80 !important; }
+html.dark .user-info b         { color: #F0E8D8 !important; }
+html.dark .user-info span      { color: #A89880 !important; }
+
+/* Pagination */
+html.dark .pag-btn             { background: #2C2418 !important; border-color: #3E3228 !important; color: #F0E8D8 !important; }
 html.dark .pag-btn:hover       { border-color: #C4A46B !important; color: #C4A46B !important; }
 html.dark .pag-btn.active      { background: #C4A46B !important; border-color: #C4A46B !important; color: #1C1208 !important; }
-html.dark .notif-btn           { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .pag-info            { color: #A89880 !important; }
 
-/* ════ 14. PANIER & COMMANDES ══════════════════════ */
+/* ────────────────────────────────────────────────────────────────────────
+   §15 · BADGES
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .badge-green,
+html.dark .status-payee        { background: #0E2218 !important; color: #4ade80 !important; }
+html.dark .badge-amber,
+html.dark .status-pending      { background: #281C00 !important; color: #fbbf24 !important; }
+html.dark .badge-red           { background: #220E0E !important; color: #f87171 !important; }
+html.dark .badge-gray,
+html.dark .status-gray         { background: #2A2418 !important; color: #9ca3af !important; }
+html.dark .en-attente          { background: #281C00 !important; color: #fbbf24 !important; }
+html.dark .acceptee            { background: #0E2218 !important; color: #4ade80 !important; }
+html.dark .retard              { background: #220E0E !important; color: #f87171 !important; }
+html.dark .rendu               { background: #2A2418 !important; color: #9ca3af !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §16 · ALERTES
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .alert-success       { background: #0E2218 !important; border-color: #1A4030 !important; color: #4ade80 !important; }
+html.dark .alert-error         { background: #220E0E !important; border-color: #401818 !important; color: #f87171 !important; }
+html.dark .alert-stock         { background: #220E0E !important; border-color: #401818 !important; border-left-color: #f87171 !important; }
+html.dark .alert-tag           { background: #320E0E !important; border-color: #601010 !important; color: #f87171 !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §17 · ADMIN DASHBOARD (admin_dashboard.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .stats-grid .stat-card { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .stat-val            { color: #F0E8D8 !important; }
+html.dark .stat-sub            { color: #A89880 !important; }
+html.dark .promo-banner        { background: #0A0600 !important; border-color: rgba(196,164,107,.2) !important; }
+html.dark .dash-date           { background: #2C2418 !important; border-color: #3E3228 !important; color: #A89880 !important; }
+html.dark .dash-title          { color: #F0E8D8 !important; }
+html.dark .dash-sub            { color: #A89880 !important; }
+
+/* Quick action cards admin */
+html.dark .qa-card             { background: #2C2418 !important; border-color: #3E3228 !important; color: #F0E8D8 !important; }
+html.dark .qa-card:hover       { border-color: #C4A46B !important; background: #342C20 !important; }
+html.dark .qa-icon-wrap        { background: rgba(196,164,107,.1) !important; border-color: rgba(196,164,107,.2) !important; }
+html.dark .qa-card.qa-featured { background: #0C1E10 !important; border-color: rgba(74,222,128,.3) !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §18 · ADMIN — GERER DOCUMENTS & MODIFIER (gerer_documents.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .container           { background: #2C2418 !important; box-shadow: 0 5px 15px rgba(0,0,0,.3) !important; }
+html.dark .header-section h2,
+html.dark .header-edit h2      { color: #C4A46B !important; }
+html.dark .btn-back            { color: #A89880 !important; border-color: #3E3228 !important; }
+html.dark .btn-back:hover      { background: #342C20 !important; color: #F0E8D8 !important; }
+html.dark .bg-blue             { background: #0F1E30 !important; color: #7EB3E8 !important; }
+html.dark .bg-green            { background: #0E2218 !important; color: #4ade80 !important; }
+html.dark .bg-orange           { background: #281A00 !important; color: #D4A030 !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §19 · ADMIN — ALL ORDERS (all_orders.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .order-container     { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .header-flex h2      { color: #F0E8D8 !important; }
+html.dark .btn-back            { color: #A89880 !important; border-color: #3E3228 !important; }
+html.dark .statut-badge.payee  { background: #0E2218 !important; color: #4ade80 !important; }
+html.dark .statut-badge.attente { background: #281C00 !important; color: #fbbf24 !important; }
+html.dark .btn-valider         { background: #2C2418 !important; color: #C4A46B !important; border: 1px solid #C4A46B !important; }
+html.dark .btn-valider:hover   { background: #C4A46B !important; color: #1C1208 !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §20 · ADMIN — GERER EMPRUNTS (gerer_emprunts.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .main-wrapper        { background: #1C1610 !important; }
+html.dark .main-wrapper .container { background: #2C2418 !important; }
+html.dark .btn-approve         { background: #2C2418 !important; color: #C4A46B !important; border: 1px solid #C4A46B !important; }
+html.dark .btn-approve:hover   { background: #C4A46B !important; color: #1C1208 !important; }
+html.dark .btn-return          { background: #281A00 !important; color: #D4A030 !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §21 · EMPRUNTS CLIENT (mes_emprunts.php, emprunt.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .emprunt-card        { background: #2C2418 !important; border-color: #3E3228 !important; box-shadow: 0 5px 15px rgba(0,0,0,.25) !important; }
+html.dark .emprunt-card:hover  { box-shadow: 0 8px 25px rgba(196,164,107,.1) !important; }
+html.dark .emprunt-details     { background: transparent !important; }
+html.dark .emprunt-details h3  { color: #F0E8D8 !important; }
+html.dark .author              { color: #C4A46B !important; }
+html.dark .info-dates          { border-top-color: #3E3228 !important; }
+html.dark .date-item span:first-child { color: #A89880 !important; }
+html.dark .date-item span:last-child  { color: #F0E8D8 !important; }
+html.dark .status-en-cours     { background: #0F1E30 !important; color: #7EB3E8 !important; }
+html.dark .status-rendu        { background: #0E2218 !important; color: #4ade80 !important; }
+html.dark .status-retard       { background: #220E0E !important; color: #f87171 !important; }
+html.dark .btn-prolong         { border-color: #C4A46B !important; color: #C4A46B !important; }
+html.dark .btn-prolong:hover   { background: #C4A46B !important; color: #1C1208 !important; }
+
+/* Stats emprunts */
+html.dark .stat-box            { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .stat-box h3         { color: #F0E8D8 !important; }
+html.dark .stat-box p          { color: #A89880 !important; }
+html.dark .stat-box.highlight  { border-bottom-color: #C4A46B !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §22 · PANIER & COMMANDES (panier.php, commande_list.php)
+   ──────────────────────────────────────────────────────────────────────── */
 html.dark .panier-item,
 html.dark .cart-summary,
 html.dark .commande-card,
-html.dark .order-card {
-    background: #2C2418 !important;
-    border-color: #3E3228 !important;
-}
-html.dark .item-title  { color: #C4A46B !important; }
-html.dark .item-author { color: #A89880 !important; }
-html.dark .total-label { color: #F0E8D8 !important; }
-html.dark .total-amount { color: #C4A46B !important; }
+html.dark .order-card          { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .item-title          { color: #C4A46B !important; }
+html.dark .item-author         { color: #A89880 !important; }
+html.dark .total-label         { color: #F0E8D8 !important; }
+html.dark .total-amount        { color: #C4A46B !important; }
 
-/* ════ 15. PAGE NOTIFICATIONS ══════════════════════ */
-html.dark .notif-page .notif-card { background: #2C2418 !important; border-color: #3E3228 !important; }
-html.dark .notif-card.unread      { background: #342C1C !important; border-left-color: #C4A46B !important; }
-html.dark .notif-card.type-danger  { background: #32201C !important; border-left-color: #f87171 !important; }
-html.dark .notif-card.type-warning { background: #30281A !important; border-left-color: #fbbf24 !important; }
-html.dark .notif-card.type-success { background: #1C2E20 !important; border-left-color: #4ade80 !important; }
-html.dark .notif-titre             { color: #F0E8D8 !important; }
-html.dark .notif-message           { color: #C4B89A !important; }
-html.dark .filter-bar .fpill       { background: #2C2418 !important; border-color: #3E3228 !important; color: #A89880 !important; }
-html.dark .filter-bar .fpill.active { background: #140E08 !important; border-color: #140E08 !important; color: #C4A46B !important; }
+/* ────────────────────────────────────────────────────────────────────────
+   §23 · NOTIFICATIONS PAGE (notifications.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .notif-card          { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .notif-card.unread   { background: #342C1C !important; border-left-color: #C4A46B !important; }
+html.dark .notif-titre         { color: #F0E8D8 !important; }
+html.dark .notif-message       { color: #C4B89A !important; }
+html.dark .notif-footer        { color: #6A5C4C !important; }
+html.dark .notif-read-btn      { background: rgba(196,164,107,.1) !important; border-color: rgba(196,164,107,.22) !important; color: #C4A46B !important; }
+html.dark .icon-btn            { background: #2C2418 !important; border-color: #3E3228 !important; color: #A89880 !important; }
+html.dark .icon-btn:hover      { border-color: #C4A46B !important; color: #C4A46B !important; }
+html.dark .icon-btn.del:hover  { border-color: #f87171 !important; color: #f87171 !important; }
+html.dark .mark-all-btn        { color: #A89880 !important; }
+html.dark .mark-all-btn:hover  { color: #C4A46B !important; background: rgba(196,164,107,.08) !important; }
+html.dark .see-all-notif       { color: #C4A46B !important; border-color: rgba(196,164,107,.2) !important; }
+html.dark .date-sep            { color: #A89880 !important; border-bottom-color: #3E3228 !important; }
 
-/* ════ 16. AUTH PAGES ══════════════════════════════ */
-html.dark .auth-card h2,
-html.dark .login-title,
-html.dark .signup-title { color: #C4A46B !important; }
+/* ────────────────────────────────────────────────────────────────────────
+   §24 · ABOUT PAGE (about.php)
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark .about-body          { background: #1C1610 !important; }
+html.dark .stat-item           { background: #2C2418 !important; }
+html.dark .stat-item .lbl      { color: #A89880 !important; }
+html.dark .stats-band          { background: #3E3228 !important; border-color: #3E3228 !important; }
+html.dark .feat-card,
+html.dark .value-card          { background: #2C2418 !important; border-color: #3E3228 !important; }
+html.dark .feat-card:hover,
+html.dark .value-card:hover    { border-color: rgba(196,164,107,.4) !important; }
+html.dark .feat-card h3,
+html.dark .value-card h4,
+html.dark .step h4             { color: #F0E8D8 !important; }
+html.dark .feat-card p,
+html.dark .value-card p,
+html.dark .step p              { color: #A89880 !important; }
+html.dark .section h2          { color: #F0E8D8 !important; }
+html.dark .section p           { color: #C4B89A !important; }
+html.dark .divider             { color: #6A5C4C !important; }
+html.dark .divider::before,
+html.dark .divider::after      { background: #3E3228 !important; }
+html.dark .step-num            { background: #2C2418 !important; }
+html.dark .feat-icon-wrap,
+html.dark .val-icon-wrap       { background: rgba(196,164,107,.1) !important; border-color: rgba(196,164,107,.22) !important; }
 
-/* ════ 17. BADGES ══════════════════════════════════ */
-html.dark .badge-green { background: #0E2218 !important; color: #4ade80 !important; }
-html.dark .badge-amber { background: #281C00 !important; color: #fbbf24 !important; }
-html.dark .badge-red   { background: #220E0E !important; color: #f87171 !important; }
-html.dark .badge-gray  { background: #2A2418 !important; color: #9ca3af !important; }
-
-/* ════ 18. ALERTES ═════════════════════════════════ */
-html.dark .alert-success { background: #0E2218 !important; border-color: #1A4030 !important; color: #4ade80 !important; }
-html.dark .alert-error   { background: #220E0E !important; border-color: #401818 !important; color: #f87171 !important; }
-
-/* ════ 19. DROPDOWNS ═══════════════════════════════ */
-html.dark .lang-menu,
-html.dark .profile-dropdown {
-    background: #2C2418 !important;
-    border-color: #3E3228 !important;
-    box-shadow: 0 12px 32px rgba(0,0,0,.5) !important;
-}
-html.dark .lang-item:hover,
-html.dark .dd-item:hover { background: rgba(196,164,107,.12) !important; }
-html.dark .dd-email       { color: rgba(255,255,255,.35) !important; }
-html.dark .dd-fullname    { color: #F0E8D8 !important; }
-/* ════ 20. DIVS HARDCODÉS EN BLANC ═════════════════ */
+/* ────────────────────────────────────────────────────────────────────────
+   §25 · INLINE STYLES HARDCODÉS (override couleurs en dur)
+   ──────────────────────────────────────────────────────────────────────── */
 html.dark [style*="background: white"],
 html.dark [style*="background:#fff"],
 html.dark [style*="background: #fff"],
 html.dark [style*="background:#FFFDF9"],
+html.dark [style*="background: #FFFDF9"],
 html.dark [style*="background:#F5F0E8"],
 html.dark [style*="background: #F5F0E8"],
-html.dark [style*="background: #FFFDF9"] { background: #2C2418 !important; }
+html.dark [style*="background:#F9F5EE"],
+html.dark [style*="background: #F9F5EE"],
+html.dark [style*="background:#F9F7F2"],
+html.dark [style*="background: #F9F7F2"],
+html.dark [style*="background:#faf8f4"],
+html.dark [style*="background: #faf8f4"]  { background: #2C2418 !important; }
 
 html.dark [style*="color: #2D2419"],
 html.dark [style*="color:#2D2419"],
 html.dark [style*="color: #2C1F0E"],
-html.dark [style*="color:#2C1F0E"]       { color: #F0E8D8 !important; }
+html.dark [style*="color:#2C1F0E"],
+html.dark [style*="color: #1A1008"],
+html.dark [style*="color:#1A1008"],
+html.dark [style*="color: #3D2E25"],
+html.dark [style*="color:#3D2E25"]        { color: #F0E8D8 !important; }
 
-/* ════ 21. SCROLLBAR ═══════════════════════════════ */
-html.dark ::-webkit-scrollbar       { width: 8px; }
-html.dark ::-webkit-scrollbar-track { background: #1C1610; }
-html.dark ::-webkit-scrollbar-thumb { background: #3E3228; border-radius: 4px; }
+html.dark [style*="border-bottom: 1px solid #f5f0e8"],
+html.dark [style*="border-bottom:1px solid #f5f0e8"] { border-bottom-color: #342C20 !important; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   §26 · SCROLLBAR
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark ::-webkit-scrollbar         { width: 8px; height: 8px; }
+html.dark ::-webkit-scrollbar-track   { background: #1C1610; }
+html.dark ::-webkit-scrollbar-thumb   { background: #3E3228; border-radius: 4px; }
 html.dark ::-webkit-scrollbar-thumb:hover { background: #C4A46B; }
