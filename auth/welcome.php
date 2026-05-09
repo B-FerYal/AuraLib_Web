@@ -20,6 +20,7 @@ $role = htmlspecialchars($_SESSION['role'] ?? 'Étudiant');
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <?php include '../includes/dark_init.php'; ?>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bienvenue — BiblioUHBC</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">

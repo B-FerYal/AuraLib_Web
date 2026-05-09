@@ -1,5 +1,6 @@
 <?php
 include "../includes/header.php";
+include '../includes/dark_init.php'; 
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location:../client/library.php");

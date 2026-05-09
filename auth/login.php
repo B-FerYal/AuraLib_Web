@@ -59,6 +59,7 @@ $pos_l = $lang === 'ar' ? 'right' : 'left';
 <html lang="<?= $lang ?>" dir="<?= $dir ?>">
 <head>
 <meta charset="UTF-8">
+<?php include '../includes/dark_init.php'; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= t('login_title') ?> — AuraLib</title>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">

@@ -41,6 +41,7 @@ if (!isset($page_title)) {
 <head>
     
     <meta charset="UTF-8">
+    <?php include '../includes/dark_init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraLib | <?= htmlspecialchars($page_title) ?></title>
 
@@ -74,6 +75,7 @@ if (!isset($page_title)) {
             }
         })();
     </script>
+    
     
 
 </head>

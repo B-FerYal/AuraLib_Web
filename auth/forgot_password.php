@@ -98,6 +98,7 @@ if (isset($_POST['submit'])) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <?php include '../includes/dark_init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mot de passe oublié - BiblioUHBC</title>
     <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">

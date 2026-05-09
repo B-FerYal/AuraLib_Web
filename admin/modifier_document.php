@@ -65,6 +65,7 @@ if (isset($_POST['modifier_livre'])) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <?php include '../includes/dark_init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier le Document - AuraLib</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

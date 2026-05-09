@@ -82,6 +82,7 @@ $result = $conn->query("SELECT d.*, t.libelle_type FROM documents d LEFT JOIN ty
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <?php include '../includes/dark_init.php'; ?>
     <title>Administration du Catalogue — UHBC</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">

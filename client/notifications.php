@@ -38,6 +38,14 @@ $result = $conn->query($query);
 <html lang="<?= $lang ?>" dir="<?= ($lang == 'ar') ? 'rtl' : 'ltr' ?>">
 <head>
     <meta charset="UTF-8">
+    <?php include '../includes/dark_init.php'; ?>
+    <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
+<script>
+(function(){
+    if(localStorage.getItem('auralib_theme')==='dark')
+        document.documentElement.classList.add('dark');
+})();
+</script>
     <style>
         :root {
             --taupe: #2C1F0E; --gold: #C4A46B; --cream: #F5F0E8; --white: #FFFDF9;

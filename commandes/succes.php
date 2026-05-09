@@ -56,6 +56,7 @@ if ($id_commande && $id_user) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <?php include '../includes/dark_init.php'; ?>
     <title>Commande confirmée — AuraLib</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
