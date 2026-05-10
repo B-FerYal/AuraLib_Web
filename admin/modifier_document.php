@@ -65,9 +65,17 @@ if (isset($_POST['modifier_livre'])) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <?php include '../includes/dark_init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier le Document - AuraLib</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
+<script>
+    (function(){
+        if(localStorage.getItem('auralib_theme')==='dark')
+            document.documentElement.classList.add('dark');
+    })();
+</script>
     <style>
         :root { --primary-color: #3d2b1f; --bg-color: #f4f1ea; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-color); padding: 40px 20px; }

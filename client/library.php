@@ -93,6 +93,7 @@ function resolveImg($d) {
 <html lang="<?= $lang ?? 'fr' ?>" dir="<?= ($lang ?? 'fr') == 'ar' ? 'rtl' : 'ltr' ?>">
 <head>
 <meta charset="UTF-8">
+<?php include '../includes/dark_init.php'; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AuraLib · Catalogue</title>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">

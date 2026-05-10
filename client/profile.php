@@ -213,9 +213,17 @@ if ($role === 'client') {
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<?php include '../includes/dark_init.php'; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mon profil — AuraLibre</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
+<script>
+(function(){
+    if(localStorage.getItem('auralib_theme')==='dark')
+        document.documentElement.classList.add('dark');
+})();
+</script>
 <style>
 :root{--taupe:#2C1F0E;--taupe2:#3A2A14;--gold:#C4A46B;--gold2:#D4B47B;--cream:#F5F0E8;--cream2:#EDE5D4;--white:#FFFDF9;--border:#DDD5C8;--muted:#9A8C7E}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}

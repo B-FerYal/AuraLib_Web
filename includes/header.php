@@ -44,6 +44,7 @@ function is_active(string ...$paths): bool {
 <html lang="<?= $lang ?>" dir="<?= ($lang == 'ar') ? 'rtl' : 'ltr' ?>">
 <head>
     <meta charset="UTF-8">
+    <?php include '../includes/dark_init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -83,7 +84,6 @@ function is_active(string ...$paths): bool {
             font-family: <?= ($lang == 'ar') ? 'var(--font-ar)' : 'var(--font-ui)' ?>;
             font-size: 15px;
             line-height: 1.6;
-            
             background: var(--page-bg);
             color: var(--page-text);
             transition: background .3s, color .3s;
@@ -242,7 +242,6 @@ function is_active(string ...$paths): bool {
         }
         .profile-wrap.open .profile-caret { transform: rotate(180deg); }
 
-        /* Dropdown panel */
         .profile-dropdown {
             display: none; position: absolute; top: calc(100% + 10px); right: 0;
             background: #3A2A14; border: 1px solid rgba(196,164,107,.2);
@@ -314,7 +313,6 @@ function is_active(string ...$paths): bool {
             background: rgba(196,164,107,.15);
             border-color: rgba(196,164,107,.5);
         }
-        /* icons inside track */
         .sw-track::before {
             content: '🌙';
             position: absolute; right: 5px; top: 50%;
@@ -452,7 +450,7 @@ function is_active(string ...$paths): bool {
 
             <div class="vsep"></div>
 
-            <!-- Dark mode toggle -->
+            <!-- Dark mode toggle — single toggle, key: auralib_theme -->
             <label class="theme-switch" title="Mode sombre">
                 <input type="checkbox" id="darkToggle">
                 <span class="sw-track"></span>
@@ -463,7 +461,6 @@ function is_active(string ...$paths): bool {
 
             <?php if ($is_logged_in): ?>
 
-                <!-- Cart (clients only) -->
                 <?php if ($user_role === 'client'): ?>
                 <a href="<?= $base ?>/cart/panier.php" class="cart-btn">
                     <i class="fa-solid fa-cart-shopping" style="font-size:12px"></i>
@@ -487,7 +484,6 @@ function is_active(string ...$paths): bool {
                     </div>
 
                     <div class="profile-dropdown" id="profileDropdown">
-                        <!-- Header -->
                         <div class="dd-head">
                             <div class="dd-av"><?= $first_letter ?></div>
                             <div class="dd-info">
@@ -499,61 +495,52 @@ function is_active(string ...$paths): bool {
                             </div>
                         </div>
 
-                        <!-- Menu items -->
                         <div class="dd-body">
                             <a href="<?= $base ?>/client/profile.php" class="dd-item">
-                                <i class="fa-regular fa-user"></i>
-                                Mon Profil
+                                <i class="fa-regular fa-user"></i> Mon Profil
                             </a>
 
                             <?php if ($user_role === 'client'): ?>
                             <a href="<?= $base ?>/emprunts/mes_emprunts.php" class="dd-item">
-                                <i class="fa-regular fa-clock"></i>
-                                Mes Emprunts
+                                <i class="fa-regular fa-clock"></i> Mes Emprunts
                             </a>
                             <a href="<?= $base ?>/commandes/commande_list.php" class="dd-item">
-                                <i class="fa-solid fa-receipt"></i>
-                                Mes Commandes
+                                <i class="fa-solid fa-receipt"></i> Mes Commandes
                             </a>
                             <a href="<?= $base ?>/cart/panier.php" class="dd-item">
                                 <i class="fa-solid fa-cart-shopping"></i>
                                 Mon Panier
                                 <?php if ($cart_count > 0): ?>
-                                    <span style="margin-left:auto; background:var(--gold); color:#2C1F0E; font-size:9px; font-weight:700; padding:2px 7px; border-radius:10px;"><?= $cart_count ?></span>
+                                    <span style="margin-left:auto;background:var(--gold);color:#2C1F0E;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;"><?= $cart_count ?></span>
                                 <?php endif; ?>
                             </a>
                             <?php endif; ?>
 
                             <?php if ($user_role === 'admin'): ?>
                             <a href="<?= $base ?>/admin/admin_dashboard.php" class="dd-item">
-                                <i class="fa-solid fa-gauge-high"></i>
-                                Dashboard Admin
+                                <i class="fa-solid fa-gauge-high"></i> Dashboard Admin
                             </a>
                             <a href="<?= $base ?>/admin/gerer_documents.php" class="dd-item">
-                                <i class="fa-solid fa-book"></i>
-                                Gérer Documents
+                                <i class="fa-solid fa-book"></i> Gérer Documents
                             </a>
                             <?php endif; ?>
 
                             <div class="dd-sep"></div>
 
                             <a href="<?= $base ?>/client/notifications.php" class="dd-item">
-                                <i class="fa-regular fa-bell"></i>
-                                Notifications
+                                <i class="fa-regular fa-bell"></i> Notifications
                             </a>
 
                             <div class="dd-sep"></div>
 
                             <a href="<?= $base ?>/auth/logout.php" class="dd-item dd-logout">
-                                <i class="fa-solid fa-right-from-bracket"></i>
-                                Déconnexion
+                                <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
                             </a>
                         </div>
                     </div>
                 </div>
 
             <?php else: ?>
-                <!-- Not logged in -->
                 <a href="<?= $base ?>/auth/login.php" class="btn-login"><?= $text['login'] ?? 'Connexion' ?></a>
                 <a href="<?= $base ?>/auth/signup.php" class="btn-signup"><?= $text['signup'] ?? "S'inscrire" ?></a>
             <?php endif; ?>
@@ -564,58 +551,47 @@ function is_active(string ...$paths): bool {
 
 <script>
 (function () {
-    /* ── Dark mode ─────────────────────────────── */
+    /* ── Dark mode — unified key: auralib_theme ── */
     const toggle = document.getElementById('darkToggle');
     const html   = document.documentElement;
 
-    // Load saved preference
-    const saved = localStorage.getItem('auralib-theme');
-    if (saved === 'dark') {
+    if (localStorage.getItem('auralib_theme') === 'dark') {
         html.classList.add('dark');
         toggle.checked = true;
     }
 
     toggle.addEventListener('change', () => {
-        if (toggle.checked) {
-            html.classList.add('dark');
-            localStorage.setItem('auralib-theme', 'dark');
-        } else {
-            html.classList.remove('dark');
-            localStorage.setItem('auralib-theme', 'light');
-        }
+        const dark = toggle.checked;
+        html.classList.toggle('dark', dark);
+        localStorage.setItem('auralib_theme', dark ? 'dark' : 'light');
     });
 
-    /* ── Language dropdown ──────────────────────── */
+    /* ── Language dropdown ── */
     const langTrigger  = document.getElementById('langTrigger');
     const langDropdown = document.getElementById('langDropdown');
     if (langTrigger) {
         langTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
             langDropdown.classList.toggle('open');
-            // close profile if open
             document.getElementById('profileWrap')?.classList.remove('open');
         });
     }
 
-    /* ── Profile dropdown ───────────────────────── */
-    const profileTrigger  = document.getElementById('profileTrigger');
-    const profileWrap     = document.getElementById('profileWrap');
+    /* ── Profile dropdown ── */
+    const profileTrigger = document.getElementById('profileTrigger');
+    const profileWrap    = document.getElementById('profileWrap');
     if (profileTrigger) {
         profileTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
             profileWrap.classList.toggle('open');
-            // close lang if open
             langDropdown?.classList.remove('open');
         });
     }
 
-    /* ── Close on outside click ─────────────────── */
+    /* ── Close on outside click ── */
     window.addEventListener('click', () => {
         langDropdown?.classList.remove('open');
         profileWrap?.classList.remove('open');
     });
 })();
 </script>
-
-</body>
-</html>

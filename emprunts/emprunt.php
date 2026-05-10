@@ -90,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $book) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <?php include '../includes/dark_init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraLib | Demande d'Emprunt</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

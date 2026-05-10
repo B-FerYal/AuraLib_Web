@@ -16,8 +16,16 @@ $documents = mysqli_fetch_all($result, MYSQLI_ASSOC);
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<?php include '../includes/dark_init.php'; ?>
 <title>تسيير الوثائق</title>
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
+<script>
+(function(){
+    if(localStorage.getItem('auralib_theme')==='dark')
+        document.documentElement.classList.add('dark');
+})();
+</script>
 
 <style>
     body { font-family: Arial, sans-serif; background-color: #f4f7f6; }

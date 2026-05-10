@@ -49,7 +49,15 @@ $result = $conn->query($query);
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <?php include '../includes/dark_init.php'; ?>
     <title>AuraLib | Gestion des Commandes</title>
+    <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
+<script>
+(function(){
+    if(localStorage.getItem('auralib_theme')==='dark')
+        document.documentElement.classList.add('dark');
+})();
+</script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --taupe: #2C1F0E; --gold: #D4A942; --cream: #F9F5EE; --white: #ffffff; --sidebar-w: 260px; --success: #27ae60; }
