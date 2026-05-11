@@ -107,7 +107,7 @@ $role = htmlspecialchars($_SESSION['role'] ?? 'Étudiant');
       width: 0%; 
       height: 100%; 
       background: var(--gold); 
-      transition: width 3s linear;
+      transition: width 1.5s linear;
     }
 
     @media (max-width: 480px) {
