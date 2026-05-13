@@ -9,7 +9,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 // ── Stats ──────────────────────────────────────────────────
 $total_docs  = $conn->query("SELECT COUNT(*) c FROM documents")->fetch_assoc()['c'] ?? 0;
-$total_users = $conn->query("SELECT COUNT(*) c FROM users WHERE role='client'")->fetch_assoc()['c'] ?? 0;
+$total_users = $conn->query("SELECT COUNT(*) c FROM users WHERE role='utilisateur'")->fetch_assoc()['c'] ?? 0;
 $total_loans = $conn->query("SELECT COUNT(*) c FROM emprunt WHERE statut='en_cours'")->fetch_assoc()['c'] ?? 0;
 $rev_q       = $conn->query("SELECT SUM(total) s FROM commande WHERE statut IN ('payee','payée','Terminé')");
 $revenue     = $rev_q ? (float)$rev_q->fetch_assoc()['s'] : 0;
@@ -95,42 +95,21 @@ $alerts_result = $conn->query("
     padding: 6px 12px;
     white-space: nowrap;
 }
-
-/* ── Alerte stock ── */
-.alert-stock {
-    background: #FFF5F5;
-    border: 1px solid #FECACA;
-    border-left: 4px solid #EF4444;
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-bottom: 24px;
+/* Card Stock Épuisé */
+.qa-card.qa-danger {
+    border-color: rgba(239,68,68,.3);
+    background: #fff5f5;
+    margin-bottom: 23px;
 }
-.alert-stock-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: #991B1B;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
+.qa-card.qa-danger .qa-icon-wrap {
+    background: rgba(239,68,68,.12);
+    border-color: rgba(239,68,68,.25);
 }
-.alert-tag {
-    display: inline-block;
-    background: #FEE2E2;
-    color: #B91C1C;
-    border: 1px solid #FCA5A5;
-    padding: 3px 10px;
-    border-radius: 5px;
-    font-size: 11px;
-    font-weight: 600;
-    margin: 3px;
-}
-.alert-note {
-    font-size: 11px;
-    color: #B91C1C;
-    font-style: italic;
-    margin-top: 8px;
-}
+.qa-card.qa-danger .qa-icon-wrap svg { stroke: #dc2626; color: #dc2626; }
+.qa-card.qa-danger .qa-label { color: #dc2626; font-weight: 700; }
+.qa-card.qa-danger:hover { border-color: #EF4444; box-shadow: 0 6px 20px rgba(239,68,68,.15); }
+ 
+html.dark .qa-card.qa-danger { background: #220E0E; border-color: rgba(239,68,68,.25); }
 
 /* ── Stats grid ── */
 .stats-grid {
@@ -383,21 +362,23 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
                 <?= ucfirst(strftime('%A %d %B %Y')) ?>
             </span>
         </div>
-
-        <!-- ── Alerte stock critique ── -->
-        <?php if ($alerts_result && $alerts_result->num_rows > 0): ?>
-        <div class="alert-stock">
-            <div class="alert-stock-title">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#991B1B" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                Attention : Stock Critique
-            </div>
-            <?php while ($alert = $alerts_result->fetch_assoc()): ?>
-                <span class="alert-tag"><?= htmlspecialchars($alert['titre']) ?> (<?= $alert['disponible_pour'] ?>)</span>
-            <?php endwhile; ?>
-            <div class="alert-note">* Ces documents ne sont plus disponibles pour de nouvelles transactions.</div>
-        </div>
-        <?php endif; ?>
-
+<a href="stock_epuise.php" class="qa-card qa-danger">
+    <?php
+    $nb_epuises = $conn->query("SELECT COUNT(*) c FROM documents WHERE exemplaires_disponibles <= 0")->fetch_assoc()['c'] ?? 0;
+    if ($nb_epuises > 0):
+    ?>
+        <span class="qa-badge"><?= $nb_epuises ?></span>
+    <?php endif; ?>
+    <div class="qa-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+    </div>
+    <span class="qa-label">Épuisé</span>
+</a>
+        
         <!-- ── Stats ── -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -513,7 +494,7 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
                         <line x1="9" y1="14" x2="13" y2="14"/>
                     </svg>
                 </div>
-                <span class="qa-label">Messages</span>
+                <span class="qa-label">Boite de reception </span>
             </a>
 
         </div>
@@ -529,7 +510,7 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
                 <table>
                     <thead>
                         <tr>
-                            <th>Client</th>
+                            <th>utilisateur</th>
                             <th>Date</th>
                             <th>Montant</th>
                             <th>Statut</th>

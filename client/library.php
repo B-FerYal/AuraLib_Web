@@ -61,21 +61,28 @@ if ($rs_slider) {
     }
 }
 
-/* ══ CATALOGUE BY CATEGORY — 6 docs per type ══ */
+/* ══ CATALOGUE BY CATEGORY — 5 docs per type ══ */
 $q_types->data_seek(0);
 $all_types = $q_types->fetch_all(MYSQLI_ASSOC);
 
 $sections = [];
 foreach ($all_types as $t) {
     $tid  = (int)$t['id_type'];
+    // apply avail filter to each section
+    $avail_cond2 = '';
+    switch ($avail) {
+        case 'buy':    $avail_cond2 = "AND d.disponible_pour IN ('achat','both')";   break;
+        case 'borrow': $avail_cond2 = "AND d.disponible_pour IN ('emprunt','both')"; break;
+        case 'both':   $avail_cond2 = "AND d.disponible_pour = 'both'";              break;
+    }
     $sql2 = "SELECT d.*, t2.libelle_type FROM documents d
              LEFT JOIN types_documents t2 ON d.id_type = t2.id_type
-             WHERE d.id_type = $tid
+             WHERE d.id_type = $tid $avail_cond2
              ORDER BY d.id_doc DESC LIMIT 5";
     $r2 = $conn->query($sql2);
     if (!$r2 || $r2->num_rows === 0) continue;
     $rows = $r2->fetch_all(MYSQLI_ASSOC);
-    $rc2  = $conn->query("SELECT COUNT(*) as n FROM documents WHERE id_type = $tid");
+    $rc2  = $conn->query("SELECT COUNT(*) as n FROM documents d WHERE d.id_type = $tid $avail_cond2");
     $total = (int)($rc2->fetch_assoc()['n'] ?? 0);
     $sections[] = ['id' => $tid, 'label' => $t['libelle_type'], 'docs' => $rows, 'total' => $total];
 }
@@ -442,15 +449,6 @@ html.dark .search-bar-sticky.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.35); 
 .ap-both .avail-dot { background: linear-gradient(135deg, var(--gold) 50%, var(--brown) 50%); }
 .ap-both.active { background: linear-gradient(110deg, var(--gold) 0%, var(--brown) 100%); border-color: transparent; color: #fff; font-weight: 700; }
 
-.search-hint-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-.hint-tag {
-    font-size: 10px; color: var(--page-muted);
-    padding: 5px 12px; border: 1px solid var(--page-border);
-    border-radius: 50px; cursor: pointer; white-space: nowrap;
-    transition: color var(--tr), border-color var(--tr), background var(--tr);
-}
-.hint-tag:hover { color: var(--gold); border-color: var(--gold-border); background: var(--gold-faint); }
-@media (max-width: 700px) { .search-hint-tags { display: none; } }
 
 /* ══════════════════════════════════════════════
    SEARCH RESULTS OVERLAY
@@ -519,12 +517,13 @@ html.dark .cat-see-all { color: var(--gold); }
 @keyframes spin { to { transform: rotate(360deg); } }
 .fa-spin { animation: spin .7s linear infinite; }
 
+/* ══ FIX: tighter grid — 5 columns at full width ══ */
 .cat-row {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
 }
-@media (max-width: 900px) { .cat-row { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; } }
+@media (max-width: 900px) { .cat-row { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; } }
 
 /* ══════════════════════════════════════════════
    BOOK CARDS
@@ -546,11 +545,12 @@ html.dark .cat-see-all { color: var(--gold); }
 .book-card:nth-child(5) { animation-delay:.20s; }
 .book-card:nth-child(6) { animation-delay:.24s; }
 
+/* ══ FIX: reduced cover height to match 5-column layout ══ */
 .card-cover {
     position: relative;
     overflow: hidden;
     background: var(--page-bg2); display: block; text-decoration: none;
-    flex-shrink: 0; height: 240px;
+    flex-shrink: 0; height: 340px;
 }
 .card-cover img {
     position: absolute; inset: 0;
@@ -658,10 +658,11 @@ html.dark .btn-both { color: var(--gold); }
 .btn-delete { background: rgba(192,57,43,.08); color: var(--danger); border: 1.5px solid rgba(192,57,43,.2); }
 .btn-delete:hover { background: rgba(192,57,43,.15); transform: translateY(-1px); }
 
+/* ══ FIX: search results grid matches cat-row ══ */
 .books-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px; transition: opacity .25s;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px; transition: opacity .25s;
 }
 .books-grid.loading { opacity: .45; pointer-events: none; }
 
@@ -672,7 +673,7 @@ html.dark .btn-both { color: var(--gold); }
 
 @media (max-width: 600px) {
     .books-grid, .cat-row { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-    .card-cover { height: 190px; }
+    .card-cover { height: 340px; }
 }
 </style>
 </head>
@@ -744,30 +745,24 @@ html.dark .btn-both { color: var(--gold); }
         <button class="search-btn" onclick="triggerSearch()">
             <i class="fa-solid fa-magnifying-glass" style="font-size:10px"></i> Rechercher
         </button>
-        <div class="search-hint-tags">
-            <span class="hint-tag" onclick="setSearch('Thèse')">Thèse</span>
-            <span class="hint-tag" onclick="setSearch('Droit')">Droit</span>
-            <span class="hint-tag" onclick="setSearch('Intelligence artificielle')">IA</span>
-            <span class="hint-tag" onclick="setSearch('Finance')">Finance</span>
-            <span class="hint-tag" onclick="setSearch('Revue')">Revue</span>
-        </div>
-    </div>
+    </div><!-- /search-top-row -->
+
     <div class="search-filters-row">
         <span class="filter-label-sm">Filtrer :</span>
-        <button class="avail-pill ap-all active" data-avail="all" onclick="setAvail('all', this)">
+        <button class="avail-pill ap-all <?= $avail==='all'?'active':'' ?>" data-avail="all" onclick="setAvail('all', this)">
             <span class="avail-dot"></span> Tout
         </button>
-        <button class="avail-pill ap-buy" data-avail="buy" onclick="setAvail('buy', this)">
+        <button class="avail-pill ap-buy <?= $avail==='buy'?'active':'' ?>" data-avail="buy" onclick="setAvail('buy', this)">
             <span class="avail-dot"></span> Achat
         </button>
-        <button class="avail-pill ap-borrow" data-avail="borrow" onclick="setAvail('borrow', this)">
+        <button class="avail-pill ap-borrow <?= $avail==='borrow'?'active':'' ?>" data-avail="borrow" onclick="setAvail('borrow', this)">
             <span class="avail-dot"></span> Emprunt
         </button>
-        <button class="avail-pill ap-both" data-avail="both" onclick="setAvail('both', this)">
+        <button class="avail-pill ap-both <?= $avail==='both'?'active':'' ?>" data-avail="both" onclick="setAvail('both', this)">
             <span class="avail-dot"></span> Achat &amp; Emprunt
         </button>
     </div>
-</div>
+</div><!-- /search-bar-sticky -->
 
 <!-- ══════════════════════════════════════════
      SEARCH RESULTS OVERLAY
@@ -798,15 +793,12 @@ html.dark .btn-both { color: var(--gold); }
             <h2><?= htmlspecialchars($sec['label']) ?></h2>
             <span class="cat-section-badge"><?= $sec['total'] ?> doc<?= $sec['total']>1?'s':'' ?></span>
         </div>
-        <?php if ($sec['total'] > 6): ?>
-        <button
+        <?php if ($sec['total'] > 5): ?>
+        <a
             class="cat-see-all"
-            id="btn-voir-<?= $sec['id'] ?>"
-            onclick="loadMore(this, <?= $sec['id'] ?>, <?= $sec['total'] ?>)"
-            data-loaded="6"
-            data-type="<?= $sec['id'] ?>">
+            href="/MEMOIR/client/catalogue_type.php?type=<?= $sec['id'] ?>&label=<?= urlencode($sec['label']) ?>">
             Voir tout <i class="fa-solid fa-arrow-right"></i>
-        </button>
+        </a>
         <?php endif; ?>
     </div>
     <div class="cat-row" id="row-<?= $sec['id'] ?>">
@@ -971,14 +963,23 @@ const suggestBox = document.getElementById('suggestionsBox');
 const clearBtnEl = document.getElementById('clearBtn');
 
 let debounceTimer, suggestTimer;
-let currentAvail = 'all';
+let currentAvail = '<?= htmlspecialchars($avail) ?>';
 
 function setAvail(val, btn) {
     currentAvail = val;
     document.querySelectorAll('.avail-pill').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     const q = searchEl.value.trim();
-    if (q) fetchCards(q);
+    if (q) {
+        // search is active — re-run with new filter
+        fetchCards(q);
+    } else {
+        // no search — reload page with avail param so PHP filters the sections
+        const url = new URL(window.location.href);
+        url.searchParams.set('avail', val);
+        url.searchParams.delete('type');
+        window.location.href = url.toString();
+    }
 }
 
 function setSearch(val) {
@@ -1099,63 +1100,6 @@ document.addEventListener('click', function(e) {
         hideSuggestions();
     }
 });
-
-/* ══════════════════════════════════════════
-   LOAD MORE — AJAX "Voir tout / Voir moins"
-══════════════════════════════════════════ */
-async function loadMore(btn, typeId, total) {
-    const row = document.getElementById('row-' + typeId);
-    if (!row) return;
-
-    /* ── Collapse : rجوع للـ 5 الأوائل ── */
-    if (btn.dataset.mode === 'collapse') {
-        const allCards = row.querySelectorAll('.book-card');
-        allCards.forEach((card, i) => { if (i >= 5) card.remove(); });
-        btn.dataset.loaded = '5';
-        btn.dataset.mode   = '';
-        btn.innerHTML = 'Voir tout <i class="fa-solid fa-arrow-right"></i>';
-        row.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        return;
-    }
-
-    /* ── Load more ── */
-    const loaded = parseInt(btn.dataset.loaded) || 5;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Chargement…';
-
-    try {
-        const res = await fetch(
-            `get_more_docs.php?type=${typeId}&offset=${loaded}&avail=${encodeURIComponent(currentAvail)}`
-        );
-        if (!res.ok) throw new Error('Erreur réseau');
-        const html = await res.text();
-
-        const tmp = document.createElement('div');
-        tmp.innerHTML = html;
-        const newCards = tmp.querySelectorAll('.book-card');
-
-        newCards.forEach((card, i) => {
-            card.style.animationDelay = (i * 0.05) + 's';
-            row.appendChild(card);
-        });
-
-        const newLoaded = loaded + newCards.length;
-        btn.dataset.loaded = newLoaded;
-        btn.disabled = false;
-
-        if (newLoaded >= total || newCards.length === 0) {
-            btn.dataset.mode = 'collapse';
-            btn.innerHTML = 'Voir moins <i class="fa-solid fa-arrow-up"></i>';
-        } else {
-            const remaining = total - newLoaded;
-            btn.innerHTML = `Voir plus (${remaining}) <i class="fa-solid fa-arrow-right"></i>`;
-        }
-    } catch (err) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Réessayer';
-        console.error('loadMore error:', err);
-    }
-}
 
 /* ══ BOTH MENU TOGGLE ══ */
 function toggleBothMenu(btn, id) {

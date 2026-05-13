@@ -1,9 +1,9 @@
 <?php
 /* ════════════════════════════════════════════════════════
    recherche_dcmnt.php — AJAX endpoint: Smart Global Search
-   Modes:
-     ?mode=suggest  → JSON array of title suggestions
-     (default)      → Book cards HTML
+   Fix : filtre avail (buy/borrow/both) ne s'appliquait pas
+         car buildSearchWhere recevait $avail_resolved mais
+         comparait avec les valeurs 'buy'/'borrow'/'both'
 ════════════════════════════════════════════════════════ */
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
@@ -27,42 +27,58 @@ $lang         = $_SESSION['lang'] ?? 'fr';
 
 $mode    = trim($_GET['mode']   ?? '');
 $search  = trim($_GET['search'] ?? '');
-$avail   = trim($_GET['avail']  ?? 'all');
+$avail   = trim($_GET['avail']  ?? 'all');   // valeurs possibles : all | buy | borrow | both
 $type_id = isset($_GET['type']) ? (int)$_GET['type'] : 0;
-
-$avail_map = [
-    'buy'    => 'achat',
-    'borrow' => 'emprunt',
-    'both'   => 'both',
-];
-$avail_resolved = $avail_map[$avail] ?? null;
 
 $s = $conn->real_escape_string($search);
 
 /* ══════════════════════════════════════════════
-   BUILD SEARCH WHERE CLAUSE (reused in both modes)
+   BUILD SEARCH WHERE CLAUSE
+   ──────────────────────────────────────────────
+   FIX : La fonction reçoit maintenant $avail tel quel
+         ('all','buy','borrow','both') et fait la
+         correspondance elle-même vers les valeurs SQL
+         ('achat','emprunt','both').
+   L'ancien code passait $avail_resolved déjà mappé
+   mais testait ensuite with 'buy'/'borrow'/'both'
+   → jamais de correspondance → filtre ignoré.
 ══════════════════════════════════════════════ */
 function buildSearchWhere($conn, $s, $avail, $type_id) {
     $where = "WHERE 1=1";
 
-    // تصفية حسب نوع العملية (Achat, Emprunt, Both)
+    // ── Filtre disponible_pour ──────────────────
+    // $avail vient du GET : all | buy | borrow | both
     if ($avail === 'buy') {
+        // Achat uniquement → achat OU both
         $where .= " AND (d.disponible_pour = 'achat' OR d.disponible_pour = 'both')";
+
     } elseif ($avail === 'borrow') {
+        // Emprunt uniquement → emprunt OU both
         $where .= " AND (d.disponible_pour = 'emprunt' OR d.disponible_pour = 'both')";
+
     } elseif ($avail === 'both') {
+        // Achat ET Emprunt disponibles → both uniquement
         $where .= " AND d.disponible_pour = 'both'";
-    }
 
-    // تصفية حسب الفئة (Livre, Memoir, etc)
+    }
+    // $avail === 'all' → pas de filtre, tout afficher
+
+    // ── Filtre type de document ─────────────────
     if ($type_id > 0) {
-        $where .= " AND d.id_type = $type_id";
+        $where .= " AND d.id_type = " . (int)$type_id;
     }
 
-    // البحث بالكلمات المفتاحية
+    // ── Filtre recherche texte ──────────────────
     if ($s !== '') {
-        $where .= " AND (d.titre LIKE '%$s%' OR d.auteur LIKE '%$s%' OR d.annee_edition LIKE '%$s%')";
+        $where .= " AND (
+            d.titre          LIKE '%$s%'
+            OR d.auteur      LIKE '%$s%'
+            OR d.annee_edition LIKE '%$s%'
+            OR d.isbn        LIKE '%$s%'
+            OR d.categorie   LIKE '%$s%'
+        )";
     }
+
     return $where;
 }
 
@@ -73,7 +89,9 @@ if ($mode === 'suggest') {
     header('Content-Type: application/json');
     if ($s === '' || mb_strlen($s) < 2) { echo json_encode([]); exit; }
 
-    $where = buildSearchWhere($conn, $s, $avail_resolved, $type_id);
+    // FIX : on passe $avail directement (pas $avail_resolved)
+    $where = buildSearchWhere($conn, $s, $avail, $type_id);
+
     $q = "
         SELECT d.id_doc, d.titre, d.auteur, d.annee_edition, t.libelle_type
         FROM documents d
@@ -103,8 +121,9 @@ if ($mode === 'suggest') {
 
 /* ══════════════════════════════════════════════
    MODE: FULL CARDS HTML (default)
+   FIX : on passe $avail directement (pas $avail_resolved)
 ══════════════════════════════════════════════ */
-$where = buildSearchWhere($conn, $s, $avail_resolved, $type_id);
+$where = buildSearchWhere($conn, $s, $avail, $type_id);
 
 $query = "
     SELECT d.*,
@@ -217,10 +236,9 @@ foreach ($documents as $d):
         <?php if ($user_role === 'client'): ?>
         <div class="card-actions">
             <?php if ($is_both): ?>
-                <!-- BOTH: show + button with popup -->
                 <div class="btn-both-wrap" style="flex:1;position:relative;">
                     <button class="btn-card btn-both full"
-                            onclick="toggleBothMenu(this, <?= (int)$d['id_doc'] ?>)">
+                           onclick="toggleBothMenu( this, <?= (int)$d['id_doc'] ?>)">
                         <i class="fa-solid fa-plus"></i> Choisir
                     </button>
                     <div class="both-menu" id="both-menu-<?= (int)$d['id_doc'] ?>">
@@ -228,9 +246,25 @@ foreach ($documents as $d):
                             <i class="fa-regular fa-clock"></i>
                             <span>Emprunter</span>
                         </a>
-                        <form action="../cart/add_to_cart.php" method="POST">
-                            <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
-                            <button type="submit" class="both-opt">
+                      <form action="../cart/add_to_cart.php"
+      method="POST"
+      style="margin:0;width:100%;">
+      
+    <input type="hidden"
+           name="id_doc"
+           value="<?= (int)$d['id_doc'] ?>">
+
+    <button type="submit"
+            class="both-opt"
+            style="width:100%;border:none;background:none;">
+
+
+
+
+
+
+
+
                                 <i class="fa-solid fa-cart-plus"></i>
                                 <span>Acheter</span>
                             </button>

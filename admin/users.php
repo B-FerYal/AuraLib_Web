@@ -12,7 +12,7 @@ $current_admin_id = intval($_SESSION['id_user']);
 if (isset($_GET['toggle_status']) && isset($_GET['id'])) {
     $user_id    = intval($_GET['id']);
     $new_status = ($_GET['toggle_status'] == 'active') ? 'suspended' : 'active';
-    $stmt = $conn->prepare("UPDATE users SET status = ? WHERE id = ? AND role = 'client'");
+    $stmt = $conn->prepare("UPDATE users SET status = ? WHERE id = ? AND role = 'utilisateur'");
     $stmt->bind_param("si", $new_status, $user_id);
     $stmt->execute();
     $stmt->close();
@@ -134,10 +134,10 @@ $result = mysqli_query($conn, $query);
             text-transform: uppercase;
             display: inline-block;
         }
-        .role-admin  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-        .role-client { background: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; }
-        html.dark .role-admin  { background: #0F1E30 !important; color: #7EB3E8 !important; border-color: #1A3550 !important; }
-        html.dark .role-client { background: #2A2418 !important; color: #A89880 !important; border-color: #3E3228 !important; }
+        /* تعديل: جعل دور المستخدم والآدمين بنفس اللون الأزرق كما طلبت */
+        .role-admin, .role-utilisateur { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        
+        html.dark .role-admin, html.dark .role-utilisateur { background: #0F1E30 !important; color: #7EB3E8 !important; border-color: #1A3550 !important; }
 
         .id-tag {
             background: var(--bg);
@@ -233,9 +233,12 @@ $result = mysqli_query($conn, $query);
                 $firstname    = htmlspecialchars($row['firstname']);
                 $email        = htmlspecialchars($row['email']);
                 $status       = $row['status'];
-                $role         = $row['role'] ?? 'client';
-                $newRole      = ($role === 'admin') ? 'client' : 'admin';
-                $newRoleLabel = ($newRole === 'admin') ? 'Admin' : 'Client';
+                
+                // تصحيح: التأكد من أن الرول ليس فارغاً ليعرض النص في الجدول
+                $role         = (!empty($row['role'])) ? $row['role'] : 'utilisateur';
+                
+                $newRole      = ($role === 'admin') ? 'utilisateur' : 'admin';
+                $newRoleLabel = ($newRole === 'admin') ? 'Admin' : 'utilisateur';
                 $isMe         = ($uid === $current_admin_id);
             ?>
             <tr id="row-<?= $uid ?>" class="<?= $isMe ? 'row-me' : '' ?>">
@@ -311,8 +314,8 @@ function confirmRoleChange(userId, userName, currentRole, newRole, newRoleLabel)
                     badge.textContent = newRole.charAt(0).toUpperCase() + newRole.slice(1);
                     badge.className = 'role-badge role-' + newRole;
                     const btn = document.getElementById('role-btn-' + userId);
-                    const next = newRole === 'admin' ? 'client' : 'admin';
-                    const nextLabel = next === 'admin' ? 'Admin' : 'Client';
+                    const next = newRole === 'admin' ? 'utilisateur' : 'admin';
+                    const nextLabel = next === 'admin' ? 'Admin' : 'utilisateur';
                     btn.textContent = '→ ' + nextLabel;
                     btn.setAttribute('onclick',
                         `confirmRoleChange(${userId}, '${userName}', '${newRole}', '${next}', '${nextLabel}')`
