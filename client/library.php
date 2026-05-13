@@ -71,7 +71,7 @@ foreach ($all_types as $t) {
     $sql2 = "SELECT d.*, t2.libelle_type FROM documents d
              LEFT JOIN types_documents t2 ON d.id_type = t2.id_type
              WHERE d.id_type = $tid
-             ORDER BY d.id_doc DESC LIMIT 6";
+             ORDER BY d.id_doc DESC LIMIT 5";
     $r2 = $conn->query($sql2);
     if (!$r2 || $r2->num_rows === 0) continue;
     $rows = $r2->fetch_all(MYSQLI_ASSOC);
