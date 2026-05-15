@@ -361,6 +361,118 @@ function is_active(string ...$paths): bool {
             to   { opacity: 1; transform: translateY(0); }
         }
 
+        /* ════ ADMIN SEARCH BAR ════════════════════ */
+        .adm-search-form {
+            display: flex; align-items: center;
+            background: rgba(255,255,255,.08);
+            border: 1.5px solid rgba(255,255,255,.15);
+            border-radius: 10px;
+            padding: 0 4px 0 12px;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .adm-search-form:focus-within {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(196,164,107,.18);
+        }
+        .adm-search-input {
+            background: transparent; border: none; outline: none;
+            color: #fff; font-size: 13px; width: 210px;
+            padding: 8px 0; font-family: var(--font-ui);
+        }
+        .adm-search-input::placeholder { color: rgba(255,255,255,.4); }
+        .adm-search-btn {
+            background: none; border: none; cursor: pointer;
+            padding: 6px 7px; color: rgba(255,255,255,.5);
+            display: flex; align-items: center; transition: color .15s;
+        }
+        .adm-search-btn:hover { color: var(--gold); }
+
+        .adm-search-dropdown {
+            position: absolute; top: calc(100% + 8px); left: 0;
+            width: 440px; max-height: 500px; overflow-y: auto;
+            background: #1a1208;
+            border: 1.5px solid rgba(196,164,107,.3);
+            border-radius: 14px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.6);
+            z-index: 9999;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(196,164,107,.3) transparent;
+            animation: fadeUp .18s ease;
+        }
+        .adm-search-dropdown::-webkit-scrollbar { width: 4px; }
+        .adm-search-dropdown::-webkit-scrollbar-thumb { background: rgba(196,164,107,.3); border-radius: 4px; }
+
+        .adm-sd-header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 16px 8px;
+            font-size: 10px; font-weight: 700; letter-spacing: .1em;
+            text-transform: uppercase; color: var(--gold);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+        .adm-sd-header svg { width: 13px; height: 13px; }
+        .adm-sd-item {
+            display: flex; align-items: center; gap: 11px;
+            padding: 9px 16px; color: rgba(255,255,255,.82);
+            font-size: 13px; transition: background .12s;
+            text-decoration: none; border: none; width: 100%;
+            background: none; text-align: left; cursor: pointer;
+        }
+        .adm-sd-item:hover { background: rgba(196,164,107,.1); }
+        .adm-sd-item:last-of-type { border-bottom: 1px solid rgba(255,255,255,.05); }
+        .adm-sd-avatar {
+            width: 34px; height: 34px; border-radius: 7px;
+            background: rgba(255,255,255,.07);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: var(--gold);
+            flex-shrink: 0; overflow: hidden;
+        }
+        .adm-sd-avatar img { width:100%; height:100%; object-fit:cover; }
+        .adm-sd-main { flex: 1; min-width: 0; }
+        .adm-sd-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .adm-sd-sub   { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .adm-sd-badge {
+            font-size: 10px; font-weight: 700;
+            padding: 2px 7px; border-radius: 20px; flex-shrink: 0;
+        }
+        .badge-active    { background: rgba(34,197,94,.18);  color: #4ade80; }
+        .badge-suspended { background: rgba(239,68,68,.18);  color: #f87171; }
+        .badge-encours   { background: rgba(234,179,8,.18);  color: #facc15; }
+        .badge-rendu     { background: rgba(34,197,94,.18);  color: #4ade80; }
+        .badge-refused   { background: rgba(239,68,68,.18);  color: #f87171; }
+        .badge-achat     { background: rgba(196,164,107,.18); color: var(--gold); }
+        .badge-emprunt   { background: rgba(99,102,241,.18); color: #a5b4fc; }
+        .badge-both      { background: rgba(255,255,255,.1); color: rgba(255,255,255,.65); }
+        .adm-sd-actions  { display: flex; gap: 5px; flex-shrink: 0; }
+        .adm-sd-act-btn {
+            display: flex; align-items: center; gap: 4px;
+            padding: 3px 8px; border-radius: 5px;
+            border: 1.5px solid rgba(255,255,255,.12);
+            font-size: 11px; font-weight: 600;
+            color: rgba(255,255,255,.75);
+            background: rgba(255,255,255,.04);
+            text-decoration: none; transition: all .15s;
+        }
+        .adm-sd-act-btn:hover { background: rgba(196,164,107,.18); border-color: var(--gold); color: #fff; }
+        .adm-sd-empty {
+            padding: 26px 18px; text-align: center;
+            color: rgba(255,255,255,.3); font-size: 13px;
+        }
+        .adm-sd-footer {
+            padding: 9px 16px; text-align: center;
+            font-size: 11px; color: rgba(255,255,255,.28);
+        }
+        .adm-sd-spinner {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; padding: 20px; color: rgba(255,255,255,.35); font-size: 13px;
+        }
+        .spin-ring {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(196,164,107,.2);
+            border-top-color: var(--gold); border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         @media (max-width: 900px) {
             .admin-subtitle, .nav-hello { display: none; }
             .nav-link { font-size: 12px; padding: 6px 8px; }
@@ -368,7 +480,7 @@ function is_active(string ...$paths): bool {
         }
     </style>
 </head>
-<body>
+<body data-user-role="<?= htmlspecialchars($user_role) ?>">
 
 <nav class="admin-nav">
     <div class="nav-container">
@@ -420,6 +532,28 @@ function is_active(string ...$paths): bool {
 
         <!-- ── RIGHT SIDE ── -->
         <div class="nav-right">
+
+            <?php if ($user_role === 'admin'): ?>
+            <!-- ── Admin Search Bar ── -->
+            <div class="adm-search-wrap" style="position:relative;">
+                <div class="adm-search-form">
+                    <input class="adm-search-input"
+                           id="adm-search-input"
+                           type="search"
+                           placeholder="Rechercher docs, utilisateurs, emprunts…"
+                           autocomplete="off"
+                           aria-label="Recherche admin">
+                    <button class="adm-search-btn" type="button">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="17" height="17">
+                            <circle cx="8.5" cy="8.5" r="5.5"/>
+                            <line x1="13" y1="13" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="adm-search-dropdown" id="adm-search-dropdown" hidden></div>
+            </div>
+            <div class="vsep"></div>
+            <?php endif; ?>
 
             <!-- Language dropdown -->
             <div class="lang-dropdown" id="langDropdown">
@@ -547,6 +681,7 @@ function is_active(string ...$paths): bool {
 
         </div>
     </div>
+
 </nav>
 
 <script>
@@ -593,5 +728,127 @@ function is_active(string ...$paths): bool {
         langDropdown?.classList.remove('open');
         profileWrap?.classList.remove('open');
     });
+    /* ── Admin Search ── */
+    <?php if ($user_role === 'admin'): ?>
+    (function() {
+        const SEARCH_URL = '/MEMOIR/client/search_engine.php';
+        const MIN        = 2;
+        const DELAY      = 280;
+        const MAX        = 5;
+
+        const input = document.getElementById('adm-search-input');
+        const drop  = document.getElementById('adm-search-dropdown');
+        if (!input || !drop) return;
+
+        let timer = null, ctrl = null;
+
+        function esc(s) {
+            return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        function hl(t,q) {
+            if(!q) return esc(t);
+            return esc(t).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark style="background:rgba(196,164,107,.3);color:#fff;border-radius:2px;padding:0 1px">$1</mark>');
+        }
+        function badge(cls,lbl){ return '<span class="adm-sd-badge badge-'+cls+'">'+lbl+'</span>'; }
+        function statusBadge(s){
+            const m={'active':['active','Actif'],'suspended':['suspended','Suspendu'],'en_cours':['encours','En cours'],'rendu':['rendu','Rendu'],'refusée':['refused','Refusée'],'en attente':['encours','Attente']};
+            const[c,l]=m[s]??['encours',s]; return badge(c,esc(l));
+        }
+        function dispoBadge(d){
+            const m={achat:'badge-achat',emprunt:'badge-emprunt',both:'badge-both'};
+            const l={achat:'Achat',emprunt:'Emprunt',both:'Achat+Emprunt'};
+            return '<span class="adm-sd-badge '+(m[d]??'badge-both')+'">'+(l[d]??d)+'</span>';
+        }
+        function actBtn(href,label){
+            return '<a href="'+esc(href)+'" class="adm-sd-act-btn">'+label+'</a>';
+        }
+
+        const ICON = {
+            documents:'<svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13"><path d="M9 4.5a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-11Zm9 0a1 1 0 0 0-1-1h-5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-11Z"/></svg>',
+            users:'<svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13"><path d="M10 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm-7 7a7 7 0 1 1 14 0H3Z"/></svg>',
+            loans:'<svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v4.5c0 .199.079.39.22.53l2.25 2.25a.75.75 0 1 0 1.06-1.06l-2.03-2.03v-4.19Z" clip-rule="evenodd"/></svg>'
+        };
+
+        function render(data, q) {
+            const {documents=[],users=[],loans=[]} = data.results??{};
+            const total = data.total??0;
+            if(!total){
+                drop.innerHTML='<div class="adm-sd-empty">Aucun résultat pour «&nbsp;'+esc(q)+'&nbsp;»</div>';
+                return;
+            }
+            let h='';
+            if(documents.length){
+                h+='<div class="adm-sd-header">'+ICON.documents+' Documents <span style="margin-left:auto;opacity:.45">'+documents.length+'</span></div>';
+                documents.slice(0,MAX).forEach(d=>{
+                    const img=d.image?'/MEMOIR/uploads/'+esc(d.image):'';
+                    h+='<div class="adm-sd-item">'
+                      +'<div class="adm-sd-avatar">'+(img?'<img src="'+img+'" onerror="this.style.display=\'none\'">':esc(d.titre.charAt(0).toUpperCase()))+'</div>'
+                      +'<div class="adm-sd-main"><div class="adm-sd-title">'+hl(d.titre,q)+'</div>'
+                      +'<div class="adm-sd-sub">'+esc(d.auteur)+(d.annee?' · '+esc(d.annee):'')+(d.type?' · '+esc(d.type):'')+'</div></div>'
+                      +dispoBadge(d.dispo)
+                      +'<div class="adm-sd-actions">'+actBtn(d.edit_url,'Modifier')+actBtn(d.detail_url,'Voir')+'</div>'
+                      +'</div>';
+                });
+            }
+            if(users.length){
+                h+='<div class="adm-sd-header">'+ICON.users+' Utilisateurs <span style="margin-left:auto;opacity:.45">'+users.length+'</span></div>';
+                users.slice(0,MAX).forEach(u=>{
+                    h+='<div class="adm-sd-item">'
+                      +'<div class="adm-sd-avatar" style="background:rgba(196,164,107,.12)">'+esc((u.name||'?').charAt(0).toUpperCase())+'</div>'
+                      +'<div class="adm-sd-main"><div class="adm-sd-title">'+hl(u.name,q)+'</div>'
+                      +'<div class="adm-sd-sub">'+hl(u.email,q)+(u.phone?' · '+esc(u.phone):'')+'</div></div>'
+                      +statusBadge(u.status)
+                      +'<div class="adm-sd-actions">'+actBtn(u.profile_url,'Profil')+'</div>'
+                      +'</div>';
+                });
+            }
+            if(loans.length){
+                h+='<div class="adm-sd-header">'+ICON.loans+' Emprunts <span style="margin-left:auto;opacity:.45">'+loans.length+'</span></div>';
+                loans.slice(0,MAX).forEach(l=>{
+                    h+='<div class="adm-sd-item">'
+                      +'<div class="adm-sd-avatar" style="background:rgba(99,102,241,.12);color:#a5b4fc">'+ICON.loans+'</div>'
+                      +'<div class="adm-sd-main"><div class="adm-sd-title">'+hl(l.book_title,q)+'</div>'
+                      +'<div class="adm-sd-sub">'+hl(l.user_name,q)+' · '+esc(l.date_debut??'')+'</div></div>'
+                      +statusBadge(l.statut)
+                      +'<div class="adm-sd-actions">'+actBtn(l.manage_url,'Gérer')+'</div>'
+                      +'</div>';
+                });
+            }
+            h+='<div class="adm-sd-footer">Entrée = recherche complète · '+total+' résultat'+(total>1?'s':'')+'</div>';
+            drop.innerHTML=h;
+        }
+
+        async function doSearch(q) {
+            if(ctrl) ctrl.abort();
+            ctrl = new AbortController();
+            drop.innerHTML='<div class="adm-sd-spinner"><div class="spin-ring"></div> Recherche…</div>';
+            drop.hidden=false;
+            try {
+                const res  = await fetch(SEARCH_URL+'?scope=admin&q='+encodeURIComponent(q),{signal:ctrl.signal,credentials:'same-origin'});
+                if(!res.ok) throw new Error('HTTP '+res.status);
+                const data = await res.json();
+                render(data,q);
+                drop.hidden=false;
+            } catch(e) {
+                if(e.name==='AbortError') return;
+                drop.innerHTML='<div class="adm-sd-empty">Erreur ('+esc(e.message)+')</div>';
+            }
+        }
+
+        input.addEventListener('input',()=>{
+            clearTimeout(timer);
+            const q=input.value.trim();
+            if(q.length<MIN){drop.hidden=true;return;}
+            timer=setTimeout(()=>doSearch(q),DELAY);
+        });
+        input.addEventListener('keydown',e=>{
+            if(e.key==='Enter'){e.preventDefault();const q=input.value.trim();if(q.length>=MIN)window.location.href='/MEMOIR/client/library.php?search='+encodeURIComponent(q);}
+            if(e.key==='Escape') drop.hidden=true;
+        });
+        document.addEventListener('click',e=>{
+            if(!input.closest('.adm-search-wrap').contains(e.target)) drop.hidden=true;
+        });
+    })();
+    <?php endif; ?>
 })();
 </script>

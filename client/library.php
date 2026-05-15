@@ -61,14 +61,13 @@ if ($rs_slider) {
     }
 }
 
-/* ══ CATALOGUE BY CATEGORY — 5 docs per type ══ */
+/* ══ CATALOGUE BY CATEGORY — 4 docs per type ══ */
 $q_types->data_seek(0);
 $all_types = $q_types->fetch_all(MYSQLI_ASSOC);
 
 $sections = [];
 foreach ($all_types as $t) {
     $tid  = (int)$t['id_type'];
-    // apply avail filter to each section
     $avail_cond2 = '';
     switch ($avail) {
         case 'buy':    $avail_cond2 = "AND d.disponible_pour IN ('achat','both')";   break;
@@ -78,11 +77,11 @@ foreach ($all_types as $t) {
     $sql2 = "SELECT d.*, t2.libelle_type FROM documents d
              LEFT JOIN types_documents t2 ON d.id_type = t2.id_type
              WHERE d.id_type = $tid $avail_cond2
-             ORDER BY d.id_doc DESC LIMIT 5";
+             ORDER BY d.id_doc DESC LIMIT 4";
     $r2 = $conn->query($sql2);
     if (!$r2 || $r2->num_rows === 0) continue;
-    $rows = $r2->fetch_all(MYSQLI_ASSOC);
-    $rc2  = $conn->query("SELECT COUNT(*) as n FROM documents d WHERE d.id_type = $tid $avail_cond2");
+    $rows  = $r2->fetch_all(MYSQLI_ASSOC);
+    $rc2   = $conn->query("SELECT COUNT(*) as n FROM documents d WHERE d.id_type = $tid $avail_cond2");
     $total = (int)($rc2->fetch_assoc()['n'] ?? 0);
     $sections[] = ['id' => $tid, 'label' => $t['libelle_type'], 'docs' => $rows, 'total' => $total];
 }
@@ -187,7 +186,6 @@ body {
     filter: brightness(.48) saturate(.75);
 }
 .swiper-slide-active .hs-slide-bg { transform: scale(1.0); }
-
 .hs-slide::before {
     content: ''; position: absolute; inset: 0;
     background:
@@ -201,17 +199,12 @@ body {
     background: linear-gradient(0deg, var(--page-bg) 0%, transparent 100%);
     z-index: 2; pointer-events: none;
 }
-html.dark .hs-slide::after {
-    background: linear-gradient(0deg, var(--page-bg) 0%, transparent 100%);
-}
-
+html.dark .hs-slide::after { background: linear-gradient(0deg, var(--page-bg) 0%, transparent 100%); }
 .hs-content {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    padding: 52px 7% 80px;
-    z-index: 3;
+    padding: 52px 7% 80px; z-index: 3;
     display: flex; flex-direction: column; align-items: flex-start;
-    justify-content: flex-start;
-    max-width: 680px;
+    justify-content: flex-start; max-width: 680px;
 }
 .hs-badge {
     display: inline-flex; align-items: center; gap: 7px;
@@ -226,7 +219,6 @@ html.dark .hs-slide::after {
 .swiper-slide-active .hs-badge,
 .swiper-slide-active .hs-title,
 .swiper-slide-active .hs-btn-row { opacity: 1; transform: translateY(0); }
-
 .hs-title {
     font-family: var(--font-serif);
     font-size: clamp(32px, 5.5vw, 62px); font-weight: 700;
@@ -250,55 +242,32 @@ html.dark .hs-slide::after {
     transition: all var(--tr); cursor: pointer; border: none;
 }
 .hs-btn-details {
-    background: rgba(253,250,245,.1);
-    backdrop-filter: blur(16px) saturate(1.4);
-    -webkit-backdrop-filter: blur(16px) saturate(1.4);
-    border: 1.5px solid rgba(253,250,245,.22);
-    color: rgba(253,250,245,.9);
+    background: rgba(253,250,245,.1); backdrop-filter: blur(16px) saturate(1.4);
+    border: 1.5px solid rgba(253,250,245,.22); color: rgba(253,250,245,.9);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 8px 24px rgba(0,0,0,.25);
 }
-.hs-btn-details:hover {
-    background: rgba(253,250,245,.18);
-    border-color: rgba(196,164,107,.5);
-    color: var(--gold2);
-    transform: translateY(-2px);
-}
-.hs-btn-borrow {
-    background: rgba(122,92,58,.25); backdrop-filter: blur(12px);
-    border: 1.5px solid rgba(122,92,58,.4); color: #F5EDD8;
-}
+.hs-btn-details:hover { background: rgba(253,250,245,.18); border-color: rgba(196,164,107,.5); color: var(--gold2); transform: translateY(-2px); }
+.hs-btn-borrow { background: rgba(122,92,58,.25); backdrop-filter: blur(12px); border: 1.5px solid rgba(122,92,58,.4); color: #F5EDD8; }
 .hs-btn-borrow:hover { background: rgba(122,92,58,.45); transform: translateY(-2px); }
-
-.hs-progress, .hs-counter { display: none !important; }
 
 .swiper-pagination-bullets.hs-pagination {
     position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
     z-index: 20; display: flex; gap: 8px;
 }
-.hs-pagination .swiper-pagination-bullet {
-    width: 8px; height: 8px;
-    background: rgba(196,164,107,.3); opacity: 1;
-    border-radius: 50%; transition: all 0.3s ease; cursor: pointer;
-}
-.hs-pagination .swiper-pagination-bullet-active {
-    background: var(--gold); width: 24px; border-radius: 4px;
-}
+.hs-pagination .swiper-pagination-bullet { width: 8px; height: 8px; background: rgba(196,164,107,.3); opacity: 1; border-radius: 50%; transition: all 0.3s ease; cursor: pointer; }
+.hs-pagination .swiper-pagination-bullet-active { background: var(--gold); width: 24px; border-radius: 4px; }
 
 .hs-thumbs {
     position: absolute; right: 28px; top: 50%; transform: translateY(-50%);
     z-index: 10; display: flex; flex-direction: column; gap: 10px;
 }
-.hs-thumb {
-    width: 52px; height: 70px; border-radius: 7px; overflow: hidden;
-    cursor: pointer; opacity: .38; border: 1.5px solid transparent;
-    transition: opacity .3s, border-color .3s, transform .3s; flex-shrink: 0;
-}
+.hs-thumb { width: 52px; height: 70px; border-radius: 7px; overflow: hidden; cursor: pointer; opacity: .38; border: 1.5px solid transparent; transition: opacity .3s, border-color .3s, transform .3s; flex-shrink: 0; }
 .hs-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .hs-thumb.active-thumb { opacity:1; border-color:var(--gold); transform:scale(1.08); box-shadow:0 4px 14px rgba(196,164,107,.3); }
 .hs-thumb:hover:not(.active-thumb) { opacity: .65; }
 .hs-arrow {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    z-index: 10; width: 40px; height: 40px; border-radius: 50%;
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+    width: 40px; height: 40px; border-radius: 50%;
     background: rgba(196,164,107,.12); backdrop-filter: blur(10px);
     border: 1px solid rgba(196,164,107,.22); color: rgba(196,164,107,.7);
     font-size: 13px; display: flex; align-items: center; justify-content: center;
@@ -307,15 +276,10 @@ html.dark .hs-slide::after {
 .hs-arrow:hover { background: rgba(196,164,107,.25); color: var(--gold); border-color: var(--gold-border); }
 .hs-arrow-prev { left: 24px; }
 .hs-arrow-next { right: 72px; }
-@media (max-width: 768px) {
-    .hs-thumbs { display: none; }
-    .hs-content { padding: 40px 5% 60px; }
-    .hs-arrow-prev { left: 14px; }
-    .hs-arrow-next { left: 60px; }
-}
+@media (max-width: 768px) { .hs-thumbs { display: none; } .hs-content { padding: 40px 5% 60px; } .hs-arrow-prev { left: 14px; } .hs-arrow-next { left: 60px; } }
 
 /* ══════════════════════════════════════════════
-   STICKY SEARCH BAR
+   STICKY SEARCH BAR — hidden for admin
 ══════════════════════════════════════════════ */
 .search-bar-sticky {
     position: sticky; top: var(--nav-h); z-index: 90;
@@ -327,116 +291,32 @@ html.dark .hs-slide::after {
 }
 .search-bar-sticky.scrolled { box-shadow: 0 4px 20px rgba(42,31,20,.1); }
 html.dark .search-bar-sticky.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.35); }
-
 .search-top-row { display: flex; align-items: center; gap: 12px; }
-
 .search-input-wrap {
     flex: 1; max-width: 600px;
     display: flex; align-items: center;
     background: var(--page-white);
     border: 1.5px solid var(--page-border);
-    border-radius: 50px;
-    padding: 0 6px 0 42px;
-    position: relative;
+    border-radius: 50px; padding: 0 6px 0 42px;
+    position: relative; /* dropdown anchor */
     transition: border-color var(--tr), box-shadow var(--tr);
 }
-.search-input-wrap:focus-within {
-    border-color: var(--gold-border);
-    box-shadow: 0 0 0 3px rgba(196,164,107,.1);
-}
-.search-input-wrap i.search-icon {
-    position: absolute; left: 16px; top: 50%;
-    transform: translateY(-50%);
-    color: var(--page-muted); font-size: 12px; pointer-events: none;
-}
-#search {
-    flex: 1; background: transparent; border: none; outline: none;
-    font-family: var(--font-ui); font-size: 13px; color: var(--page-text);
-    padding: 11px 0; min-width: 0;
-}
+.search-input-wrap:focus-within { border-color: var(--gold-border); box-shadow: 0 0 0 3px rgba(196,164,107,.1); }
+.search-input-wrap i.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--page-muted); font-size: 12px; pointer-events: none; }
+#search { flex: 1; background: transparent; border: none; outline: none; font-family: var(--font-ui); font-size: 13px; color: var(--page-text); padding: 11px 0; min-width: 0; }
 #search::placeholder { color: var(--page-muted); opacity: .65; }
-.search-btn-clear {
-    background: transparent; border: none; cursor: pointer;
-    color: var(--page-muted); font-size: 13px; padding: 4px 8px;
-    transition: color var(--tr); display: none;
-}
+.search-btn-clear { background: transparent; border: none; cursor: pointer; color: var(--page-muted); font-size: 13px; padding: 4px 8px; transition: color var(--tr); display: none; }
 .search-btn-clear.visible { display: flex; align-items: center; }
 .search-btn-clear:hover { color: var(--danger); }
-
-.search-btn {
-    background: var(--gold); border: none; cursor: pointer;
-    border-radius: 50px; padding: 8px 20px;
-    font-family: var(--font-ui); font-size: 11px; font-weight: 700;
-    color: #2C1F0E; letter-spacing: .3px;
-    transition: background var(--tr); white-space: nowrap; flex-shrink: 0;
-}
+.search-btn { background: var(--gold); border: none; cursor: pointer; border-radius: 50px; padding: 8px 20px; font-family: var(--font-ui); font-size: 11px; font-weight: 700; color: #2C1F0E; letter-spacing: .3px; transition: background var(--tr); white-space: nowrap; flex-shrink: 0; }
 .search-btn:hover { background: var(--gold2); }
 
-/* Live Suggestions */
-.suggestions-wrap {
-    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-    background: var(--page-white);
-    border: 1.5px solid var(--gold-border);
-    border-radius: 16px;
-    box-shadow: 0 16px 48px rgba(42,31,20,.16);
-    overflow: hidden; z-index: 200;
-    display: none; animation: fadeUp .18s ease both;
-}
-.suggestions-wrap.visible { display: block; }
-.suggestion-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 16px; cursor: pointer;
-    transition: background var(--tr);
-    border-bottom: 1px solid var(--page-border);
-    text-decoration: none; color: inherit;
-}
-.suggestion-item:last-child { border-bottom: none; }
-.suggestion-item:hover { background: var(--gold-faint); }
-.sug-icon {
-    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
-    background: var(--page-bg2); display: flex; align-items: center;
-    justify-content: center; font-size: 12px; color: var(--gold);
-}
-.sug-info { flex: 1; min-width: 0; }
-.sug-title {
-    font-family: var(--font-serif); font-size: 14px; font-weight: 600;
-    color: var(--page-text); white-space: nowrap; overflow: hidden;
-    text-overflow: ellipsis; display: block;
-}
-.sug-meta { font-size: 10px; color: var(--page-muted); margin-top: 1px; }
-.sug-type {
-    font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-    color: var(--gold); background: var(--gold-faint);
-    border: 1px solid var(--gold-border); border-radius: 20px; padding: 2px 8px;
-    white-space: nowrap; flex-shrink: 0;
-}
-.sug-all-btn {
-    display: flex; align-items: center; justify-content: center; gap: 7px;
-    padding: 10px; font-size: 11px; font-weight: 700; color: var(--gold-deep);
-    background: var(--gold-faint); cursor: pointer; border: none; width: 100%;
-    font-family: var(--font-ui); letter-spacing: .2px;
-    transition: background var(--tr);
-}
-.sug-all-btn:hover { background: rgba(196,164,107,.15); }
+/* suggestions replaced by search-drop */
 
-/* Avail Filter Pills */
-.search-filters-row {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-}
-.filter-label-sm {
-    font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
-    text-transform: uppercase; color: var(--page-muted);
-    flex-shrink: 0; padding-right: 4px;
-}
-.avail-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 16px; border-radius: 50px;
-    font-family: var(--font-ui); font-size: 11px; font-weight: 600;
-    border: 1.5px solid var(--page-border);
-    background: var(--page-white); color: var(--page-muted);
-    cursor: pointer; transition: all var(--tr); white-space: nowrap;
-    user-select: none;
-}
+/* Avail pills */
+.search-filters-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.filter-label-sm { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--page-muted); flex-shrink: 0; padding-right: 4px; }
+.avail-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 50px; font-family: var(--font-ui); font-size: 11px; font-weight: 600; border: 1.5px solid var(--page-border); background: var(--page-white); color: var(--page-muted); cursor: pointer; transition: all var(--tr); white-space: nowrap; user-select: none; }
 .avail-pill:hover { border-color: var(--gold); color: var(--gold-deep); background: var(--gold-faint); }
 .avail-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .ap-all  .avail-dot { background: var(--page-muted); }
@@ -449,147 +329,154 @@ html.dark .search-bar-sticky.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.35); 
 .ap-both .avail-dot { background: linear-gradient(135deg, var(--gold) 50%, var(--brown) 50%); }
 .ap-both.active { background: linear-gradient(110deg, var(--gold) 0%, var(--brown) 100%); border-color: transparent; color: #fff; font-weight: 700; }
 
-
 /* ══════════════════════════════════════════════
-   SEARCH RESULTS OVERLAY
+   SEARCH DROPDOWN — Option B (thumbnail + info)
 ══════════════════════════════════════════════ */
-#search-overlay { display: none; padding: 0 5% 60px; max-width: 1380px; margin: 0 auto; }
-#search-overlay.visible { display: block; }
-.search-overlay-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 32px 0 20px;
+.search-drop {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0; right: 0;
+    z-index: 400;
+    background: var(--page-white);
+    border: 1.5px solid var(--gold-border);
+    border-radius: 16px;
+    box-shadow: 0 16px 48px rgba(42,31,20,.16), 0 2px 8px rgba(42,31,20,.06);
+    overflow: hidden;
+    animation: dropIn .18s cubic-bezier(.4,0,.2,1) both;
+    max-height: 420px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(196,164,107,.25) transparent;
+}
+.search-drop::-webkit-scrollbar { width: 3px; }
+.search-drop::-webkit-scrollbar-thumb { background: rgba(196,164,107,.3); border-radius: 3px; }
+html.dark .search-drop {
+    background: #1C1409;
+    border-color: rgba(196,164,107,.2);
+    box-shadow: 0 16px 48px rgba(0,0,0,.55);
+}
+.search-drop.open { display: block; }
+
+@keyframes dropIn {
+    from { opacity:0; transform:translateY(-6px) scale(.99); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+}
+
+/* ── item row ── */
+.sd-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
     border-bottom: 1px solid var(--page-border);
-    margin-bottom: 28px;
+    text-decoration: none; color: inherit;
+    transition: background var(--tr); cursor: pointer;
 }
-.search-overlay-header h2 { font-family: var(--font-serif); font-size: 22px; font-weight: 600; }
-#search-count-label { font-size: 12px; color: var(--page-muted); display: block; margin-top: 3px; }
-#search-count-label strong { color: var(--gold); font-size: 18px; font-family: var(--font-serif); }
-.search-clear-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 11px; font-weight: 600; color: var(--page-muted);
-    cursor: pointer; padding: 6px 14px; border-radius: 50px;
-    border: 1px solid var(--page-border); background: transparent;
-    transition: all var(--tr);
+.sd-item:last-of-type { border-bottom: none; }
+.sd-item:hover { background: var(--gold-faint); }
+html.dark .sd-item:hover { background: rgba(196,164,107,.06); }
+
+.sd-thumb {
+    width: 34px; height: 46px; border-radius: 4px;
+    object-fit: cover; flex-shrink: 0;
+    background: var(--page-bg2);
+    border: 1px solid var(--page-border);
 }
-.search-clear-btn:hover { color: var(--danger); border-color: rgba(192,57,43,.3); }
+.sd-info { flex: 1; min-width: 0; }
+.sd-title {
+    font-family: var(--font-serif); font-size: 14px; font-weight: 600;
+    color: var(--page-text); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; display: block;
+    line-height: 1.2;
+}
+.sd-meta {
+    font-size: 10px; color: var(--page-muted); margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sd-badge {
+    font-size: 9px; font-weight: 700; letter-spacing: .5px;
+    text-transform: uppercase; padding: 3px 8px;
+    border-radius: 20px; flex-shrink: 0; white-space: nowrap;
+}
+.sd-badge.buy    { background: rgba(196,164,107,.14); color: var(--gold-deep); border: 1px solid var(--gold-border); }
+.sd-badge.borrow { background: rgba(122,92,58,.1);    color: var(--brown);     border: 1px solid var(--brown-border); }
+.sd-badge.both   { background: rgba(196,164,107,.1);  color: var(--gold-deep); border: 1px solid var(--gold-border); }
+
+/* ── footer row ── */
+.sd-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 14px;
+    background: var(--gold-faint);
+    border-top: 1px solid var(--gold-border);
+    cursor: pointer; transition: background var(--tr);
+}
+.sd-footer:hover { background: rgba(196,164,107,.13); }
+.sd-footer-label { font-size: 11px; font-weight: 700; color: var(--gold-deep); display: flex; align-items: center; gap: 6px; }
+html.dark .sd-footer-label { color: var(--gold); }
+.sd-footer-count { font-size: 11px; color: var(--page-muted); }
+
+/* ── empty / spinner ── */
+.sd-empty {
+    padding: 20px 14px; text-align: center;
+    font-size: 13px; color: var(--page-muted);
+}
+.sd-empty i { font-size: 20px; display: block; margin-bottom: 6px; opacity: .4; color: var(--gold); }
+.sd-loading {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 18px; font-size: 12px; color: var(--page-muted);
+}
+.sd-spin {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(196,164,107,.2);
+    border-top-color: var(--gold); border-radius: 50%;
+    animation: sdSpin .6s linear infinite; flex-shrink: 0;
+}
+@keyframes sdSpin { to { transform: rotate(360deg); } }
 
 /* ══════════════════════════════════════════════
    CATALOGUE SECTIONS
 ══════════════════════════════════════════════ */
 #catalogue-sections { padding: 0 5% 80px; max-width: 1380px; margin: 0 auto; }
-
-.cat-section {
-    padding-top: 48px;
-    border-top: 1px solid var(--page-border); margin-top: 0;
-}
+.cat-section { padding-top: 48px; border-top: 1px solid var(--page-border); }
 .cat-section:first-child { border-top: none; padding-top: 40px; }
-.cat-section-head {
-    display: flex; align-items: flex-end;
-    justify-content: space-between; gap: 12px; margin-bottom: 24px;
-}
+.cat-section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
 .cat-section-title { display: flex; align-items: center; gap: 12px; }
 .cat-section-title h2 { font-family: var(--font-serif); font-size: 26px; font-weight: 600; line-height: 1; }
-.cat-section-badge {
-    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--page-muted);
-    background: var(--page-bg2); border: 1px solid var(--page-border);
-    padding: 3px 10px; border-radius: 50px;
-}
-
-/* ── "Voir tout" button — AJAX version ── */
-.cat-see-all {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 11px; font-weight: 700; letter-spacing: .3px;
-    color: var(--gold-deep); text-decoration: none;
-    padding: 8px 18px; border-radius: 50px;
-    border: 1.5px solid var(--gold-border);
-    background: var(--gold-faint);
-    transition: all var(--tr); white-space: nowrap; flex-shrink: 0;
-    cursor: pointer; font-family: var(--font-ui);
-}
+.cat-section-badge { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--page-muted); background: var(--page-bg2); border: 1px solid var(--page-border); padding: 3px 10px; border-radius: 50px; }
+.cat-see-all { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: .3px; color: var(--gold-deep); text-decoration: none; padding: 8px 18px; border-radius: 50px; border: 1.5px solid var(--gold-border); background: var(--gold-faint); transition: all var(--tr); white-space: nowrap; flex-shrink: 0; cursor: pointer; font-family: var(--font-ui); }
 html.dark .cat-see-all { color: var(--gold); }
 .cat-see-all:hover { background: var(--gold); color: #1A0E05; border-color: var(--gold); box-shadow: var(--shadow-gold); transform: translateY(-1px); }
 .cat-see-all i { font-size: 9px; transition: transform var(--tr); }
 .cat-see-all:hover i { transform: translateX(3px); }
-.cat-see-all:disabled { opacity: .55; cursor: default; transform: none; box-shadow: none; }
-
-/* Spinner dans le bouton */
 @keyframes spin { to { transform: rotate(360deg); } }
 .fa-spin { animation: spin .7s linear infinite; }
 
-/* ══ FIX: tighter grid — 5 columns at full width ══ */
-.cat-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
-}
+.cat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
 @media (max-width: 900px) { .cat-row { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; } }
 
 /* ══════════════════════════════════════════════
    BOOK CARDS
 ══════════════════════════════════════════════ */
-.book-card {
-    background: var(--page-white);
-    border-radius: var(--radius);
-    border: 1px solid var(--page-border);
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    display: flex; flex-direction: column;
-    transition: transform var(--tr), box-shadow var(--tr), border-color var(--tr);
-    animation: cardIn .4s ease both;
-}
+.book-card { background: var(--page-white); border-radius: var(--radius); border: 1px solid var(--page-border); overflow: hidden; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; transition: transform var(--tr), box-shadow var(--tr), border-color var(--tr); animation: cardIn .4s ease both; }
 .book-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: var(--gold-border); }
 .book-card:nth-child(2) { animation-delay:.05s; }
 .book-card:nth-child(3) { animation-delay:.10s; }
 .book-card:nth-child(4) { animation-delay:.15s; }
 .book-card:nth-child(5) { animation-delay:.20s; }
-.book-card:nth-child(6) { animation-delay:.24s; }
 
-/* ══ FIX: reduced cover height to match 5-column layout ══ */
-.card-cover {
-    position: relative;
-    overflow: hidden;
-    background: var(--page-bg2); display: block; text-decoration: none;
-    flex-shrink: 0; height: 340px;
-}
-.card-cover img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    transition: transform .6s cubic-bezier(.4,0,.2,1);
-}
+.card-cover { position: relative; overflow: hidden; background: var(--page-bg2); display: block; text-decoration: none; flex-shrink: 0; height: 340px; }
+.card-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s cubic-bezier(.4,0,.2,1); }
 .book-card:hover .card-cover img { transform: scale(1.06); }
 
-.avail-ribbon {
-    position: absolute; top: 10px; left: 10px;
-    display: flex; flex-direction: column; gap: 5px; z-index: 2;
-}
-.avail-tag {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 4px 10px; border-radius: 20px;
-    font-size: 9px; font-weight: 700; letter-spacing: .8px;
-    text-transform: uppercase; backdrop-filter: blur(10px);
-    border: 1px solid transparent;
-}
+.avail-ribbon { position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; gap: 5px; z-index: 2; }
+.avail-tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; backdrop-filter: blur(10px); border: 1px solid transparent; }
 .tag-buy    { background: rgba(196,164,107,.9); color: #2C1F0E; border-color: rgba(196,164,107,.4); }
 .tag-borrow { background: rgba(122,92,58,.88);  color: #F5EDD8; border-color: rgba(122,92,58,.4); }
-.wish-btn {
-    position: absolute; bottom: 10px; right: 10px; z-index: 2;
-    width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(44,31,14,.6); backdrop-filter: blur(8px);
-    border: 1px solid rgba(196,164,107,.18); color: rgba(196,164,107,.45);
-    font-size: 13px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all var(--tr);
-}
+.wish-btn { position: absolute; bottom: 10px; right: 10px; z-index: 2; width: 32px; height: 32px; border-radius: 50%; background: rgba(44,31,14,.6); backdrop-filter: blur(8px); border: 1px solid rgba(196,164,107,.18); color: rgba(196,164,107,.45); font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all var(--tr); }
 .wish-btn:hover { color: var(--gold); border-color: var(--gold-border); background: rgba(44,31,14,.85); }
 .wish-btn.wishlisted { color: #ef4444; border-color: #fca5a5; }
 
 .card-body { padding: 12px 13px 14px; flex: 1; display: flex; flex-direction: column; }
-.card-title {
-    font-family: var(--font-serif); font-size: 15px; font-weight: 600;
-    color: var(--page-text); line-height: 1.3; margin-bottom: 3px;
-    display: -webkit-box; -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical; overflow: hidden;
-}
+.card-title { font-family: var(--font-serif); font-size: 15px; font-weight: 600; color: var(--page-text); line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .card-title a { text-decoration: none; color: inherit; }
 .card-title a:hover { color: var(--gold); }
 .card-author { font-size: 10px; color: var(--page-muted); margin-bottom: 10px; }
@@ -602,13 +489,7 @@ html.dark .card-price { color: var(--gold2); }
 .card-free i { color: var(--gold); font-size: 10px; }
 .card-divider { height: 1px; background: var(--page-border); margin-bottom: 10px; opacity: .6; }
 .card-actions { display: flex; gap: 6px; margin-top: auto; }
-.btn-card {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    gap: 6px; padding: 8px 6px; border-radius: 9px;
-    font-family: var(--font-ui); font-size: 10px; font-weight: 700;
-    text-decoration: none; border: none; cursor: pointer;
-    transition: all var(--tr); line-height: 1; letter-spacing: .3px;
-}
+.btn-card { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 6px; border-radius: 9px; font-family: var(--font-ui); font-size: 10px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all var(--tr); line-height: 1; letter-spacing: .3px; }
 .btn-card i { font-size: 10px; }
 .btn-borrow { background: var(--brown-faint); border: 1.5px solid var(--brown-border); color: var(--brown); }
 .btn-borrow:hover { background: var(--brown); color: #F5EDD8; border-color: var(--brown); }
@@ -616,64 +497,35 @@ html.dark .card-price { color: var(--gold2); }
 html.dark .btn-buy { color: var(--gold); }
 .btn-buy:hover { background: var(--gold); color: #2C1F0E; border-color: var(--gold); box-shadow: var(--shadow-gold); }
 .btn-card.full { flex: 1 1 100%; }
-
-.btn-both {
-    background: linear-gradient(110deg, var(--gold-faint) 0%, var(--brown-faint) 100%);
-    border: 1.5px solid var(--gold-border); color: var(--gold-deep);
-}
+.btn-both { background: linear-gradient(110deg, var(--gold-faint) 0%, var(--brown-faint) 100%); border: 1.5px solid var(--gold-border); color: var(--gold-deep); }
 html.dark .btn-both { color: var(--gold); }
 .btn-both:hover { background: linear-gradient(110deg, var(--gold) 0%, var(--brown) 100%); color: #fff; border-color: transparent; }
-
 .btn-both-wrap { position: relative; flex: 1; }
-.both-menu {
-    position: absolute; bottom: calc(100% + 8px); left: 0; right: 0;
-    background: var(--page-white);
-    border: 1.5px solid var(--gold-border);
-    border-radius: 12px;
-    box-shadow: 0 12px 36px rgba(42,31,20,.2);
-    overflow: hidden; z-index: 50;
-    display: none; animation: fadeUp .18s ease both;
-}
+.both-menu { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; background: var(--page-white); border: 1.5px solid var(--gold-border); border-radius: 12px; box-shadow: 0 12px 36px rgba(42,31,20,.2); overflow: hidden; z-index: 50; display: none; animation: fadeUp .18s ease both; }
 .both-menu.open { display: block; }
-.both-opt {
-    display: flex; align-items: center; gap: 10px; width: 100%;
-    padding: 10px 14px; font-family: var(--font-ui); font-size: 11px; font-weight: 600;
-    color: var(--page-text); text-decoration: none; background: transparent;
-    border: none; cursor: pointer; transition: background var(--tr);
-    border-bottom: 1px solid var(--page-border);
-}
+.both-opt { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; font-family: var(--font-ui); font-size: 11px; font-weight: 600; color: var(--page-text); text-decoration: none; background: transparent; border: none; cursor: pointer; transition: background var(--tr); border-bottom: 1px solid var(--page-border); }
 .both-opt:last-child { border-bottom: none; }
 .both-opt:hover { background: var(--gold-faint); }
 .both-opt i { color: var(--gold); font-size: 12px; }
-
 .admin-actions { display: flex; gap: 7px; margin-top: auto; }
-.btn-admin {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    gap: 6px; padding: 9px; border-radius: 9px;
-    font-family: var(--font-ui); font-size: 11px; font-weight: 700;
-    text-decoration: none; transition: all var(--tr);
-}
+.btn-admin { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; border-radius: 9px; font-family: var(--font-ui); font-size: 11px; font-weight: 700; text-decoration: none; transition: all var(--tr); }
 .btn-edit   { background: var(--gold-faint); color: var(--gold); border: 1.5px solid var(--gold-border); }
 .btn-edit:hover { background: rgba(196,164,107,.18); transform: translateY(-1px); }
 .btn-delete { background: rgba(192,57,43,.08); color: var(--danger); border: 1.5px solid rgba(192,57,43,.2); }
 .btn-delete:hover { background: rgba(192,57,43,.15); transform: translateY(-1px); }
 
-/* ══ FIX: search results grid matches cat-row ══ */
-.books-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px; transition: opacity .25s;
-}
-.books-grid.loading { opacity: .45; pointer-events: none; }
 
 .empty-state { grid-column: 1/-1; text-align: center; padding: 70px 20px; }
 .empty-icon  { font-size: 44px; color: var(--page-border); margin-bottom: 16px; }
 .empty-state h3 { font-family: var(--font-serif); font-size: 22px; color: var(--page-muted); margin-bottom: 6px; }
 .empty-state p  { font-size: 13px; color: var(--page-muted); }
 
+/* ══ type-badge (used in search_engine.php card output) ══ */
+.type-badge { position: absolute; bottom: 10px; left: 10px; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: rgba(44,31,14,.7); color: var(--gold); border: 1px solid rgba(196,164,107,.3); padding: 3px 9px; border-radius: 20px; backdrop-filter: blur(8px); z-index: 2; }
+
 @media (max-width: 600px) {
     .books-grid, .cat-row { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-    .card-cover { height: 340px; }
+    .card-cover { height: 220px; }
 }
 </style>
 </head>
@@ -687,15 +539,14 @@ html.dark .btn-both { color: var(--gold); }
     <div class="swiper hs-swiper" style="width:100%;height:100%;">
         <div class="swiper-wrapper">
             <?php foreach ($slider_items as $idx => $s):
-                $detail_url  = "/MEMOIR/client/doc_details.php?id=" . (int)$s['id_doc'];
-                $safe_title  = htmlspecialchars($s['titre']);
-                $safe_type   = htmlspecialchars($s['libelle_type'] ?? 'Document');
-                $safe_img    = htmlspecialchars($s['_img']);
-                $dp          = $s['disponible_pour'] ?? 'both';
+                $detail_url = "/MEMOIR/client/doc_details.php?id=" . (int)$s['id_doc'];
+                $safe_title = htmlspecialchars($s['titre']);
+                $safe_type  = htmlspecialchars($s['libelle_type'] ?? 'Document');
+                $safe_img   = htmlspecialchars($s['_img']);
+                $dp         = $s['disponible_pour'] ?? 'both';
             ?>
             <div class="swiper-slide hs-slide">
-                <img class="hs-slide-bg" src="<?= $safe_img ?>" alt="<?= $safe_title ?>"
-                     onerror="this.src='../uploads/default.jpg'">
+                <img class="hs-slide-bg" src="<?= $safe_img ?>" alt="<?= $safe_title ?>" onerror="this.src='../uploads/default.jpg'">
                 <div class="hs-content">
                     <div class="hs-badge"><i class="fa-solid fa-bookmark"></i> <?= $safe_type ?></div>
                     <h2 class="hs-title"><?= $safe_title ?></h2>
@@ -703,7 +554,7 @@ html.dark .btn-both { color: var(--gold); }
                         <a href="<?= $detail_url ?>" class="hs-btn hs-btn-details">
                             <i class="fa-solid fa-circle-info" style="font-size:10px"></i> Détails
                         </a>
-                        <?php if ($is_logged_in && $user_role==='client' && in_array($dp,['emprunt','both'])): ?>
+                        <?php if ($is_logged_in && $user_role === 'client' && in_array($dp, ['emprunt','both'])): ?>
                         <a href="/MEMOIR/emprunts/emprunt.php?id_doc=<?= (int)$s['id_doc'] ?>" class="hs-btn hs-btn-borrow">
                             <i class="fa-regular fa-clock" style="font-size:10px"></i> Emprunter
                         </a>
@@ -728,8 +579,11 @@ html.dark .btn-both { color: var(--gold); }
 <?php endif; ?>
 
 <!-- ══════════════════════════════════════════
-     STICKY SEARCH BAR
+     STICKY SEARCH BAR — client & guest only
+     Admin uses the navbar search bar instead
 ══════════════════════════════════════════ -->
+<!-- search bar: client & guest only -->
+<?php if ($user_role !== 'admin'): ?>
 <div class="search-bar-sticky" id="searchBar">
     <div class="search-top-row">
         <div class="search-input-wrap" id="searchWrap" style="position:relative;">
@@ -740,45 +594,35 @@ html.dark .btn-both { color: var(--gold); }
             <button class="search-btn-clear" id="clearBtn" onclick="clearSearch()" title="Effacer">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <div class="suggestions-wrap" id="suggestionsBox"></div>
+            <div class="search-drop" id="searchDrop"></div>
         </div>
         <button class="search-btn" onclick="triggerSearch()">
             <i class="fa-solid fa-magnifying-glass" style="font-size:10px"></i> Rechercher
         </button>
-    </div><!-- /search-top-row -->
+    </div>
+</div><!-- /search-bar-sticky -->
+<?php endif; ?>
 
+<!-- filter pills: tout le monde (admin + client + guest) -->
+<div class="search-bar-sticky" id="filterBar" style="<?= $user_role==='admin' ? 'top:var(--nav-h)' : 'top:calc(var(--nav-h) + 60px)' ?>">
     <div class="search-filters-row">
         <span class="filter-label-sm">Filtrer :</span>
-        <button class="avail-pill ap-all <?= $avail==='all'?'active':'' ?>" data-avail="all" onclick="setAvail('all', this)">
+        <button class="avail-pill ap-all <?= $avail==='all'?'active':'' ?>" onclick="setAvail('all', this)">
             <span class="avail-dot"></span> Tout
         </button>
-        <button class="avail-pill ap-buy <?= $avail==='buy'?'active':'' ?>" data-avail="buy" onclick="setAvail('buy', this)">
+        <button class="avail-pill ap-buy <?= $avail==='buy'?'active':'' ?>" onclick="setAvail('buy', this)">
             <span class="avail-dot"></span> Achat
         </button>
-        <button class="avail-pill ap-borrow <?= $avail==='borrow'?'active':'' ?>" data-avail="borrow" onclick="setAvail('borrow', this)">
+        <button class="avail-pill ap-borrow <?= $avail==='borrow'?'active':'' ?>" onclick="setAvail('borrow', this)">
             <span class="avail-dot"></span> Emprunt
         </button>
-        <button class="avail-pill ap-both <?= $avail==='both'?'active':'' ?>" data-avail="both" onclick="setAvail('both', this)">
+        <button class="avail-pill ap-both <?= $avail==='both'?'active':'' ?>" onclick="setAvail('both', this)">
             <span class="avail-dot"></span> Achat &amp; Emprunt
         </button>
     </div>
-</div><!-- /search-bar-sticky -->
-
-<!-- ══════════════════════════════════════════
-     SEARCH RESULTS OVERLAY
-══════════════════════════════════════════ -->
-<div id="search-overlay">
-    <div class="search-overlay-header">
-        <div>
-            <h2>Résultats de recherche</h2>
-            <span id="search-count-label">0 document(s) trouvé(s)</span>
-        </div>
-        <button class="search-clear-btn" onclick="clearSearch()">
-            <i class="fa-solid fa-xmark"></i> Effacer
-        </button>
-    </div>
-    <div class="books-grid" id="resultat"></div>
 </div>
+
+
 
 <!-- ══════════════════════════════════════════
      CATALOGUE PAR CATÉGORIE
@@ -793,10 +637,8 @@ html.dark .btn-both { color: var(--gold); }
             <h2><?= htmlspecialchars($sec['label']) ?></h2>
             <span class="cat-section-badge"><?= $sec['total'] ?> doc<?= $sec['total']>1?'s':'' ?></span>
         </div>
-        <?php if ($sec['total'] > 5): ?>
-        <a
-            class="cat-see-all"
-            href="/MEMOIR/client/catalogue_type.php?type=<?= $sec['id'] ?>&label=<?= urlencode($sec['label']) ?>">
+        <?php if ($sec['total'] > 4): ?>
+        <a class="cat-see-all" href="/MEMOIR/client/catalogue_type.php?type=<?= $sec['id'] ?>&label=<?= urlencode($sec['label']) ?>">
             Voir tout <i class="fa-solid fa-arrow-right"></i>
         </a>
         <?php endif; ?>
@@ -820,7 +662,7 @@ html.dark .btn-both { color: var(--gold); }
                     <?php if ($can_buy): ?><span class="avail-tag tag-buy"><i class="fa-solid fa-cart-shopping" style="font-size:8px"></i> Achat</span><?php endif; ?>
                     <?php if ($can_borrow): ?><span class="avail-tag tag-borrow"><i class="fa-regular fa-clock" style="font-size:8px"></i> Emprunt</span><?php endif; ?>
                 </div>
-                <?php if ($is_logged_in && $user_role==='client'): ?>
+                <?php if ($is_logged_in && $user_role === 'client'): ?>
                 <button class="wish-btn" onclick="event.preventDefault();toggleWishlist(this,<?= (int)$d['id_doc'] ?>)" title="Favoris">
                     <i class="fa-regular fa-heart"></i>
                 </button>
@@ -840,12 +682,11 @@ html.dark .btn-both { color: var(--gold); }
                 </div>
                 <div class="card-divider"></div>
 
-                <?php if ($user_role==='client'): ?>
+                <?php if ($user_role === 'client'): ?>
                 <div class="card-actions">
                     <?php if ($is_both): ?>
                         <div class="btn-both-wrap">
-                            <button class="btn-card btn-both full"
-                                    onclick="toggleBothMenu(this, <?= (int)$d['id_doc'] ?>)">
+                            <button class="btn-card btn-both full" onclick="toggleBothMenu(this, <?= (int)$d['id_doc'] ?>)">
                                 <i class="fa-solid fa-plus"></i> Choisir
                             </button>
                             <div class="both-menu" id="both-menu-<?= (int)$d['id_doc'] ?>">
@@ -864,8 +705,7 @@ html.dark .btn-both { color: var(--gold); }
                         </div>
                     <?php else: ?>
                         <?php if ($can_borrow): ?>
-                        <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>"
-                           class="btn-card btn-borrow <?= !$can_buy?'full':'' ?>">
+                        <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="btn-card btn-borrow <?= !$can_buy?'full':'' ?>">
                             <i class="fa-regular fa-clock"></i> Emprunter
                         </a>
                         <?php endif; ?>
@@ -884,19 +724,18 @@ html.dark .btn-both { color: var(--gold); }
                 <a href="/MEMOIR/auth/login.php" class="btn-card btn-borrow full">
                     <i class="fa-solid fa-right-to-bracket"></i> Connexion requise
                 </a>
-                <?php elseif ($user_role==='admin'): ?>
+
+                <?php elseif ($user_role === 'admin'): ?>
                 <div class="admin-actions">
-                    <a href="/MEMOIR/admin/modifier_document.php?id=<?= (int)$d['id_doc'] ?>"
-                       class="btn-admin btn-edit" title="Modifier">
+                    <a href="/MEMOIR/admin/modifier_document.php?id=<?= (int)$d['id_doc'] ?>" class="btn-admin btn-edit">
                         <i class="fa-solid fa-pen"></i> Modifier
                     </a>
-                    <a href="/MEMOIR/admin/delete_doc.php?id=<?= (int)$d['id_doc'] ?>"
-                       onclick="return confirm('Supprimer ce document ?')"
-                       class="btn-admin btn-delete" title="Supprimer">
+                    <a href="/MEMOIR/admin/delete_doc.php?id=<?= (int)$d['id_doc'] ?>" onclick="return confirm('Supprimer ce document ?')" class="btn-admin btn-delete">
                         <i class="fa-solid fa-trash"></i> Supprimer
                     </a>
                 </div>
                 <?php endif; ?>
+
             </div>
         </div>
         <?php endforeach; ?>
@@ -921,185 +760,215 @@ html.dark .btn-both { color: var(--gold); }
 (function () {
     const DELAY  = 3000;
     const thumbs = document.querySelectorAll('.hs-thumb');
-
     function updateThumbs(idx) {
         thumbs.forEach((t,i) => t.classList.toggle('active-thumb', i===idx));
     }
-
     const swiper = new Swiper('.hs-swiper', {
-        loop: true,
-        speed: 1000,
-        effect: 'fade',
+        loop: true, speed: 1000, effect: 'fade',
         fadeEffect: { crossFade: true },
         autoplay: { delay: DELAY, disableOnInteraction: false, pauseOnMouseEnter: true },
         navigation: { nextEl: '#hsNext', prevEl: '#hsPrev' },
         pagination: { el: '.hs-pagination', clickable: true },
-        on: {
-            slideChangeTransitionEnd() { updateThumbs(this.realIndex); }
-        }
+        on: { slideChangeTransitionEnd() { updateThumbs(this.realIndex); } }
     });
-
-    window.hsGoTo = function(idx) {
-        swiper.slideToLoop(idx, 900);
-        updateThumbs(idx);
-    };
+    window.hsGoTo = function(idx) { swiper.slideToLoop(idx, 900); updateThumbs(idx); };
 })();
 
+<?php if ($user_role !== 'admin'): ?>
 /* ══ STICKY SEARCH SHADOW ══ */
 const searchBarEl = document.getElementById('searchBar');
-window.addEventListener('scroll', () => {
-    searchBarEl.classList.toggle('scrolled', window.scrollY > 30);
-}, { passive: true });
+if (searchBarEl) {
+    window.addEventListener('scroll', () => {
+        searchBarEl.classList.toggle('scrolled', window.scrollY > 30);
+    }, { passive: true });
+}
 
-/* ══════════════════════════════════════════
-   SMART GLOBAL SEARCH ENGINE
-══════════════════════════════════════════ */
-const searchEl   = document.getElementById('search');
-const overlayEl  = document.getElementById('search-overlay');
-const gridEl     = document.getElementById('resultat');
-const countLbl   = document.getElementById('search-count-label');
-const sectionsEl = document.getElementById('catalogue-sections');
-const suggestBox = document.getElementById('suggestionsBox');
-const clearBtnEl = document.getElementById('clearBtn');
+/* ══════════════════════════════════════════════════
+   CLIENT SEARCH — Option B dropdown
+   thumbnail + titre + auteur + badge
+   mode=suggest → JSON léger depuis recherche_dcmnt.php
+══════════════════════════════════════════════════ */
+const searchEl  = document.getElementById('search');
+const dropEl    = document.getElementById('searchDrop');
+const clearBtn  = document.getElementById('clearBtn');
+const sectionsEl= document.getElementById('catalogue-sections');
 
-let debounceTimer, suggestTimer;
+let dropTimer = null;
 let currentAvail = '<?= htmlspecialchars($avail) ?>';
 
+/* ── helpers ── */
+function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function badgeCls(dp) {
+    if (dp==='achat')   return 'buy';
+    if (dp==='emprunt') return 'borrow';
+    return 'both';
+}
+function badgeLbl(dp) {
+    if (dp==='achat')   return 'Achat';
+    if (dp==='emprunt') return 'Emprunt';
+    return 'Achat &amp; Emprunt';
+}
+function buildUrl(q) {
+    return 'recherche_dcmnt.php?mode=suggest'
+         + '&search=' + encodeURIComponent(q)
+         + '&avail='  + encodeURIComponent(currentAvail)
+         + '&type=0';
+}
+
+/* ── open / close ── */
+function openDrop()  { dropEl.classList.add('open'); }
+function closeDrop() { dropEl.classList.remove('open'); dropEl.innerHTML = ''; }
+
+function clearSearch() {
+    searchEl.value = '';
+    clearBtn.classList.remove('visible');
+    closeDrop();
+    searchEl.focus();
+}
+
+/* ── filter pills ── */
 function setAvail(val, btn) {
     currentAvail = val;
     document.querySelectorAll('.avail-pill').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
-    const q = searchEl.value.trim();
-    if (q) {
-        // search is active — re-run with new filter
-        fetchCards(q);
-    } else {
-        // no search — reload page with avail param so PHP filters the sections
-        const url = new URL(window.location.href);
-        url.searchParams.set('avail', val);
-        url.searchParams.delete('type');
-        window.location.href = url.toString();
+
+    /* si search active → relancer la recherche */
+    const searchEl = document.getElementById('search');
+    if (searchEl) {
+        const q = searchEl.value.trim();
+        if (q.length >= 2) { doSearch(q); return; }
     }
+
+    /* AJAX filter sur les sections catalogue */
+    const sectionsEl = document.getElementById('catalogue-sections');
+    if (!sectionsEl) return;
+    sectionsEl.style.opacity = '.4';
+    sectionsEl.style.pointerEvents = 'none';
+
+    fetch('get_sections.php?avail=' + encodeURIComponent(val))
+        .then(r => r.text())
+        .then(html => {
+            sectionsEl.innerHTML = html;
+            sectionsEl.style.opacity = '';
+            sectionsEl.style.pointerEvents = '';
+            const url = new URL(window.location.href);
+            url.searchParams.set('avail', val);
+            history.replaceState({}, '', url.toString());
+        })
+        .catch(() => {
+            sectionsEl.style.opacity = '';
+            sectionsEl.style.pointerEvents = '';
+        });
 }
 
-function setSearch(val) {
-    searchEl.value = val;
-    clearBtnEl.classList.add('visible');
-    hideSuggestions();
-    fetchCards(val);
-    searchEl.focus();
-}
+/* ── main search ── */
+function doSearch(q, autoGo) {
+    dropEl.innerHTML = '<div class="sd-loading"><div class="sd-spin"></div> Recherche…</div>';
+    openDrop();
 
-function clearSearch() {
-    searchEl.value = '';
-    clearBtnEl.classList.remove('visible');
-    hideSuggestions();
-    overlayEl.classList.remove('visible');
-    sectionsEl.style.display = '';
-    searchEl.focus();
+    fetch(buildUrl(q))
+        .then(r => r.json())
+        .then(items => {
+            if (!items.length) {
+                dropEl.innerHTML = '<div class="sd-empty"><i class="fa-regular fa-folder-open"></i>Aucun résultat pour «&nbsp;' + esc(q) + '&nbsp;»</div>';
+                openDrop();
+                return;
+            }
+
+            /* autoGo = true → Enter/Rechercher → روح لأول نتيجة مباشرة */
+            if (autoGo) {
+                window.location.href = '/MEMOIR/client/doc_details.php?id=' + items[0].id;
+                return;
+            }
+
+            let html = '';
+            items.slice(0, 8).forEach(item => {
+                const img  = item.image ? '/MEMOIR/uploads/' + item.image : '/MEMOIR/uploads/' + item.id + '.jpg';
+                const meta = [item.auteur, item.annee, item.type].filter(Boolean).join(' · ');
+                html += '<a class="sd-item" href="/MEMOIR/client/doc_details.php?id=' + item.id + '">'
+                      + '<img class="sd-thumb" src="' + esc(img) + '" '
+                      + 'onerror="this.onerror=null;this.src=\'/MEMOIR/uploads/default.jpg\'" alt="">'
+                      + '<div class="sd-info">'
+                      + '<span class="sd-title">' + esc(item.titre) + '</span>'
+                      + '<span class="sd-meta">'  + esc(meta)       + '</span>'
+                      + '</div>'
+                      + '<span class="sd-badge ' + badgeCls(item.dispo||'both') + '">' + badgeLbl(item.dispo||'both') + '</span>'
+                      + '</a>';
+            });
+
+            /* footer */
+            html += '<div class="sd-footer" onclick="closeDrop()">'
+                  + '<span class="sd-footer-label"><i class="fa-solid fa-magnifying-glass" style="font-size:10px"></i> ' + items.length + ' résultat' + (items.length>1?'s':'') + '</span>'
+                  + '<span class="sd-footer-count">✕ Fermer</span>'
+                  + '</div>';
+
+            dropEl.innerHTML = html;
+            openDrop();
+        })
+        .catch(() => {
+            dropEl.innerHTML = '<div class="sd-empty"><i class="fa-solid fa-triangle-exclamation"></i>Erreur de chargement</div>';
+            openDrop();
+        });
 }
 
 function triggerSearch() {
     const q = searchEl.value.trim();
     if (!q) { clearSearch(); return; }
-    hideSuggestions();
-    fetchCards(q);
-}
+    clearTimeout(dropTimer);
 
-function buildUrl(q, extra='') {
-    return 'recherche_dcmnt.php?search=' + encodeURIComponent(q)
-         + '&avail=' + encodeURIComponent(currentAvail)
-         + '&type=0' + extra;
-}
-
-function fetchCards(q) {
-    overlayEl.classList.add('visible');
-    sectionsEl.style.display = 'none';
-    gridEl.classList.add('loading');
-    countLbl.textContent = 'Recherche en cours…';
-
-    fetch(buildUrl(q))
-        .then(r => r.text())
-        .then(html => {
-            gridEl.innerHTML = html;
-            gridEl.classList.remove('loading');
-            const n = gridEl.querySelectorAll('.book-card').length;
-            countLbl.innerHTML = '<strong>' + n + '</strong> document' + (n!==1?'s':'') + ' trouvé' + (n!==1?'s':'');
-        })
-        .catch(() => {
-            gridEl.classList.remove('loading');
-            countLbl.textContent = 'Erreur de chargement';
-        });
-}
-
-function fetchSuggestions(q) {
-    fetch(buildUrl(q, '&mode=suggest'))
-        .then(r => r.json())
-        .then(items => {
-            if (!items.length) { hideSuggestions(); return; }
-            let html = '';
-            items.forEach(item => {
-                const meta = [item.auteur, item.annee].filter(Boolean).join(' · ');
-                html += `<a class="suggestion-item" href="/MEMOIR/client/doc_details.php?id=${item.id}">
-                    <div class="sug-icon"><i class="fa-solid fa-book"></i></div>
-                    <div class="sug-info">
-                        <span class="sug-title">${escHtml(item.titre)}</span>
-                        ${meta ? `<span class="sug-meta">${escHtml(meta)}</span>` : ''}
-                    </div>
-                    ${item.type ? `<span class="sug-type">${escHtml(item.type)}</span>` : ''}
-                </a>`;
-            });
-            html += `<button class="sug-all-btn" onclick="hideSuggestions();fetchCards('${escAttr(q)}')">
-                <i class="fa-solid fa-magnifying-glass" style="font-size:10px"></i>
-                Voir tous les résultats
-            </button>`;
-            suggestBox.innerHTML = html;
-            suggestBox.classList.add('visible');
-        })
-        .catch(() => hideSuggestions());
-}
-
-function hideSuggestions() {
-    suggestBox.classList.remove('visible');
-    suggestBox.innerHTML = '';
-}
-
-function escHtml(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function escAttr(s) { return String(s).replace(/'/g,"\\'"); }
-
-searchEl.addEventListener('input', function () {
-    clearTimeout(debounceTimer);
-    clearTimeout(suggestTimer);
-    const q = this.value.trim();
-    clearBtnEl.classList.toggle('visible', q.length > 0);
-    if (!q) { clearSearch(); return; }
-    if (q.length >= 2) {
-        suggestTimer = setTimeout(() => fetchSuggestions(q), 180);
+    /* إذا الـ dropdown فيه نتائج → روح لأول نتيجة */
+    const items = dropEl.querySelectorAll('.sd-item');
+    if (items.length >= 1) {
+        window.location.href = items[0].href;
+        return;
     }
-    debounceTimer = setTimeout(() => {
-        hideSuggestions();
-        fetchCards(q);
-    }, 350);
+    /* ما في شيء → دور مع autoGo */
+    doSearch(q, true);
+}
+
+/* ── events ── */
+searchEl.addEventListener('input', function() {
+    clearTimeout(dropTimer);
+    const q = this.value.trim();
+    clearBtn.classList.toggle('visible', q.length > 0);
+    if (!q) { closeDrop(); return; }
+    if (q.length >= 2) {
+        dropTimer = setTimeout(() => doSearch(q), 250);
+    }
 });
 
 searchEl.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
         e.preventDefault();
-        clearTimeout(debounceTimer);
-        clearTimeout(suggestTimer);
-        hideSuggestions();
-        fetchCards(this.value.trim());
+        e.stopPropagation();
+        clearTimeout(dropTimer);
+        const q = searchEl.value.trim();
+        if (!q) return;
+
+        /* إذا الـ dropdown فيه نتائج → روح لأول نتيجة مباشرة */
+        const items = dropEl.querySelectorAll('.sd-item');
+        if (items.length >= 1) {
+            window.location.href = items[0].href;
+            return;
+        }
+        /* ما في شيء بعد → دور أولاً ثم روح */
+        doSearch(q);
     }
-    if (e.key === 'Escape') { clearSearch(); }
+    if (e.key === 'Escape') clearSearch();
 });
 
+/* close on outside click — ignore clicks inside the wrap */
 document.addEventListener('click', function(e) {
-    if (!searchEl.contains(e.target) && !suggestBox.contains(e.target)) {
-        hideSuggestions();
-    }
+    const wrap = document.querySelector('.search-input-wrap');
+    const btn  = document.querySelector('.search-btn');
+    if (wrap && wrap.contains(e.target)) return;
+    if (btn  && btn.contains(e.target))  return;
+    closeDrop();
 });
+
+<?php endif; /* end non-admin search JS */ ?>
 
 /* ══ BOTH MENU TOGGLE ══ */
 function toggleBothMenu(btn, id) {

@@ -93,7 +93,9 @@ if ($mode === 'suggest') {
     $where = buildSearchWhere($conn, $s, $avail, $type_id);
 
     $q = "
-        SELECT d.id_doc, d.titre, d.auteur, d.annee_edition, t.libelle_type
+        SELECT d.id_doc, d.titre, d.auteur, d.annee_edition,
+               d.disponible_pour, d.image_doc,
+               t.libelle_type
         FROM documents d
         LEFT JOIN types_documents t ON d.id_type = t.id_type
         $where
@@ -112,6 +114,8 @@ if ($mode === 'suggest') {
                 'auteur'=> $row['auteur'] ?? '',
                 'annee' => $row['annee_edition'] ?? '',
                 'type'  => $row['libelle_type'] ?? '',
+                'dispo' => $row['disponible_pour'] ?? 'both',
+                'image' => $row['image_doc'] ?? '',
             ];
         }
     }
