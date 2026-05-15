@@ -8,50 +8,86 @@ $montant     = isset($_GET['montant']) ? (float)$_GET['montant'] : 0;
 $methode     = isset($_GET['methode']) ? $_GET['methode']        : 'baridi';
 $id_user     = isset($_SESSION['id_user']) ? (int)$_SESSION['id_user'] : 0;
 
+// ── Sanitize methode ────────────────────────────────────
+$methode = in_array($methode, ['baridi', 'cash']) ? $methode : 'baridi';
+
+// ── Determine statut based on payment method ────────────
+// Baridi Mob = paid immediately → 'payée'
+// Cash on delivery = not paid yet → 'en attente de paiement'
+$statut_commande = ($methode === 'baridi') ? 'payée' : 'en attente de paiement';
+
 $order = null;
 
 if ($id_commande && $id_user) {
-    // 1. جلب بيانات الطلب
+
+    // ── Fetch the order ─────────────────────────────────
     $stmt = $conn->prepare("SELECT * FROM commande WHERE id_commande = ? AND id_user = ?");
     $stmt->bind_param("ii", $id_commande, $id_user);
     $stmt->execute();
     $order = $stmt->get_result()->fetch_assoc();
 
-    // 2. الأتمتة: تحديث المخزون والحالة إذا كان الطلب "En attente"
-    if ($order && $order['statut'] !== 'payée') {
-        
-        // تحديث حالة الطلب وتاريخ الدفع
-        $update_order = $conn->prepare("UPDATE commande SET statut = 'payée', date_paiement = NOW() WHERE id_commande = ?");
-        $update_order->bind_param("i", $id_commande);
-        
+    // ── Automate: update stock and status only once ─────
+    if ($order && $order['statut'] === 'en attente') {
+
+        // Update order status — different per method
+        $update_order = $conn->prepare("
+            UPDATE commande 
+            SET statut = ?, date_paiement = NOW() 
+            WHERE id_commande = ?
+        ");
+        $update_order->bind_param("si", $statut_commande, $id_commande);
+
         if ($update_order->execute()) {
-            // جلب الكتب الموجودة في هذا الطلب لنقصها من المخزون
-            $items_stmt = $conn->prepare("SELECT id_doc, quantite FROM commande_item WHERE id_commande = ?");
-            $items_stmt->bind_param("i", $id_commande);
-            $items_stmt->execute();
-            $items_result = $items_stmt->get_result();
 
-            while ($item = $items_result->fetch_assoc()) {
-                $id_doc = $item['id_doc'];
-                $qty = $item['quantite'];
+            // Decrease stock only if actually paid (baridi)
+            if ($methode === 'baridi') {
+                $items_stmt = $conn->prepare("SELECT id_doc, quantite FROM commande_item WHERE id_commande = ?");
+                $items_stmt->bind_param("i", $id_commande);
+                $items_stmt->execute();
+                $items_result = $items_stmt->get_result();
 
-                // تحديث المخزون: ينقص من الكلي (exemplaires) ومن المتاح (exemplaires_disponibles)
-                $update_stock = $conn->prepare("UPDATE documents SET 
-                                                exemplaires = exemplaires - ?, 
-                                                exemplaires_disponibles = exemplaires_disponibles - ? 
-                                                WHERE id_doc = ?");
-                $update_stock->bind_param("iii", $qty, $qty, $id_doc);
-                $update_stock->execute();
+                while ($item = $items_result->fetch_assoc()) {
+                    $id_doc = $item['id_doc'];
+                    $qty    = $item['quantite'];
+
+                    $update_stock = $conn->prepare("
+                        UPDATE documents 
+                        SET exemplaires            = exemplaires - ?,
+                            exemplaires_disponibles = exemplaires_disponibles - ?
+                        WHERE id_doc = ?
+                    ");
+                    $update_stock->bind_param("iii", $qty, $qty, $id_doc);
+                    $update_stock->execute();
+                }
             }
-            
-            // تحديث متغير $order ليعكس الحالة الجديدة في الواجهة
-            $order['statut'] = 'payée';
+
+            // Reflect new status in the $order array for display
+            $order['statut']        = $statut_commande;
             $order['date_paiement'] = date('Y-m-d H:i:s');
         }
     }
 }
-?>
 
+// ── UI helpers ──────────────────────────────────────────
+// Cash on delivery gets a different icon/color/label
+$is_cash = ($methode === 'cash');
+
+$statut_label = $is_cash
+    ? '🕐 En attente de paiement'
+    : '✔️ Payée';
+
+$statut_color = $is_cash ? '#B8924A' : '#2E7D52';
+
+$page_title = $is_cash
+    ? 'Commande confirmée !'
+    : 'Merci pour votre commande !';
+
+$page_icon  = $is_cash ? '📦' : '🎉';
+
+$page_desc  = $is_cash
+    ? 'Votre commande est enregistrée et sera préparée dès que possible. Le paiement s\'effectuera à la réception du colis.'
+    : 'Votre paiement a été traité avec succès. Vous recevrez une confirmation par e-mail très bientôt.';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -59,6 +95,7 @@ if ($id_commande && $id_user) {
     <?php include '../includes/dark_init.php'; ?>
     <title>Commande confirmée — AuraLib</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
     <style>
         body { background: #F5F0E8; font-family: 'Lato', sans-serif; margin: 0; }
 
@@ -79,6 +116,12 @@ if ($id_commande && $id_user) {
             margin: 0 auto 28px;
         }
 
+        /* Cash delivery gets a warm amber ring instead of green */
+        .success-icon.cash {
+            background: rgba(184,146,74,0.10);
+            border-color: rgba(184,146,74,0.30);
+        }
+
         .success-page h1 {
             font-family: 'Cormorant Garamond', serif;
             font-size: 40px;
@@ -95,6 +138,27 @@ if ($id_commande && $id_user) {
             margin-bottom: 36px;
         }
 
+        /* ── Cash delivery info banner ─────────────────── */
+        .cash-notice {
+            background: rgba(184,146,74,0.08);
+            border: 1px solid rgba(184,146,74,0.30);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            text-align: left;
+        }
+        .cash-notice-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+        .cash-notice-text {
+            font-size: 13px;
+            color: #7A6A55;
+            line-height: 1.6;
+        }
+        .cash-notice-text strong { color: #B8924A; }
+
+        /* ── Receipt card ──────────────────────────────── */
         .receipt-card {
             background: #FFFDF9;
             border: 1px solid #EDE5D4;
@@ -131,7 +195,9 @@ if ($id_commande && $id_user) {
             color: #B8924A;
         }
         .receipt-row .rv.green { color: #2E7D52; }
+        .receipt-row .rv.amber { color: #B8924A; }
 
+        /* ── Buttons ───────────────────────────────────── */
         .btn-primary {
             display: block;
             width: 100%;
@@ -149,9 +215,11 @@ if ($id_commande && $id_user) {
             text-decoration: none;
             margin-bottom: 10px;
             transition: background 0.2s;
+            text-align: center;
         }
         .btn-primary:hover { background: #D4B47B; }
-.btn-secondary {
+
+        .btn-secondary {
             display: block;
             width: 100%;
             padding: 13px;
@@ -163,6 +231,7 @@ if ($id_commande && $id_user) {
             border-radius: 10px;
             text-decoration: none;
             transition: 0.2s;
+            text-align: center;
         }
         .btn-secondary:hover { border-color: #C4A46B; color: #B8924A; }
     </style>
@@ -170,38 +239,57 @@ if ($id_commande && $id_user) {
 <body>
 
 <div class="success-page">
-    <div class="success-icon">🎉</div>
-    <h1>Merci pour votre commande !</h1>
-    <p>Votre paiement a été traité avec succès. Vous recevrez une confirmation par e-mail très bientôt.</p>
+
+    <div class="success-icon <?= $is_cash ? 'cash' : '' ?>">
+        <?= $page_icon ?>
+    </div>
+
+    <h1><?= $page_title ?></h1>
+    <p><?= $page_desc ?></p>
+
+    <?php if ($is_cash): ?>
+    <!-- Extra reminder banner for cash on delivery -->
+    <div class="cash-notice">
+        <div class="cash-notice-icon">💡</div>
+        <div class="cash-notice-text">
+            Préparez le montant exact de <strong><?= number_format($montant, 0, ',', ' ') ?> DA</strong> lors de la réception.
+            Le statut de votre commande passera à <strong>Payée</strong> une fois le livreur confirmé.
+        </div>
+    </div>
+    <?php endif; ?>
 
     <?php if ($order): ?>
     <div class="receipt-card">
         <div class="receipt-title">Récapitulatif de commande</div>
-        <div class="receipt-row">
-            <span class="rk">Numéro de commande</span>
-            <span class="rv">#<?= str_pad($order['id_commande'], 6, '0', STR_PAD_LEFT) ?></span>
-        </div>
+
         <div class="receipt-row">
             <span class="rk">Méthode de paiement</span>
-            <span class="rv"><?= $methode === 'baridi' ? 'Baridi Mob / CCP' : 'Paiement à la livraison' ?></span>
+            <span class="rv"><?= $is_cash ? '💵 Paiement à la livraison' : '🟡 Baridi Mob / CCP' ?></span>
         </div>
         <div class="receipt-row">
             <span class="rk">Date</span>
-            <span class="rv"><?= $order && $order['date_paiement'] ? date('d/m/Y à H:i', strtotime($order['date_paiement'])) : date('d/m/Y à H:i') ?></span>
+            <span class="rv">
+                <?= $order['date_paiement']
+                    ? date('d/m/Y à H:i', strtotime($order['date_paiement']))
+                    : date('d/m/Y à H:i') ?>
+            </span>
         </div>
         <div class="receipt-row">
-            <span class="rk">Montant payé</span>
+            <span class="rk">Montant <?= $is_cash ? 'à régler' : 'payé' ?></span>
             <span class="rv gold"><?= number_format($montant, 0, ',', ' ') ?> DA</span>
         </div>
         <div class="receipt-row">
             <span class="rk">Statut</span>
-            <span class="rv green">✔️ Payée</span>
+            <span class="rv <?= $is_cash ? 'amber' : 'green' ?>">
+                <?= $statut_label ?>
+            </span>
         </div>
     </div>
     <?php endif; ?>
 
     <a href="/MEMOIR/client/library.php" class="btn-primary">📚 Retour au catalogue</a>
     <a href="/MEMOIR/commandes/commande_list.php" class="btn-secondary">Voir mes achats</a>
+
 </div>
 
 <?php include "../includes/footer.php"; ?>

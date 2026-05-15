@@ -1,5 +1,6 @@
 <?php
 include_once __DIR__ . "/../includes/header.php"; 
+// $text و t() و $lang متاحة تلقائياً من header.php ← languages.php
 
 if (!$is_logged_in) {
     header("Location: " . $base . "/auth/login.php");
@@ -26,201 +27,570 @@ $query = "SELECT e.*, d.titre, d.auteur, d.id_doc
           WHERE e.id_user = $id_user 
           ORDER BY e.date_debut DESC";
 $result = $conn->query($query);
+
+// ── نصوص الصفحة حسب اللغة ──────────────────────────────
+$pg = [
+    'fr' => [
+        'eyebrow'        => 'Ma bibliothèque',
+        'title'          => 'Mes <em>Emprunts</em>',
+        'subtitle'       => 'Gérez vos lectures et suivez vos délais en toute simplicité.',
+        'lbl_total'      => 'Total',
+        'lbl_active'     => 'Lectures actives',
+        'lbl_late'       => 'En retard',
+        'lbl_borrowed'   => 'Emprunté le',
+        'lbl_deadline'   => 'Date limite',
+        'lbl_confirm'    => 'À confirmer',
+        'lbl_unavail'    => 'Document actuellement indisponible.',
+        'lbl_prolong'    => 'Prolonger de 7 jours',
+        'lbl_explore'    => 'Explorer le catalogue',
+        'empty_title'    => 'Aucun emprunt trouvé',
+        'empty_sub'      => 'Commencez votre aventure littéraire dès maintenant.',
+        'st_active'      => 'En cours',
+        'st_returned'    => 'Rendu',
+        'st_late'        => 'En retard',
+        'st_pending'     => 'En attente',
+        'st_refused'     => 'Indisponible',
+    ],
+    'en' => [
+        'eyebrow'        => 'My Library',
+        'title'          => 'My <em>Loans</em>',
+        'subtitle'       => 'Manage your readings and track your deadlines easily.',
+        'lbl_total'      => 'Total',
+        'lbl_active'     => 'Active loans',
+        'lbl_late'       => 'Overdue',
+        'lbl_borrowed'   => 'Borrowed on',
+        'lbl_deadline'   => 'Due date',
+        'lbl_confirm'    => 'To be confirmed',
+        'lbl_unavail'    => 'Document currently unavailable.',
+        'lbl_prolong'    => 'Extend by 7 days',
+        'lbl_explore'    => 'Explore the catalogue',
+        'empty_title'    => 'No loans found',
+        'empty_sub'      => 'Start your literary adventure now.',
+        'st_active'      => 'Active',
+        'st_returned'    => 'Returned',
+        'st_late'        => 'Overdue',
+        'st_pending'     => 'Pending',
+        'st_refused'     => 'Unavailable',
+    ],
+    'ar' => [
+        'eyebrow'        => 'مكتبتي',
+        'title'          => '<em>استعاراتي</em>',
+        'subtitle'       => 'تابع قراءاتك ومواعيد الإعادة بكل سهولة.',
+        'lbl_total'      => 'المجموع',
+        'lbl_active'     => 'استعارات نشطة',
+        'lbl_late'       => 'متأخرة',
+        'lbl_borrowed'   => 'تاريخ الاستعارة',
+        'lbl_deadline'   => 'تاريخ الإعادة',
+        'lbl_confirm'    => 'في انتظار التأكيد',
+        'lbl_unavail'    => 'الكتاب غير متاح حالياً.',
+        'lbl_prolong'    => 'تمديد 7 أيام',
+        'lbl_explore'    => 'استكشف الكتالوج',
+        'empty_title'    => 'لا توجد استعارات',
+        'empty_sub'      => 'ابدأ مغامرتك الأدبية الآن.',
+        'st_active'      => 'جارية',
+        'st_returned'    => 'مُعادة',
+        'st_late'        => 'متأخرة',
+        'st_pending'     => 'في الانتظار',
+        'st_refused'     => 'غير متاح',
+    ],
+];
+
+// اختيار اللغة الحالية مع fallback للفرنسية
+$p = $pg[$lang] ?? $pg['fr'];
+$isRtl = ($lang === 'ar');
+
+// ── دالة تنسيق التاريخ حسب اللغة ──────────────────────
+function fmt_date(string $date_str, string $lang): string {
+    if (!$date_str || $date_str === '0000-00-00') return '—';
+    $ts = strtotime($date_str);
+    if (!$ts) return '—';
+    $day = date('d', $ts);
+    $m   = (int)date('n', $ts);
+    $yr  = date('Y', $ts);
+    $months = [
+        'fr' => ['','Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],
+        'en' => ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        'ar' => ['','يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
+    ];
+    $month = ($months[$lang] ?? $months['fr'])[$m];
+    return "$day $month $yr";
+}
 ?>
 
 <style>
-    :root {
-        --premium-gold: #C4A46B;
-        --soft-bg: #F9F7F2;
-        --text-dark: #2C1F0E;
-        --accent-red: #D32F2F;
-    }
+:root {
+    --gold:       #C4A46B;
+    --gold-deep:  #B8924A;
+    --gold-light: #E8D5AA;
+    --cream:      #F5F0E8;
+    --cream-dark: #EDE5D4;
+    --ink:        #2C1F0E;
+    --ink-muted:  #9A8C7E;
+    --white:      #FFFDF9;
+    --red:        #C0392B;
+    --green:      #2E7D52;
+    --amber:      #C9870A;
+}
 
-    .main-content { background: var(--soft-bg); min-height: 100vh; padding: 60px 0; font-family: 'Inter', sans-serif; }
-    .emprunts-container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+.emprunts-page {
+    background: var(--cream);
+    min-height: 100vh;
+    padding: 0 0 80px;
+    font-family: <?= $isRtl ? "'Tajawal', sans-serif" : "'Lato', sans-serif" ?>;
+    direction: <?= $isRtl ? 'rtl' : 'ltr' ?>;
+}
 
-    .page-header h1 { font-family: 'Playfair Display', serif; font-size: 42px; margin-bottom: 10px; color: var(--text-dark); }
-    .page-header p { color: #9A8C7E; font-size: 16px; margin-bottom: 50px; }
+.emp-hero {
+    background: var(--ink);
+    padding: 90px 24px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.emp-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(ellipse 55% 80% at 10% 60%, rgba(196,164,107,0.09) 0%, transparent 65%),
+        radial-gradient(ellipse 45% 60% at 90% 20%, rgba(196,164,107,0.07) 0%, transparent 65%);
+    pointer-events: none;
+}
+.emp-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 12%; right: 12%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(196,164,107,0.45), transparent);
+}
+.emp-hero-inner { position: relative; z-index: 1; }
 
-    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 50px; }
-    .stat-box {
-        background: white; padding: 30px; border-radius: 20px; text-align: center;
-        border: 1px solid rgba(196,164,107,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-        transition: 0.3s;
-    }
-    .stat-box h3 { font-size: 32px; margin: 0; color: var(--text-dark); font-weight: 800; }
-    .stat-box p { color: #9A8C7E; font-size: 12px; margin: 8px 0 0; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
-    .stat-box.highlight { border-bottom: 4px solid var(--premium-gold); }
+.emp-hero-eyebrow {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: <?= $isRtl ? '1px' : '5px' ?>;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+.emp-hero-eyebrow::before,
+.emp-hero-eyebrow::after {
+    content: '';
+    width: 30px; height: 1px;
+    background: var(--gold);
+    opacity: 0.45;
+}
+.emp-hero h1 {
+    font-family: <?= $isRtl ? "'Tajawal', sans-serif" : "'Cormorant Garamond', serif" ?>;
+    font-size: <?= $isRtl ? '42px' : '54px' ?>;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 12px;
+    letter-spacing: <?= $isRtl ? '0' : '-1px' ?>;
+    line-height: 1.2;
+}
+.emp-hero h1 em { font-style: italic; color: var(--gold); }
+.emp-hero p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.38);
+    letter-spacing: 0.4px;
+}
 
-    .emprunt-card {
-        display: flex; background: white; border-radius: 24px; margin-bottom: 30px;
-        overflow: hidden; border: 1px solid rgba(0,0,0,0.05); position: relative;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    }
-    .emprunt-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(196,164,107,0.15); }
+.stats-strip {
+    width: 95%;
+    max-width: 1400px;
+    margin: 44px auto 44px;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+.stat-tile {
+    background: var(--white);
+    border: 1px solid var(--cream-dark);
+    border-radius: 18px;
+    padding: 28px 12px 22px;
+    text-align: center;
+    box-shadow: 0 6px 28px rgba(44,31,14,0.07);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+.stat-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 40px rgba(196,164,107,0.15);
+}
+.stat-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 18px 18px 0 0;
+    background: var(--cream-dark);
+}
+.stat-tile.t-gold::before  { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+.stat-tile.t-green::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+.stat-tile.t-red::before   { background: linear-gradient(90deg, transparent, var(--red), transparent); }
 
-    .book-side { width: 180px; position: relative; overflow: hidden; background: var(--text-dark); display: flex; align-items: center; justify-content: center; }
-    .book-side img { width: 110px; height: 160px; object-fit: cover; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 2; }
+.stat-svg {
+    display: block;
+    width: 24px; height: 24px;
+    margin: 0 auto 14px;
+    stroke: var(--gold);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.85;
+}
+.stat-tile.t-green .stat-svg { stroke: var(--green); }
+.stat-tile.t-red   .stat-svg { stroke: var(--red); }
 
-    .emprunt-details { padding: 35px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-    .emprunt-details h3 { font-family: 'Playfair Display', serif; font-size: 24px; margin: 0 0 10px; color: var(--text-dark); }
-    .author { color: var(--premium-gold); font-weight: 600; font-size: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 8px; }
+.stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    display: block;
+}
+.stat-tile.t-green .stat-num { color: var(--green); }
+.stat-tile.t-red   .stat-num { color: var(--red); }
 
-    .status-badge { 
-        position: absolute; top: 35px; right: 35px; padding: 8px 20px; border-radius: 50px; 
-        font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; 
-    }
-    .status-en-cours { background: #F0F7FF; color: #007AFF; border: 1px solid #D0E7FF; }
-    .status-rendu    { background: #F2FAF3; color: #34C759; border: 1px solid #D7F0DB; }
-    .status-retard   { background: #FFF2F2; color: var(--accent-red); border: 1px solid #FFD6D6; animation: softPulse 2s infinite; }
-    .status-attente  { background: #FFF9E6; color: #D4A942; border: 1px solid #FFECB3; }
-    .status-refuse   { background: #FEE2E2; color: #880E4F; border: 1px solid #F48FB1; }
+.stat-lbl {
+    display: block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: <?= $isRtl ? '0' : '2.5px' ?>;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-top: 10px;
+}
 
-    @keyframes softPulse { 
-        0%   { box-shadow: 0 0 0 0 rgba(211,47,47,0.2); } 
-        70%  { box-shadow: 0 0 0 10px rgba(211,47,47,0); } 
-        100% { box-shadow: 0 0 0 0 rgba(211,47,47,0); } 
-    }
+.emp-list {
+    width: 95%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
 
-    .info-dates { display: flex; gap: 50px; margin-top: 10px; }
-    .date-item { display: flex; flex-direction: column; }
-    .date-label { font-size: 11px; color: #9A8C7E; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700; }
-    .date-value { font-size: 16px; font-weight: 700; color: var(--text-dark); }
+.emp-card {
+    background: var(--white);
+    border: 1px solid var(--cream-dark);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 4px 20px rgba(44,31,14,0.06);
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+.emp-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 44px rgba(196,164,107,0.14);
+}
+.emp-card.refused { opacity: 0.65; }
 
-    .btn-prolong {
-        margin-top: 25px; align-self: flex-start;
-        background: white; border: 2px solid var(--premium-gold); color: var(--premium-gold);
-        padding: 10px 22px; border-radius: 12px; font-size: 13px; font-weight: 700;
-        cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease;
-        text-decoration: none;
-    }
-    .btn-prolong:hover { background: var(--premium-gold); color: white; transform: scale(1.05); }
+.emp-bar {
+    width: 4px;
+    flex-shrink: 0;
+    background: var(--cream-dark);
+}
+.emp-bar.b-cours   { background: #3B82F6; }
+.emp-bar.b-rendu   { background: var(--green); }
+.emp-bar.b-retard  { background: var(--red); }
+.emp-bar.b-attente { background: var(--amber); }
+.emp-bar.b-refuse  { background: #9B1C1C; }
 
-    /* كارت مرفوضة تبان أفتح شوية */
-    .emprunt-card.refused { opacity: 0.7; }
+.emp-cover {
+    width: 106px;
+    flex-shrink: 0;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 12px;
+}
+.emp-cover img {
+    width: 74px; height: 108px;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 4px 6px 18px rgba(0,0,0,0.5);
+}
+
+.emp-content {
+    flex: 1;
+    padding: 20px 22px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    text-align: <?= $isRtl ? 'right' : 'left' ?>;
+}
+.emp-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-direction: <?= $isRtl ? 'row-reverse' : 'row' ?>;
+}
+.emp-title {
+    font-family: <?= $isRtl ? "'Tajawal', sans-serif" : "'Cormorant Garamond', serif" ?>;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.emp-author {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gold-deep);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-direction: <?= $isRtl ? 'row-reverse' : 'row' ?>;
+}
+
+.emp-badge {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: <?= $isRtl ? '0' : '1px' ?>;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.bdg-cours   { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
+.bdg-rendu   { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
+.bdg-retard  { background: #FEF2F2; color: var(--red); border: 1px solid #FECACA; animation: pulse-r 2s infinite; }
+.bdg-attente { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
+.bdg-refuse  { background: #FFF1F2; color: #9B1C1C; border: 1px solid #FECDD3; }
+
+@keyframes pulse-r {
+    0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); }
+    50%      { box-shadow: 0 0 0 6px rgba(192,57,43,0.12); }
+}
+
+.emp-dates {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 14px;
+    flex-direction: <?= $isRtl ? 'row-reverse' : 'row' ?>;
+}
+.emp-date-lbl {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: <?= $isRtl ? '0' : '1.5px' ?>;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 3px;
+}
+.emp-date-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+}
+.emp-date-val.late { color: var(--red); }
+
+.refused-msg {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: #9B1C1C;
+    background: #FFF1F2;
+    border: 1px solid #FECDD3;
+    padding: 6px 12px;
+    border-radius: 8px;
+    flex-direction: <?= $isRtl ? 'row-reverse' : 'row' ?>;
+}
+
+.btn-prolong {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold-deep);
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+    flex-direction: <?= $isRtl ? 'row-reverse' : 'row' ?>;
+}
+.btn-prolong:hover { background: var(--gold); color: var(--ink); transform: scale(1.03); }
+
+.emp-empty {
+    text-align: center;
+    padding: 80px 40px;
+    background: var(--white);
+    border: 1.5px dashed var(--cream-dark);
+    border-radius: 24px;
+}
+.emp-empty h3 {
+    font-family: <?= $isRtl ? "'Tajawal', sans-serif" : "'Cormorant Garamond', serif" ?>;
+    font-size: 26px;
+    color: var(--ink);
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+.emp-empty p { font-size: 14px; color: var(--ink-muted); margin-bottom: 24px; }
+
+@media (max-width: 600px) {
+    .emp-hero   { padding: 80px 16px 44px; }
+    .emp-hero h1 { font-size: 38px; }
+    .stats-strip, .emp-list { padding: 0 14px; }
+    .stat-num   { font-size: 38px; }
+    .emp-cover  { width: 76px; padding: 14px 8px; }
+    .emp-cover img { width: 56px; height: 82px; }
+    .emp-content { padding: 14px 12px; }
+    .emp-title  { font-size: 15px; }
+    .emp-dates  { gap: 16px; flex-wrap: wrap; }
+}
 </style>
 
-<div class="main-content">
-    <div class="emprunts-container">
-        
-        <div class="page-header" style="text-align: center;">
-            <h1>Mes <em style="color:var(--premium-gold)">Emprunts</em></h1>
-            <p>Gérez vos lectures et suivez vos délais en toute simplicité.</p>
+<div class="emprunts-page">
+
+    <!-- HERO -->
+    <div class="emp-hero">
+        <div class="emp-hero-inner">
+            <div class="emp-hero-eyebrow"><?= $p['eyebrow'] ?></div>
+            <h1><?= $p['title'] ?></h1>
+            <p><?= $p['subtitle'] ?></p>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-strip">
+
+        <div class="stat-tile t-gold">
+            <svg class="stat-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span class="stat-num"><?= $total ?></span>
+            <span class="stat-lbl"><?= $p['lbl_total'] ?></span>
         </div>
 
-        <div class="stats-row">
-            <div class="stat-box">
-                <h3><?= $total ?></h3>
-                <p>Total</p>
+        <div class="stat-tile t-green">
+            <svg class="stat-svg" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span class="stat-num"><?= $active ?></span>
+            <span class="stat-lbl"><?= $p['lbl_active'] ?></span>
+        </div>
+
+        <div class="stat-tile <?= $late > 0 ? 't-red' : '' ?>">
+            <svg class="stat-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="stat-num"><?= $late ?></span>
+            <span class="stat-lbl"><?= $p['lbl_late'] ?></span>
+        </div>
+
+    </div>
+
+    <!-- CARDS -->
+    <div class="emp-list">
+
+    <?php if ($result && $result->num_rows > 0): ?>
+        <?php while ($e = $result->fetch_assoc()):
+            $date_prevue = $e['date_retour_prevue'];
+            $statut_brut = strtolower(trim($e['statut']));
+
+            if (in_array($statut_brut, ['rendu','retourné'])) {
+                $bar='b-rendu';  $bdg='bdg-rendu';  $lbl=$p['st_returned'];
+            } elseif (in_array($statut_brut, ['refusée','refusee'])) {
+                $bar='b-refuse'; $bdg='bdg-refuse'; $lbl=$p['st_refused'];
+            } elseif ($statut_brut === 'en attente') {
+                $bar='b-attente';$bdg='bdg-attente';$lbl=$p['st_pending'];
+            } elseif ($statut_brut === 'retard' || ($date_prevue && $today > $date_prevue)) {
+                $bar='b-retard'; $bdg='bdg-retard'; $lbl=$p['st_late'];
+            } else {
+                $bar='b-cours';  $bdg='bdg-cours';  $lbl=$p['st_active'];
+            }
+
+            $is_refused = in_array($statut_brut, ['refusée','refusee']);
+            $is_late    = ($statut_brut === 'retard' || ($date_prevue && $today > $date_prevue));
+        ?>
+
+        <div class="emp-card <?= $is_refused ? 'refused' : '' ?>">
+            <div class="emp-bar <?= $bar ?>"></div>
+
+            <div class="emp-cover">
+                <img src="../uploads/<?= $e['id_doc'] ?>.jpg"
+                     onerror="this.src='../uploads/default.jpg'" alt="">
             </div>
-            <div class="stat-box highlight">
-                <h3><?= $active ?></h3>
-                <p>Lectures Actives</p>
-            </div>
-            <div class="stat-box" style="<?= $late > 0 ? 'border-bottom:4px solid var(--accent-red)' : '' ?>">
-                <h3 style="<?= $late > 0 ? 'color:var(--accent-red)' : '' ?>"><?= $late ?></h3>
-                <p>En Retard</p>
+
+            <div class="emp-content">
+                <div class="emp-top">
+                    <div style="min-width:0;">
+                        <div class="emp-title"><?= htmlspecialchars($e['titre']) ?></div>
+                        <div class="emp-author">
+                            <i class="fas fa-feather-alt"></i>
+                            <?= htmlspecialchars($e['auteur']) ?>
+                        </div>
+                    </div>
+                    <span class="emp-badge <?= $bdg ?>"><?= $lbl ?></span>
+                </div>
+
+                <div class="emp-dates">
+                    <div>
+                        <div class="emp-date-lbl"><?= $p['lbl_borrowed'] ?></div>
+                        <div class="emp-date-val"><?= fmt_date($e['date_debut'], $lang) ?></div>
+                    </div>
+                    <div>
+                        <div class="emp-date-lbl"><?= $p['lbl_deadline'] ?></div>
+                        <div class="emp-date-val <?= $is_late ? 'late' : '' ?>">
+                            <?php if ($is_refused): ?>
+                                <span style="color:var(--ink-muted)">—</span>
+                            <?php elseif ($date_prevue && $date_prevue !== '0000-00-00'): ?>
+                                <?= fmt_date($date_prevue, $lang) ?>
+                            <?php else: ?>
+                                <?= $p['lbl_confirm'] ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <?php if ($is_refused): ?>
+                    <div class="refused-msg">
+                        <i class="fas fa-times-circle"></i>
+                        <?= $p['lbl_unavail'] ?>
+                    </div>
+                <?php elseif ($statut_brut === 'acceptée' && (!$date_prevue || $today <= $date_prevue)): ?>
+                    <form method="POST" action="prolonger_action.php" style="margin:0;">
+                        <input type="hidden" name="id_emprunt" value="<?= $e['id_emprunt'] ?>">
+                        <button type="submit" class="btn-prolong">
+                            <i class="fas fa-history"></i>
+                            <?= $p['lbl_prolong'] ?>
+                        </button>
+                    </form>
+                <?php endif; ?>
             </div>
         </div>
 
-        <?php if ($result && $result->num_rows > 0): ?>
-            <?php while ($e = $result->fetch_assoc()): 
-                $date_prevue = $e['date_retour_prevue'];
-                $statut_brut = strtolower(trim($e['statut']));
+        <?php endwhile; ?>
 
-                // ════ تحديد الحالة البصرية ════
-                if ($statut_brut === 'rendu' || $statut_brut === 'retourné') {
-                    $status_class = "status-rendu";
-                    $status_text  = "Rendu";
-
-                } elseif ($statut_brut === 'refusée' || $statut_brut === 'refusee') {
-                    $status_class = "status-refuse";
-                    $status_text  = "Refusée";
-
-                } elseif ($statut_brut === 'en attente') {
-                    $status_class = "status-attente";
-                    $status_text  = "En attente";
-
-                } elseif ($statut_brut === 'retard' || ($date_prevue && $today > $date_prevue)) {
-                    $status_class = "status-retard";
-                    $status_text  = "En retard";
-
-                } else {
-                    // acceptée + dans les délais
-                    $status_class = "status-en-cours";
-                    $status_text  = "En cours";
-                }
-
-                $imgPath     = "../uploads/" . $e['id_doc'] . ".jpg";
-                $is_refused  = ($statut_brut === 'refusée' || $statut_brut === 'refusee');
-            ?>
-
-            <div class="emprunt-card <?= $is_refused ? 'refused' : '' ?>">
-                <div class="book-side">
-                    <img src="<?= $imgPath ?>" onerror="this.src='../uploads/default.jpg';">
-                </div>
-
-                <div class="emprunt-details">
-                    <span class="status-badge <?= $status_class ?>"><?= $status_text ?></span>
-
-                    <h3><?= htmlspecialchars($e['titre']) ?></h3>
-                    <div class="author">
-                        <i class="fas fa-feather-alt"></i> 
-                        <?= htmlspecialchars($e['auteur']) ?>
-                    </div>
-
-                    <div class="info-dates">
-                        <div class="date-item">
-                            <span class="date-label">Emprunté le</span>
-                            <span class="date-value">
-                                <?= date('d M Y', strtotime($e['date_debut'])) ?>
-                            </span>
-                        </div>
-                        <div class="date-item">
-                            <span class="date-label">Date limite</span>
-                            <span class="date-value" style="<?= ($status_text === 'En retard') ? 'color:var(--accent-red)' : '' ?>">
-                                <?php if ($is_refused): ?>
-                                    <span style="color:#880E4F;">—</span>
-                                <?php elseif ($date_prevue && $date_prevue !== '0000-00-00'): ?>
-                                    <?= date('d M Y', strtotime($date_prevue)) ?>
-                                <?php else: ?>
-                                    À confirmer
-                                <?php endif; ?>
-                            </span>
-                        </div>
-                    </div>
-
-                    <?php if ($is_refused): ?>
-                        <!-- رسالة للمستخدم عند الرفض -->
-                        <p style="margin-top:16px; font-size:12px; color:#880E4F; background:#FEE2E2; padding:8px 14px; border-radius:8px; display:inline-block;">
-                            ✗ Votre demande a été refusée par l'administrateur.
-                        </p>
-
-                    <?php elseif ($statut_brut === 'acceptée' && (!$date_prevue || $today <= $date_prevue)): ?>
-                        <form method="POST" action="prolonger_action.php">
-                            <input type="hidden" name="id_emprunt" value="<?= $e['id_emprunt'] ?>">
-                            <button type="submit" class="btn-prolong">
-                                <i class="fas fa-history"></i> Prolonger de 7 jours
-                            </button>
-                        </form>
-                    <?php endif; ?>
-
-                </div>
-            </div>
-
-            <?php endwhile; ?>
-
-        <?php else: ?>
-            <div style="text-align:center; padding:100px 40px; background:white; border-radius:30px; border:2px dashed #E6E1D8;">
-                <i class="fas fa-book-open fa-3x" style="color:var(--premium-gold); margin-bottom:20px;"></i>
-                <h3 style="color:var(--text-dark)">Aucun emprunt trouvé</h3>
-                <p style="color:#9A8C7E; margin-bottom:25px;">Commencez votre aventure littéraire dès maintenant.</p>
-                <a href="../client/library.php" class="btn-prolong" style="display:inline-flex;">
-                    Explorer le catalogue
-                </a>
-            </div>
-        <?php endif; ?>
+    <?php else: ?>
+        <div class="emp-empty">
+            <svg style="width:38px;height:38px;stroke:var(--gold);fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;margin:0 auto 16px;display:block;" viewBox="0 0 24 24">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            <h3><?= $p['empty_title'] ?></h3>
+            <p><?= $p['empty_sub'] ?></p>
+            <a href="../client/library.php" class="btn-prolong">
+                <i class="fas fa-compass"></i>
+                <?= $p['lbl_explore'] ?>
+            </a>
+        </div>
+    <?php endif; ?>
 
     </div>
 </div>

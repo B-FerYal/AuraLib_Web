@@ -1,9 +1,106 @@
 <?php
 // includes/footer.php
-// Appelé en bas de chaque page : <?php include "../includes/footer.php"; ?>
+// Appelé en bas de chaque page : include "../includes/footer.php";
 
+// $lang و $text متاحان تلقائياً من header.php ← languages.php
+// نصوص الـ footer حسب اللغة
 
-<footer class="aura-footer">
+// Fallback si languages.php pas encore chargé
+if (!isset($lang))  $lang = 'fr';
+if (!isset($base))  $base = '/MEMOIR';
+$ft = [
+    'fr' => [
+        'tagline'      => 'Plateforme de gestion de livres en ligne',
+        'desc'         => 'Découvrez, empruntez et achetez vos livres en ligne. AuraLib connecte les lecteurs aux bibliothèques partout, simplement et rapidement.',
+        'badge'        => 'Lecture · Emprunt · Achat',
+        // Nav col
+        'nav_title'    => 'Navigation',
+        'nav_home'     => 'Accueil',
+        'nav_catalogue'=> 'Catalogue',
+        'nav_loans'    => 'Mes emprunts',
+        'nav_orders'   => 'Mes achats',
+        'nav_profile'  => 'Mon profil',
+        // Services col
+        'srv_title'    => 'Services',
+        'srv_borrow'   => 'Emprunter un livre',
+        'srv_buy'      => 'Acheter un livre',
+        'srv_wishlist' => 'Ma liste de souhaits',
+        'srv_cart'     => 'Mon panier',
+        'srv_notifs'   => 'Notifications',
+        // Help col
+        'hlp_title'    => 'Aide',
+        'hlp_about'    => 'À propos',
+        'hlp_contact'  => 'Contact',
+        'hlp_policy'   => "Politique d'emprunt",
+        'hlp_terms'    => "Conditions d'utilisation",
+        'hlp_login'    => 'Connexion',
+        // Bottom
+        'copy_suffix'  => 'Gestion, vente et emprunt de livres en ligne',
+        'privacy'      => 'Confidentialité',
+        'legal'        => 'Mentions légales',
+        'terms'        => 'Conditions',
+    ],
+    'en' => [
+        'tagline'      => 'Online library management platform',
+        'desc'         => 'Discover, borrow and buy your books online. AuraLib connects readers to libraries everywhere, simply and quickly.',
+        'badge'        => 'Reading · Borrowing · Purchasing',
+        'nav_title'    => 'Navigation',
+        'nav_home'     => 'Home',
+        'nav_catalogue'=> 'Catalogue',
+        'nav_loans'    => 'My loans',
+        'nav_orders'   => 'My purchases',
+        'nav_profile'  => 'My profile',
+        'srv_title'    => 'Services',
+        'srv_borrow'   => 'Borrow a book',
+        'srv_buy'      => 'Buy a book',
+        'srv_wishlist' => 'My wishlist',
+        'srv_cart'     => 'My cart',
+        'srv_notifs'   => 'Notifications',
+        'hlp_title'    => 'Help',
+        'hlp_about'    => 'About',
+        'hlp_contact'  => 'Contact',
+        'hlp_policy'   => 'Borrowing policy',
+        'hlp_terms'    => 'Terms of use',
+        'hlp_login'    => 'Login',
+        'copy_suffix'  => 'Library management, sales and loans online',
+        'privacy'      => 'Privacy',
+        'legal'        => 'Legal notice',
+        'terms'        => 'Terms',
+    ],
+    'ar' => [
+        'tagline'      => 'منصة لإدارة الكتب عبر الإنترنت',
+        'desc'         => 'اكتشف، استعر واشترِ كتبك عبر الإنترنت. AuraLib يربط القراء بالمكتبات في كل مكان، ببساطة وسرعة.',
+        'badge'        => 'قراءة · استعارة · شراء',
+        'nav_title'    => 'التنقل',
+        'nav_home'     => 'الرئيسية',
+        'nav_catalogue'=> 'الكتالوج',
+        'nav_loans'    => 'استعاراتي',
+        'nav_orders'   => 'مشترياتي',
+        'nav_profile'  => 'ملفي الشخصي',
+        'srv_title'    => 'الخدمات',
+        'srv_borrow'   => 'استعارة كتاب',
+        'srv_buy'      => 'شراء كتاب',
+        'srv_wishlist' => 'قائمة أمنياتي',
+        'srv_cart'     => 'سلتي',
+        'srv_notifs'   => 'الإشعارات',
+        'hlp_title'    => 'المساعدة',
+        'hlp_about'    => 'حول الموقع',
+        'hlp_contact'  => 'اتصل بنا',
+        'hlp_policy'   => 'سياسة الاستعارة',
+        'hlp_terms'    => 'شروط الاستخدام',
+        'hlp_login'    => 'تسجيل الدخول',
+        'copy_suffix'  => 'إدارة وبيع واستعارة الكتب عبر الإنترنت',
+        'privacy'      => 'الخصوصية',
+        'legal'        => 'الإشعارات القانونية',
+        'terms'        => 'الشروط',
+    ],
+];
+
+$fl    = $ft[$lang] ?? $ft['fr'];
+$isRtl = ($lang === 'ar');
+?>
+
+<footer class="aura-footer" dir="<?= $isRtl ? 'rtl' : 'ltr' ?>">
     <div class="aura-footer-inner">
 
         <!-- ══ GRID : Brand + 3 colonnes ══ -->
@@ -15,12 +112,10 @@
                 <div class="ft-brand-name">
                     <span class="ft-white">Aura</span>Lib
                 </div>
-                <span class="ft-brand-sub">Plateforme de gestion de livres en ligne</span>
+                <span class="ft-brand-sub"><?= $fl['tagline'] ?></span>
 
                 <p class="ft-brand-desc">
-                    Découvrez, empruntez et achetez vos livres en ligne.
-                    AuraLib connecte les lecteurs aux bibliothèques partout,
-                    simplement et rapidement.
+                    <?= $fl['desc'] ?>
                 </p>
 
                 <div class="ft-socials">
@@ -46,43 +141,44 @@
 
                 <div class="ft-badge">
                     <span class="ft-badge-dot"></span>
-                    <span>Lecture · Emprunt · Achat</span>
+                    <span><?= $fl['badge'] ?></span>
                 </div>
 
             </div>
 
             <!-- ── Navigation ── -->
             <div class="ft-col">
-                <span class="ft-col-title">Navigation</span>
+                <span class="ft-col-title"><?= $fl['nav_title'] ?></span>
                 <ul class="ft-links">
-                    <li><a href="<?= $base ?>/client/library.php">Accueil</a></li>
-                    <li><a href="<?= $base ?>/client/library.php">Catalogue</a></li>
-                    <li><a href="<?= $base ?>/emprunts/mes_emprunts.php">Mes emprunts</a></li>
-                    <li><a href="<?= $base ?>/commandes/commande_list.php">Mes achats</a></li>
-                    <li><a href="<?= $base ?>/client/profile.php">Mon profil</a></li>
+                    <li><a href="<?= $base ?>/client/library.php"><?= $fl['nav_home'] ?></a></li>
+                    <li><a href="<?= $base ?>/client/library.php"><?= $fl['nav_catalogue'] ?></a></li>
+                    <li><a href="<?= $base ?>/emprunts/mes_emprunts.php"><?= $fl['nav_loans'] ?></a></li>
+                    <li><a href="<?= $base ?>/commandes/commande_list.php"><?= $fl['nav_orders'] ?></a></li>
+                    <li><a href="<?= $base ?>/client/profile.php"><?= $fl['nav_profile'] ?></a></li>
                 </ul>
             </div>
 
             <!-- ── Services ── -->
             <div class="ft-col">
-                <span class="ft-col-title">Services</span>
+                <span class="ft-col-title"><?= $fl['srv_title'] ?></span>
                 <ul class="ft-links">
-                    <li><a href="<?= $base ?>/client/library.php?filter=emprunt">Emprunter un livre</a></li>
-                    <li><a href="<?= $base ?>/client/library.php?filter=achat">Acheter un livre</a></li>
-                    <li><a href="<?= $base ?>/client/profile.php?tab=wishlist">Ma liste de souhaits</a></li>
-                    <li><a href="<?= $base ?>/cart/panier.php">Mon panier</a></li>
-                    <li><a href="<?= $base ?>/client/notifications.php">Notifications</a></li>
+                    <li><a href="<?= $base ?>/client/library.php?filter=emprunt"><?= $fl['srv_borrow'] ?></a></li>
+                    <li><a href="<?= $base ?>/client/library.php?filter=achat"><?= $fl['srv_buy'] ?></a></li>
+                    <li><a href="<?= $base ?>/client/profile.php?tab=wishlist"><?= $fl['srv_wishlist'] ?></a></li>
+                    <li><a href="<?= $base ?>/cart/panier.php"><?= $fl['srv_cart'] ?></a></li>
+                    <li><a href="<?= $base ?>/client/notifications.php"><?= $fl['srv_notifs'] ?></a></li>
                 </ul>
             </div>
-<!-- ── Aide ── -->
+
+            <!-- ── Aide ── -->
             <div class="ft-col">
-                <span class="ft-col-title">Aide</span>
+                <span class="ft-col-title"><?= $fl['hlp_title'] ?></span>
                 <ul class="ft-links">
-                    <li><a href="#">À propos</a></li>
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="#">Politique d'emprunt</a></li>
-                    <li><a href="#">Conditions d'utilisation</a></li>
-                    <li><a href="<?= $base ?>/auth/login.php">Connexion</a></li>
+                    <li><a href="<?= $base ?>/client/about.php"><?= $fl['hlp_about'] ?></a></li>
+                    <li><a href="<?= $base ?>/client/contact.php"><?= $fl['hlp_contact'] ?></a></li>
+                    <li><a href="#"><?= $fl['hlp_policy'] ?></a></li>
+                    <li><a href="#"><?= $fl['hlp_terms'] ?></a></li>
+                    <li><a href="<?= $base ?>/auth/login.php"><?= $fl['hlp_login'] ?></a></li>
                 </ul>
             </div>
 
@@ -94,12 +190,12 @@
         <div class="ft-bottom">
             <p class="ft-copy">
                 &copy; <?= date('Y') ?> <strong>AuraLib</strong>
-                &nbsp;·&nbsp; Gestion, vente et emprunt de livres en ligne
+                &nbsp;·&nbsp; <?= $fl['copy_suffix'] ?>
             </p>
             <div class="ft-legal">
-                <a href="#">Confidentialité</a>
-                <a href="#">Mentions légales</a>
-                <a href="#">Conditions</a>
+                <a href="#"><?= $fl['privacy'] ?></a>
+                <a href="#"><?= $fl['legal'] ?></a>
+                <a href="#"><?= $fl['terms'] ?></a>
             </div>
         </div>
 
@@ -277,6 +373,35 @@
     transition: color .15s;
 }
 .ft-legal a:hover { color: #C4A46B; }
+
+/* ── RTL support ── */
+.aura-footer[dir="rtl"] .ft-links a {
+    flex-direction: row-reverse;
+}
+.aura-footer[dir="rtl"] .ft-links a::before {
+    order: 1;
+}
+.aura-footer[dir="rtl"] .ft-brand-sub {
+    letter-spacing: 0;
+}
+.aura-footer[dir="rtl"] .ft-col-title {
+    letter-spacing: 0;
+}
+.aura-footer[dir="rtl"] .ft-socials {
+    flex-direction: row-reverse;
+}
+.aura-footer[dir="rtl"] .ft-bottom {
+    flex-direction: row-reverse;
+}
+.aura-footer[dir="rtl"] .ft-legal {
+    flex-direction: row-reverse;
+}
+.aura-footer[dir="rtl"] .ft-badge {
+    flex-direction: row-reverse;
+}
+.aura-footer[dir="rtl"] .ft-brand-desc {
+    text-align: right;
+}
 
 /* ── Responsive ── */
 @media (max-width: 768px) {

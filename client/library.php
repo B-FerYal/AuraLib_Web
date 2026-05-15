@@ -11,6 +11,120 @@ $id_user      = $is_logged_in ? (int)$_SESSION['id_user'] : 0;
 $user_role    = $_SESSION['role'] ?? 'client';
 $base         = "/MEMOIR";
 
+// ── نصوص الصفحة حسب اللغة — AJOUT UNIQUEMENT ──────────
+$pg = [
+    'fr' => [
+        'search_ph'      => 'Titre, auteur, ISBN, prix, année, éditeur…',
+        'search_btn'     => 'Rechercher',
+        'clear_title'    => 'Effacer',
+        'filter_lbl'     => 'Filtrer :',
+        'f_all'          => 'Tout',
+        'f_buy'          => 'Achat',
+        'f_borrow'       => 'Emprunt',
+        'f_both'         => 'Achat &amp; Emprunt',
+        'details'        => 'Détails',
+        'borrow'         => 'Emprunter',
+        'buy'            => 'Acheter',
+        'choose'         => 'Choisir',
+        'add_cart'       => 'Acheter',
+        'login_req'      => 'Connexion requise',
+        'edit'           => 'Modifier',
+        'delete'         => 'Supprimer',
+        'delete_confirm' => 'Supprimer ce document ?',
+        'free_loan'      => 'Emprunt gratuit',
+        'free'           => 'Gratuit',
+        'tag_buy'        => 'Achat',
+        'tag_borrow'     => 'Emprunt',
+        'see_all'        => 'Voir tout',
+        'no_docs'        => 'Aucun document dans le catalogue',
+        'no_docs_sub'    => 'Ajoutez des documents pour les voir apparaître ici.',
+        'sd_loading'     => 'Recherche…',
+        'sd_empty'       => 'Aucun résultat pour',
+        'sd_error'       => 'Erreur de chargement',
+        'sd_close'       => '✕ Fermer',
+        'sd_result'      => 'résultat',
+        'sd_results'     => 'résultats',
+        'sd_buy'         => 'Achat',
+        'sd_borrow'      => 'Emprunt',
+        'sd_both'        => 'Achat &amp; Emprunt',
+        'doc_s'          => 's',
+    ],
+    'en' => [
+        'search_ph'      => 'Title, author, ISBN, price, year, publisher…',
+        'search_btn'     => 'Search',
+        'clear_title'    => 'Clear',
+        'filter_lbl'     => 'Filter:',
+        'f_all'          => 'All',
+        'f_buy'          => 'Purchase',
+        'f_borrow'       => 'Borrow',
+        'f_both'         => 'Purchase &amp; Borrow',
+        'details'        => 'Details',
+        'borrow'         => 'Borrow',
+        'buy'            => 'Buy',
+        'choose'         => 'Choose',
+        'add_cart'       => 'Buy',
+        'login_req'      => 'Login required',
+        'edit'           => 'Edit',
+        'delete'         => 'Delete',
+        'delete_confirm' => 'Delete this document?',
+        'free_loan'      => 'Free loan',
+        'free'           => 'Free',
+        'tag_buy'        => 'Purchase',
+        'tag_borrow'     => 'Borrow',
+        'see_all'        => 'See all',
+        'no_docs'        => 'No documents in the catalogue',
+        'no_docs_sub'    => 'Add documents to see them appear here.',
+        'sd_loading'     => 'Searching…',
+        'sd_empty'       => 'No results for',
+        'sd_error'       => 'Loading error',
+        'sd_close'       => '✕ Close',
+        'sd_result'      => 'result',
+        'sd_results'     => 'results',
+        'sd_buy'         => 'Purchase',
+        'sd_borrow'      => 'Borrow',
+        'sd_both'        => 'Purchase &amp; Borrow',
+        'doc_s'          => 's',
+    ],
+    'ar' => [
+        'search_ph'      => 'العنوان، المؤلف، ISBN، السعر، السنة…',
+        'search_btn'     => 'بحث',
+        'clear_title'    => 'مسح',
+        'filter_lbl'     => 'تصفية:',
+        'f_all'          => 'الكل',
+        'f_buy'          => 'شراء',
+        'f_borrow'       => 'استعارة',
+        'f_both'         => 'شراء &amp; استعارة',
+        'details'        => 'تفاصيل',
+        'borrow'         => 'استعارة',
+        'buy'            => 'شراء',
+        'choose'         => 'اختر',
+        'add_cart'       => 'شراء',
+        'login_req'      => 'تسجيل الدخول مطلوب',
+        'edit'           => 'تعديل',
+        'delete'         => 'حذف',
+        'delete_confirm' => 'حذف هذا الكتاب؟',
+        'free_loan'      => 'استعارة مجانية',
+        'free'           => 'مجاني',
+        'tag_buy'        => 'شراء',
+        'tag_borrow'     => 'استعارة',
+        'see_all'        => 'عرض الكل',
+        'no_docs'        => 'لا توجد وثائق في الكتالوج',
+        'no_docs_sub'    => 'أضف وثائق لتظهر هنا.',
+        'sd_loading'     => 'جارٍ البحث…',
+        'sd_empty'       => 'لا توجد نتائج لـ',
+        'sd_error'       => 'خطأ في التحميل',
+        'sd_close'       => '✕ إغلاق',
+        'sd_result'      => 'نتيجة',
+        'sd_results'     => 'نتائج',
+        'sd_buy'         => 'شراء',
+        'sd_borrow'      => 'استعارة',
+        'sd_both'        => 'شراء &amp; استعارة',
+        'doc_s'          => '',
+    ],
+];
+$p = $pg[$lang] ?? $pg['fr'];
+// ── FIN AJOUT ───────────────────────────────────────────
+
 $q_types = $conn->query("SELECT * FROM types_documents");
 
 /* ── URL params ── */
@@ -552,11 +666,11 @@ html.dark .btn-both { color: var(--gold); }
                     <h2 class="hs-title"><?= $safe_title ?></h2>
                     <div class="hs-btn-row">
                         <a href="<?= $detail_url ?>" class="hs-btn hs-btn-details">
-                            <i class="fa-solid fa-circle-info" style="font-size:10px"></i> Détails
+                            <i class="fa-solid fa-circle-info" style="font-size:10px"></i> <?= $p['details'] ?>
                         </a>
                         <?php if ($is_logged_in && $user_role === 'client' && in_array($dp, ['emprunt','both'])): ?>
                         <a href="/MEMOIR/emprunts/emprunt.php?id_doc=<?= (int)$s['id_doc'] ?>" class="hs-btn hs-btn-borrow">
-                            <i class="fa-regular fa-clock" style="font-size:10px"></i> Emprunter
+                            <i class="fa-regular fa-clock" style="font-size:10px"></i> <?= $p['borrow'] ?>
                         </a>
                         <?php endif; ?>
                     </div>
@@ -589,15 +703,15 @@ html.dark .btn-both { color: var(--gold); }
         <div class="search-input-wrap" id="searchWrap" style="position:relative;">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
             <input type="text" id="search"
-                   placeholder="Titre, auteur, ISBN, prix, année, éditeur…"
+                   placeholder="<?= htmlspecialchars($p['search_ph']) ?>"
                    autocomplete="off" spellcheck="false">
-            <button class="search-btn-clear" id="clearBtn" onclick="clearSearch()" title="Effacer">
+            <button class="search-btn-clear" id="clearBtn" onclick="clearSearch()" title="<?= htmlspecialchars($p['clear_title']) ?>">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div class="search-drop" id="searchDrop"></div>
         </div>
         <button class="search-btn" onclick="triggerSearch()">
-            <i class="fa-solid fa-magnifying-glass" style="font-size:10px"></i> Rechercher
+            <i class="fa-solid fa-magnifying-glass" style="font-size:10px"></i> <?= $p['search_btn'] ?>
         </button>
     </div>
 </div><!-- /search-bar-sticky -->
@@ -606,18 +720,18 @@ html.dark .btn-both { color: var(--gold); }
 <!-- filter pills: tout le monde (admin + client + guest) -->
 <div class="search-bar-sticky" id="filterBar" style="<?= $user_role==='admin' ? 'top:var(--nav-h)' : 'top:calc(var(--nav-h) + 60px)' ?>">
     <div class="search-filters-row">
-        <span class="filter-label-sm">Filtrer :</span>
+        <span class="filter-label-sm"><?= $p['filter_lbl'] ?></span>
         <button class="avail-pill ap-all <?= $avail==='all'?'active':'' ?>" onclick="setAvail('all', this)">
-            <span class="avail-dot"></span> Tout
+            <span class="avail-dot"></span> <?= $p['f_all'] ?>
         </button>
         <button class="avail-pill ap-buy <?= $avail==='buy'?'active':'' ?>" onclick="setAvail('buy', this)">
-            <span class="avail-dot"></span> Achat
+            <span class="avail-dot"></span> <?= $p['f_buy'] ?>
         </button>
         <button class="avail-pill ap-borrow <?= $avail==='borrow'?'active':'' ?>" onclick="setAvail('borrow', this)">
-            <span class="avail-dot"></span> Emprunt
+            <span class="avail-dot"></span> <?= $p['f_borrow'] ?>
         </button>
         <button class="avail-pill ap-both <?= $avail==='both'?'active':'' ?>" onclick="setAvail('both', this)">
-            <span class="avail-dot"></span> Achat &amp; Emprunt
+            <span class="avail-dot"></span> <?= $p['f_both'] ?>
         </button>
     </div>
 </div>
@@ -635,11 +749,11 @@ html.dark .btn-both { color: var(--gold); }
     <div class="cat-section-head">
         <div class="cat-section-title">
             <h2><?= htmlspecialchars($sec['label']) ?></h2>
-            <span class="cat-section-badge"><?= $sec['total'] ?> doc<?= $sec['total']>1?'s':'' ?></span>
+            <span class="cat-section-badge"><?= $sec['total'] ?> doc<?= $sec['total']>1 ? $p['doc_s'] : '' ?></span>
         </div>
         <?php if ($sec['total'] > 4): ?>
         <a class="cat-see-all" href="/MEMOIR/client/catalogue_type.php?type=<?= $sec['id'] ?>&label=<?= urlencode($sec['label']) ?>">
-            Voir tout <i class="fa-solid fa-arrow-right"></i>
+            <?= $p['see_all'] ?> <i class="fa-solid fa-arrow-right"></i>
         </a>
         <?php endif; ?>
     </div>
@@ -659,8 +773,8 @@ html.dark .btn-both { color: var(--gold); }
                      loading="lazy"
                      onerror="this.src='../uploads/default.jpg'">
                 <div class="avail-ribbon">
-                    <?php if ($can_buy): ?><span class="avail-tag tag-buy"><i class="fa-solid fa-cart-shopping" style="font-size:8px"></i> Achat</span><?php endif; ?>
-                    <?php if ($can_borrow): ?><span class="avail-tag tag-borrow"><i class="fa-regular fa-clock" style="font-size:8px"></i> Emprunt</span><?php endif; ?>
+                    <?php if ($can_buy): ?><span class="avail-tag tag-buy"><i class="fa-solid fa-cart-shopping" style="font-size:8px"></i> <?= $p['tag_buy'] ?></span><?php endif; ?>
+                    <?php if ($can_borrow): ?><span class="avail-tag tag-borrow"><i class="fa-regular fa-clock" style="font-size:8px"></i> <?= $p['tag_borrow'] ?></span><?php endif; ?>
                 </div>
                 <?php if ($is_logged_in && $user_role === 'client'): ?>
                 <button class="wish-btn" onclick="event.preventDefault();toggleWishlist(this,<?= (int)$d['id_doc'] ?>)" title="Favoris">
@@ -675,9 +789,9 @@ html.dark .btn-both { color: var(--gold); }
                     <?php if ($can_buy && (float)$d['prix'] > 0): ?>
                         <span class="card-price"><?= number_format((float)$d['prix'],0,',',' ') ?><span class="price-unit">DA</span></span>
                     <?php elseif ($can_borrow && !$can_buy): ?>
-                        <span class="card-free"><i class="fa-solid fa-book-open"></i> Emprunt gratuit</span>
+                        <span class="card-free"><i class="fa-solid fa-book-open"></i> <?= $p['free_loan'] ?></span>
                     <?php else: ?>
-                        <span class="card-free"><i class="fa-solid fa-lock-open"></i> Gratuit</span>
+                        <span class="card-free"><i class="fa-solid fa-lock-open"></i> <?= $p['free'] ?></span>
                     <?php endif; ?>
                 </div>
                 <div class="card-divider"></div>
@@ -687,17 +801,17 @@ html.dark .btn-both { color: var(--gold); }
                     <?php if ($is_both): ?>
                         <div class="btn-both-wrap">
                             <button class="btn-card btn-both full" onclick="toggleBothMenu(this, <?= (int)$d['id_doc'] ?>)">
-                                <i class="fa-solid fa-plus"></i> Choisir
+                                <i class="fa-solid fa-plus"></i> <?= $p['choose'] ?>
                             </button>
                             <div class="both-menu" id="both-menu-<?= (int)$d['id_doc'] ?>">
                                 <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="both-opt">
-                                    <i class="fa-regular fa-clock"></i><span>Emprunter</span>
+                                    <i class="fa-regular fa-clock"></i><span><?= $p['borrow'] ?></span>
                                 </a>
                                 <div class="both-opt" style="padding:0;">
                                     <form action="../cart/add_to_cart.php" method="POST" style="width:100%;">
                                         <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
                                         <button type="submit" style="all:unset;display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;font-family:var(--font-ui);font-size:11px;font-weight:600;color:var(--page-text);cursor:pointer;">
-                                            <i class="fa-solid fa-cart-plus" style="color:var(--gold);font-size:12px;"></i><span>Acheter</span>
+                                            <i class="fa-solid fa-cart-plus" style="color:var(--gold);font-size:12px;"></i><span><?= $p['add_cart'] ?></span>
                                         </button>
                                     </form>
                                 </div>
@@ -706,14 +820,14 @@ html.dark .btn-both { color: var(--gold); }
                     <?php else: ?>
                         <?php if ($can_borrow): ?>
                         <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="btn-card btn-borrow <?= !$can_buy?'full':'' ?>">
-                            <i class="fa-regular fa-clock"></i> Emprunter
+                            <i class="fa-regular fa-clock"></i> <?= $p['borrow'] ?>
                         </a>
                         <?php endif; ?>
                         <?php if ($can_buy): ?>
                         <form action="../cart/add_to_cart.php" method="POST" style="flex:1;display:flex">
                             <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
                             <button type="submit" class="btn-card btn-buy <?= !$can_borrow?'full':'' ?>">
-                                <i class="fa-solid fa-cart-plus"></i> Acheter
+                                <i class="fa-solid fa-cart-plus"></i> <?= $p['add_cart'] ?>
                             </button>
                         </form>
                         <?php endif; ?>
@@ -722,16 +836,16 @@ html.dark .btn-both { color: var(--gold); }
 
                 <?php elseif (!$is_logged_in): ?>
                 <a href="/MEMOIR/auth/login.php" class="btn-card btn-borrow full">
-                    <i class="fa-solid fa-right-to-bracket"></i> Connexion requise
+                    <i class="fa-solid fa-right-to-bracket"></i> <?= $p['login_req'] ?>
                 </a>
 
                 <?php elseif ($user_role === 'admin'): ?>
                 <div class="admin-actions">
                     <a href="/MEMOIR/admin/modifier_document.php?id=<?= (int)$d['id_doc'] ?>" class="btn-admin btn-edit">
-                        <i class="fa-solid fa-pen"></i> Modifier
+                        <i class="fa-solid fa-pen"></i> <?= $p['edit'] ?>
                     </a>
-                    <a href="/MEMOIR/admin/delete_doc.php?id=<?= (int)$d['id_doc'] ?>" onclick="return confirm('Supprimer ce document ?')" class="btn-admin btn-delete">
-                        <i class="fa-solid fa-trash"></i> Supprimer
+                    <a href="/MEMOIR/admin/delete_doc.php?id=<?= (int)$d['id_doc'] ?>" onclick="return confirm('<?= addslashes($p['delete_confirm']) ?>')" class="btn-admin btn-delete">
+                        <i class="fa-solid fa-trash"></i> <?= $p['delete'] ?>
                     </a>
                 </div>
                 <?php endif; ?>
@@ -745,8 +859,8 @@ html.dark .btn-both { color: var(--gold); }
 <?php else: ?>
 <div class="empty-state" style="padding:80px 0">
     <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
-    <h3>Aucun document dans le catalogue</h3>
-    <p>Ajoutez des documents pour les voir apparaître ici.</p>
+    <h3><?= $p['no_docs'] ?></h3>
+    <p><?= $p['no_docs_sub'] ?></p>
 </div>
 <?php endif; ?>
 
@@ -796,6 +910,19 @@ const sectionsEl= document.getElementById('catalogue-sections');
 let dropTimer = null;
 let currentAvail = '<?= htmlspecialchars($avail) ?>';
 
+/* ── translated strings passed from PHP ── */
+const SD = {
+    loading : <?= json_encode($p['sd_loading']) ?>,
+    empty   : <?= json_encode($p['sd_empty']) ?>,
+    error   : <?= json_encode($p['sd_error']) ?>,
+    close   : <?= json_encode($p['sd_close']) ?>,
+    result  : <?= json_encode($p['sd_result']) ?>,
+    results : <?= json_encode($p['sd_results']) ?>,
+    buy     : <?= json_encode($p['sd_buy']) ?>,
+    borrow  : <?= json_encode($p['sd_borrow']) ?>,
+    both    : <?= json_encode($p['sd_both']) ?>,
+};
+
 /* ── helpers ── */
 function esc(s) {
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -806,9 +933,9 @@ function badgeCls(dp) {
     return 'both';
 }
 function badgeLbl(dp) {
-    if (dp==='achat')   return 'Achat';
-    if (dp==='emprunt') return 'Emprunt';
-    return 'Achat &amp; Emprunt';
+    if (dp==='achat')   return SD.buy;
+    if (dp==='emprunt') return SD.borrow;
+    return SD.both;
 }
 function buildUrl(q) {
     return 'recherche_dcmnt.php?mode=suggest'
@@ -865,14 +992,14 @@ function setAvail(val, btn) {
 
 /* ── main search ── */
 function doSearch(q, autoGo) {
-    dropEl.innerHTML = '<div class="sd-loading"><div class="sd-spin"></div> Recherche…</div>';
+    dropEl.innerHTML = '<div class="sd-loading"><div class="sd-spin"></div> ' + SD.loading + '</div>';
     openDrop();
 
     fetch(buildUrl(q))
         .then(r => r.json())
         .then(items => {
             if (!items.length) {
-                dropEl.innerHTML = '<div class="sd-empty"><i class="fa-regular fa-folder-open"></i>Aucun résultat pour «&nbsp;' + esc(q) + '&nbsp;»</div>';
+                dropEl.innerHTML = '<div class="sd-empty"><i class="fa-regular fa-folder-open"></i>' + SD.empty + ' «\u00a0' + esc(q) + '\u00a0»</div>';
                 openDrop();
                 return;
             }
@@ -899,16 +1026,17 @@ function doSearch(q, autoGo) {
             });
 
             /* footer */
+            const count = items.length;
             html += '<div class="sd-footer" onclick="closeDrop()">'
-                  + '<span class="sd-footer-label"><i class="fa-solid fa-magnifying-glass" style="font-size:10px"></i> ' + items.length + ' résultat' + (items.length>1?'s':'') + '</span>'
-                  + '<span class="sd-footer-count">✕ Fermer</span>'
+                  + '<span class="sd-footer-label"><i class="fa-solid fa-magnifying-glass" style="font-size:10px"></i> ' + count + ' ' + (count > 1 ? SD.results : SD.result) + '</span>'
+                  + '<span class="sd-footer-count">' + SD.close + '</span>'
                   + '</div>';
 
             dropEl.innerHTML = html;
             openDrop();
         })
         .catch(() => {
-            dropEl.innerHTML = '<div class="sd-empty"><i class="fa-solid fa-triangle-exclamation"></i>Erreur de chargement</div>';
+            dropEl.innerHTML = '<div class="sd-empty"><i class="fa-solid fa-triangle-exclamation"></i>' + SD.error + '</div>';
             openDrop();
         });
 }

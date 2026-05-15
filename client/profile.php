@@ -34,68 +34,8 @@ $nb_users = $nb_livres = $nb_emprunts_actifs_total = $nb_retards_total = 0;
 $chiffre_affaires = 0.0;
 $last_orders = null;
 // ── POST handlers ─────────────────────────────────────────
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
-    if ($_POST['action'] === 'update_info') {
-        $new_firstname = trim($_POST['firstname'] ?? '');
-        $new_lastname  = trim($_POST['lastname']  ?? '');
-        $new_email     = trim($_POST['email']     ?? '');
-        $new_phone     = trim($_POST['phone']     ?? '');
-        $new_gender    = trim($_POST['gender']    ?? '');
-
-        if (empty($new_firstname) || empty($new_email)) {
-            $error = "Le prénom et l'email sont obligatoires.";
-            $tab   = 'settings';
-        } elseif (!filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
-            $error = "Adresse email invalide.";
-            $tab   = 'settings';
-        } else {
-            $chk = $conn->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
-            $chk->bind_param("si", $new_email, $id_user);
-            $chk->execute();
-            if ($chk->get_result()->num_rows > 0) {
-                $error = "Cette adresse email est déjà utilisée.";
-                $tab   = 'settings';
-            } else {
-                $upd = $conn->prepare("UPDATE users SET firstname=?, lastname=?, email=?, phone=?, Gender=? WHERE id=?");
-                $upd->bind_param("sssssi", $new_firstname, $new_lastname, $new_email, $new_phone, $new_gender, $id_user);
-                $upd->execute();
-                $user['firstname'] = $new_firstname; $user['lastname'] = $new_lastname;
-                $user['email']     = $new_email;     $user['phone']    = $new_phone;
-                $user['Gender']    = $new_gender;
-                $first_letter     = strtoupper(substr($new_firstname, 0, 1));
-                $display_name     = htmlspecialchars($new_firstname);
-                $display_email    = htmlspecialchars($new_email);
-                $display_fullname = htmlspecialchars(trim("$new_firstname $new_lastname"));
-                $success = "Informations mises à jour avec succès !";
-                $tab     = 'settings';
-            }
-        }
-
-    } elseif ($_POST['action'] === 'update_password') {
-        $current = $_POST['current_password'] ?? '';
-        $new_pwd = $_POST['new_password']     ?? '';
-        $confirm = $_POST['confirm_password'] ?? '';
-
-        if (empty($current) || empty($new_pwd) || empty($confirm)) {
-            $error = "Tous les champs sont obligatoires.";
-        } elseif ($new_pwd !== $confirm) {
-            $error = "Les nouveaux mots de passe ne correspondent pas.";
-        } elseif (strlen($new_pwd) < 6) {
-            $error = "Le mot de passe doit contenir au moins 6 caractères.";
-        } elseif (!password_verify($current, $user['password'] ?? '')) {
-            $error = "Mot de passe actuel incorrect.";
-        } else {
-            $hash = password_hash($new_pwd, PASSWORD_DEFAULT);
-            $upd  = $conn->prepare("UPDATE users SET password=? WHERE id=?");
-            $upd->bind_param("si", $hash, $id_user);
-            $upd->execute();
-            $success = "Mot de passe modifié avec succès !";
-        }
-        $tab = 'settings';
-    }
-}
-
+  
 // ════════════════════════════════════════════════
 //  DONNÉES SELON LE RÔLE
 // ════════════════════════════════════════════════
@@ -454,10 +394,9 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--taupe)}
         Mon profil
     </a>
 
-    <a href="?tab=settings" class="tab-btn <?= $tab==='settings'?'active':'' ?>">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Paramètres
-    </a>
+   
+
+    
 
     <?php if ($role === 'client'): ?>
     <a href="?tab=historique" class="tab-btn <?= $tab==='historique'?'active':'' ?>">
@@ -600,50 +539,7 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--taupe)}
     <?php endif; ?>
 </div>
 
-<!-- ════════════════════════════════════════════
-     PANEL : PARAMÈTRES
-════════════════════════════════════════════ -->
-<div class="panel <?= $tab==='settings'?'active':'' ?>">
-    <div class="form-grid">
-        <div class="form-card">
-            <h3>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                Modifier mes informations
-            </h3>
-            <form method="POST">
-                <input type="hidden" name="action" value="update_info">
-                <div class="form-group"><label>Prénom <span style="color:#e74c3c">*</span></label><input type="text" name="firstname" value="<?= htmlspecialchars($user['firstname']??'') ?>" required></div>
-                <div class="form-group"><label>Nom de famille</label><input type="text" name="lastname" value="<?= htmlspecialchars($user['lastname']??'') ?>"></div>
-                <div class="form-group"><label>Email <span style="color:#e74c3c">*</span></label><input type="email" name="email" value="<?= htmlspecialchars($user['email']??'') ?>" required></div>
-                <div class="form-group"><label>Téléphone</label><input type="tel" name="phone" value="<?= htmlspecialchars($user['phone']??'') ?>" placeholder="0XXXXXXXXX"></div>
-                <div class="form-group">
-                    <label>Genre</label>
-                    <select name="gender">
-                        <option value="">— Sélectionner —</option>
-                        <option value="Homme" <?= ($user['Gender']??'')==='Homme'?'selected':'' ?>>Homme</option>
-                        <option value="Femme" <?= ($user['Gender']??'')==='Femme'?'selected':'' ?>>Femme</option>
-                        <option value="Autre" <?= ($user['Gender']??'')==='Autre'?'selected':'' ?>>Autre</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-save">Enregistrer</button>
-            </form>
-        </div>
-        <div class="form-card">
-            <h3>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                Changer le mot de passe
-            </h3>
-            <form method="POST">
-                <input type="hidden" name="action" value="update_password">
-                <div class="form-group"><label>Mot de passe actuel</label><input type="password" name="current_password" placeholder="••••••••" required></div>
-                <div class="form-group"><label>Nouveau mot de passe</label><input type="password" name="new_password" placeholder="••••••••" required minlength="6"></div>
-                <div class="form-group"><label>Confirmer le nouveau</label><input type="password" name="confirm_password" placeholder="••••••••" required></div>
-                <p style="font-size:10px;color:var(--muted);margin:6px 0 10px">Minimum 6 caractères.</p>
-                <button type="submit" class="btn-save">Changer</button>
-            </form>
-        </div>
-    </div>
-</div>
+  
 
 <!-- ════════════════════════════════════════════
      PANEL : HISTORIQUE

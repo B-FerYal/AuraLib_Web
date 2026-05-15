@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once"../includes/db.php";
+require_once "../includes/db.php";
 
 // ── Guards ──────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -32,16 +32,20 @@ if (!$check->get_result()->fetch_assoc()) {
 
 $now = date('Y-m-d H:i:s');
 
-// ── 1. Update commande status ──────────────────────────
+// ── Statut selon la méthode ────────────────────────────
+// baridi = paiement immédiat → 'payée'
+// cash   = paiement à la livraison → 'en attente de paiement'
+$statut_commande = ($methode === 'baridi') ? 'payée' : 'en attente de paiement';
 
+// ── 1. Update commande status ──────────────────────────
 $stmt = $conn->prepare("
     UPDATE commande 
-    SET statut = 'payee',
+    SET statut           = ?,
         methode_paiement = ?,
         date_paiement    = ?
     WHERE id_commande = ? AND id_user = ?
 ");
-$stmt->bind_param("ssii", $methode, $now, $id_commande, $id_user);
+$stmt->bind_param("sssii", $statut_commande, $methode, $now, $id_commande, $id_user);
 $stmt->execute();
 
 // ── 2. Insert into paiement table ─────────────────────
@@ -51,7 +55,6 @@ $ins = $conn->prepare("
 ");
 $ins->bind_param("iids", $id_commande, $id_user, $montant, $now);
 $ins->execute();
-
 
 // ── 3. Empty the cart (Secure way) ─────────────────────
 $del_items = $conn->prepare("
@@ -65,9 +68,6 @@ $del_items->execute();
 $del_panier = $conn->prepare("DELETE FROM panier WHERE id_user = ?");
 $del_panier->bind_param("i", $id_user);
 $del_panier->execute();
-
-// Delete the panier row itself
-$conn->query("DELETE FROM panier WHERE id_user = $id_user");
 
 // ── 4. Redirect to success page ───────────────────────
 header("Location: /MEMOIR/commandes/succes.php?id=$id_commande&montant=$montant&methode=$methode");
