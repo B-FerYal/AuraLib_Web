@@ -209,16 +209,6 @@ function resolveImg($d) {
 }
 ?>
 <?php include '../includes/header.php'; ?>
-<!DOCTYPE html>
-<html lang="<?= $lang ?? 'fr' ?>" dir="<?= ($lang ?? 'fr') == 'ar' ? 'rtl' : 'ltr' ?>">
-<head>
-<meta charset="UTF-8">
-<?php include '../includes/dark_init.php'; ?>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuraLib · Catalogue</title>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 <style>
 /* ══════════════════════════════════════════════
@@ -642,8 +632,6 @@ html.dark .btn-both { color: var(--gold); }
     .card-cover { height: 220px; }
 }
 </style>
-</head>
-<body>
 
 <!-- ══════════════════════════════════════════
      HERO SLIDER
