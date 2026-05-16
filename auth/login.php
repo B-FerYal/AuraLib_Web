@@ -35,8 +35,17 @@ if (isset($_POST['login'])) {
                     $_SESSION['id_user']   = $user['id'];
                     $_SESSION['role']      = $user['role'];
                     $_SESSION['firstname'] = $user['firstname'];
-                    header("Location: ../auth/welcome.php");
-                    exit;
+                   // Redirect vers la page demandée, sinon welcome
+$redirect = '../auth/welcome.php';
+if (!empty($_GET['redirect'])) {
+    $candidate = urldecode($_GET['redirect']);
+    // Sécurité : accepter seulement les URLs du projet
+    if (strpos($candidate, '/MEMOIR/') === 0 || strpos($candidate, '../') === 0) {
+        $redirect = $candidate;
+    }
+}
+header("Location: " . $redirect);
+exit;
                 }
             } else {
                 $err[] = t('error_login');
