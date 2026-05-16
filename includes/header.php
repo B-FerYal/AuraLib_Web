@@ -517,6 +517,14 @@ function is_active(string ...$paths): bool {
                        class="nav-link <?= is_active('commande') ? 'active' : '' ?>">
                         <?= $text['purchased'] ?>
                     </a>
+                    <a href="/MEMOIR/cart/panier.php"
+                       class="nav-link <?= is_active('panier') ? 'active' : '' ?>">
+                        <i class="fa-solid fa-cart-shopping" style="font-size:11px;margin-right:4px"></i>
+                        <?= $text['cart'] ?? 'Panier' ?>
+                        <?php if ($cart_count > 0): ?>
+                            <span style="background:var(--gold);color:#2C1F0E;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"><?= $cart_count ?></span>
+                        <?php endif; ?>
+                    </a>
                 <?php endif; ?>
             <?php endif; ?>
 
@@ -595,16 +603,7 @@ function is_active(string ...$paths): bool {
 
             <?php if ($is_logged_in): ?>
 
-                <?php if ($user_role === 'client'): ?>
-                <a href="<?= $base ?>/cart/panier.php" class="cart-btn">
-                    <i class="fa-solid fa-cart-shopping" style="font-size:12px"></i>
-                    <span><?= $text['cart'] ?></span>
-                    <?php if ($cart_count > 0): ?>
-                        <span class="cart-badge"><?= $cart_count ?></span>
-                    <?php endif; ?>
-                </a>
-                <div class="vsep"></div>
-                <?php endif; ?>
+
 
                 <!-- Profile dropdown -->
                 <div class="profile-wrap" id="profileWrap">

@@ -8,7 +8,8 @@ include_once '../includes/languages.php';
 
 $is_logged_in = isset($_SESSION['id_user']);
 $id_user      = $is_logged_in ? (int)$_SESSION['id_user'] : 0;
-$user_role    = $_SESSION['role'] ?? 'client';
+$user_role    = strtolower(trim($_SESSION['role'] ?? 'client'));
+$is_client    = $is_logged_in && $user_role !== 'admin';
 $base         = "/MEMOIR";
 
 // ── نصوص الصفحة حسب اللغة — AJOUT UNIQUEMENT ──────────
@@ -149,7 +150,7 @@ $documents = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 /* ── Cart count ── */
 $cart_count = 0;
-if ($is_logged_in && $user_role === 'client') {
+if ($is_client) {
     $rc = $conn->query("SELECT SUM(pi.quantite) as total FROM panier_item pi
                         JOIN panier p ON pi.id_panier = p.id_panier
                         WHERE p.id_user = $id_user");
@@ -209,16 +210,6 @@ function resolveImg($d) {
 }
 ?>
 <?php include '../includes/header.php'; ?>
-<!DOCTYPE html>
-<html lang="<?= $lang ?? 'fr' ?>" dir="<?= ($lang ?? 'fr') == 'ar' ? 'rtl' : 'ltr' ?>">
-<head>
-<meta charset="UTF-8">
-<?php include '../includes/dark_init.php'; ?>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuraLib · Catalogue</title>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 <style>
 /* ══════════════════════════════════════════════
@@ -448,10 +439,8 @@ html.dark .search-bar-sticky.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.35); 
 ══════════════════════════════════════════════ */
 .search-drop {
     display: none;
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0; right: 0;
-    z-index: 400;
+    position: fixed;
+    z-index: 99999;
     background: var(--page-white);
     border: 1.5px solid var(--gold-border);
     border-radius: 16px;
@@ -642,8 +631,6 @@ html.dark .btn-both { color: var(--gold); }
     .card-cover { height: 220px; }
 }
 </style>
-</head>
-<body>
 
 <!-- ══════════════════════════════════════════
      HERO SLIDER
@@ -708,7 +695,6 @@ html.dark .btn-both { color: var(--gold); }
             <button class="search-btn-clear" id="clearBtn" onclick="clearSearch()" title="<?= htmlspecialchars($p['clear_title']) ?>">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <div class="search-drop" id="searchDrop"></div>
         </div>
         <button class="search-btn" onclick="triggerSearch()">
             <i class="fa-solid fa-magnifying-glass" style="font-size:10px"></i> <?= $p['search_btn'] ?>
@@ -776,7 +762,7 @@ html.dark .btn-both { color: var(--gold); }
                     <?php if ($can_buy): ?><span class="avail-tag tag-buy"><i class="fa-solid fa-cart-shopping" style="font-size:8px"></i> <?= $p['tag_buy'] ?></span><?php endif; ?>
                     <?php if ($can_borrow): ?><span class="avail-tag tag-borrow"><i class="fa-regular fa-clock" style="font-size:8px"></i> <?= $p['tag_borrow'] ?></span><?php endif; ?>
                 </div>
-                <?php if ($is_logged_in && $user_role === 'client'): ?>
+                <?php if ($is_client): ?>
                 <button class="wish-btn" onclick="event.preventDefault();toggleWishlist(this,<?= (int)$d['id_doc'] ?>)" title="Favoris">
                     <i class="fa-regular fa-heart"></i>
                 </button>
@@ -796,7 +782,7 @@ html.dark .btn-both { color: var(--gold); }
                 </div>
                 <div class="card-divider"></div>
 
-                <?php if ($user_role === 'client'): ?>
+                <?php if ($is_client): ?>
                 <div class="card-actions">
                     <?php if ($is_both): ?>
                         <div class="btn-both-wrap">
@@ -835,9 +821,31 @@ html.dark .btn-both { color: var(--gold); }
                 </div>
 
                 <?php elseif (!$is_logged_in): ?>
-                <a href="/MEMOIR/auth/login.php" class="btn-card btn-borrow full">
-                    <i class="fa-solid fa-right-to-bracket"></i> <?= $p['login_req'] ?>
-                </a>
+                <div class="card-actions">
+                    <?php
+                        $emprunt_url  = '/MEMOIR/emprunts/emprunt.php?id_doc=' . (int)$d['id_doc'];
+                        $login_borrow = '/MEMOIR/auth/login.php?redirect=' . urlencode($emprunt_url);
+                        $login_buy    = '/MEMOIR/auth/login.php?redirect=' . urlencode('/MEMOIR/cart/add_to_cart.php?id_doc=' . (int)$d['id_doc']);
+                    ?>
+                    <?php if ($is_both): ?>
+                        <div class="btn-both-wrap">
+                            <a href="<?= $login_borrow ?>" class="btn-card btn-both full">
+                                <i class="fa-solid fa-plus"></i> <?= $p['choose'] ?>
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <?php if ($can_borrow): ?>
+                        <a href="<?= $login_borrow ?>" class="btn-card btn-borrow <?= !$can_buy ? 'full' : '' ?>">
+                            <i class="fa-regular fa-clock"></i> <?= $p['borrow'] ?>
+                        </a>
+                        <?php endif; ?>
+                        <?php if ($can_buy): ?>
+                        <a href="<?= $login_buy ?>" class="btn-card btn-buy <?= !$can_borrow ? 'full' : '' ?>">
+                            <i class="fa-solid fa-cart-plus"></i> <?= $p['add_cart'] ?>
+                        </a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
 
                 <?php elseif ($user_role === 'admin'): ?>
                 <div class="admin-actions">
@@ -867,6 +875,9 @@ html.dark .btn-both { color: var(--gold); }
 </div><!-- /catalogue-sections -->
 
 <?php include '../includes/footer.php'; ?>
+
+<!-- Search dropdown — appended to body to escape sticky stacking context -->
+<div class="search-drop" id="searchDrop"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
@@ -945,7 +956,14 @@ function buildUrl(q) {
 }
 
 /* ── open / close ── */
-function openDrop()  { dropEl.classList.add('open'); }
+function openDrop() {
+    const wrap = document.getElementById('searchWrap');
+    const rect = wrap.getBoundingClientRect();
+    dropEl.style.top   = (rect.bottom + 8) + 'px';
+    dropEl.style.left  = rect.left + 'px';
+    dropEl.style.width = rect.width + 'px';
+    dropEl.classList.add('open');
+}
 function closeDrop() { dropEl.classList.remove('open'); dropEl.innerHTML = ''; }
 
 function clearSearch() {

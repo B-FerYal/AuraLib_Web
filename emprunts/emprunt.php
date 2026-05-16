@@ -3,15 +3,16 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once "../includes/db.php"; 
 
 if (!isset($_SESSION['id_user'])) {
-    header("Location: ../auth/login.php");
+    $redirect = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: ../auth/login.php?redirect=" . $redirect);
     exit;
 }
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'client') {
-    header("Location: ../index.php?error=unauthorized");
+if (!isset($_SESSION['role']) || $_SESSION['role'] === 'admin') {
+    header("Location: ../client/library.php");
     exit;
 }
-
+   
 $id_user = (int)$_SESSION['id_user'];
 $id_doc  = isset($_GET['id_doc']) ? intval($_GET['id_doc']) : 0;
 
@@ -166,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $book) {
                 </a>
 
             <?php else: ?>
-                <form method="POST" id="loanForm">
+                <form method="POST" id="loanForm" action="emprunt.php?id_doc=<?= (int)$id_doc ?>">
                     <div class="info-box">
                         <i class="fa fa-info-circle" style="color: var(--gold);"></i> 
                         La durée d'emprunt est fixée à <strong>15 jours</strong> à compter de la date de début.
