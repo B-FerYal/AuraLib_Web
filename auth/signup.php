@@ -384,11 +384,6 @@ html.dark .bottom-link { color: rgba(255,255,255,.4); }
     <?= $lang === 'ar' ? '→ رجوع' : '← ' . (t('back') ?: 'Retour') ?>
 </a>
 
-<div class="lang-bar">
-    <a href="?lang=fr" class="<?= $lang==='fr'?'active':'' ?>">🇫🇷 FR</a>
-    <a href="?lang=en" class="<?= $lang==='en'?'active':'' ?>">🇬🇧 EN</a>
-    <a href="?lang=ar" class="<?= $lang==='ar'?'active':'' ?>">🇩🇿 AR</a>
-</div>
 
 <div class="card">
 

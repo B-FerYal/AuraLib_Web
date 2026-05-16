@@ -12,7 +12,7 @@ $ft = [
     'fr' => [
         'tagline'      => 'Plateforme de gestion de livres en ligne',
         'desc'         => 'Découvrez, empruntez et achetez vos livres en ligne. AuraLib connecte les lecteurs aux bibliothèques partout, simplement et rapidement.',
-        'badge'        => 'Lecture · Emprunt · Achat',
+        'badge'        => ' Emprunt · Achat',
         // Nav col
         'nav_title'    => 'Navigation',
         'nav_home'     => 'Accueil',
