@@ -1,6 +1,109 @@
 <?php
 include "../includes/header.php";
 include '../includes/dark_init.php'; 
+// $lang و $p متاحان من header.php ← languages.php
+
+// ── نصوص الصفحة حسب اللغة ──────────────────────────────
+$pg = [
+    'fr' => [
+        'page_title'     => 'Tableau de Bord',
+        'page_sub'       => "Bienvenue dans l'espace de gestion AuraLib",
+        'stat_docs'      => 'Total Documents',
+        'stat_docs_sub'  => 'dans le catalogue',
+        'stat_users'     => 'Lecteurs Inscrits',
+        'stat_users_sub' => 'comptes actifs',
+        'stat_loans'     => 'Emprunts en cours',
+        'stat_loans_sub' => 'en circulation',
+        'stat_rev'       => 'Recettes (Ventes)',
+        'stat_rev_sub'   => 'DA encaissés',
+        'promo_h4'       => 'Analyses &amp; Rapports 2026',
+        'promo_p'        => 'Visualisez l\'évolution de vos ventes et les préférences de vos lecteurs.',
+        'promo_btn'      => 'Voir les Graphiques →',
+        'qa_epuise'      => 'Épuisé',
+        'qa_docs'        => 'Documents',
+        'qa_analyses'    => 'Analyses',
+        'qa_ventes'      => 'Ventes',
+        'qa_users'       => 'Utilisateurs',
+        'qa_prets'       => 'Prêts',
+        'qa_inbox'       => 'Boite de réception',
+        'tb_sales'       => 'Dernières Ventes',
+        'tb_sales_link'  => 'Voir tout →',
+        'tb_loans'       => 'Flux d\'Emprunts',
+        'tb_loans_link'  => 'Voir tout →',
+        'th_user'        => 'Utilisateur',
+        'th_date'        => 'Date',
+        'th_amount'      => 'Montant',
+        'th_status'      => 'Statut',
+        'th_book'        => 'Livre',
+        'th_reader'      => 'Lecteur',
+    ],
+    'en' => [
+        'page_title'     => 'Dashboard',
+        'page_sub'       => 'Welcome to the AuraLib management space',
+        'stat_docs'      => 'Total Documents',
+        'stat_docs_sub'  => 'in the catalogue',
+        'stat_users'     => 'Registered Readers',
+        'stat_users_sub' => 'active accounts',
+        'stat_loans'     => 'Active Loans',
+        'stat_loans_sub' => 'in circulation',
+        'stat_rev'       => 'Revenue (Sales)',
+        'stat_rev_sub'   => 'DA collected',
+        'promo_h4'       => 'Analytics &amp; Reports 2026',
+        'promo_p'        => 'Visualise your sales trends and reader preferences.',
+        'promo_btn'      => 'View Charts →',
+        'qa_epuise'      => 'Out of stock',
+        'qa_docs'        => 'Documents',
+        'qa_analyses'    => 'Analytics',
+        'qa_ventes'      => 'Sales',
+        'qa_users'       => 'Users',
+        'qa_prets'       => 'Loans',
+        'qa_inbox'       => 'Inbox',
+        'tb_sales'       => 'Recent Sales',
+        'tb_sales_link'  => 'See all →',
+        'tb_loans'       => 'Loan Activity',
+        'tb_loans_link'  => 'See all →',
+        'th_user'        => 'User',
+        'th_date'        => 'Date',
+        'th_amount'      => 'Amount',
+        'th_status'      => 'Status',
+        'th_book'        => 'Book',
+        'th_reader'      => 'Reader',
+    ],
+    'ar' => [
+        'page_title'     => 'لوحة التحكم',
+        'page_sub'       => 'مرحباً بك في فضاء إدارة AuraLib',
+        'stat_docs'      => 'إجمالي الوثائق',
+        'stat_docs_sub'  => 'في الكتالوج',
+        'stat_users'     => 'القراء المسجلون',
+        'stat_users_sub' => 'حسابات نشطة',
+        'stat_loans'     => 'الاستعارات الجارية',
+        'stat_loans_sub' => 'في التداول',
+        'stat_rev'       => 'الإيرادات (المبيعات)',
+        'stat_rev_sub'   => 'دج محصّلة',
+        'promo_h4'       => 'التحليلات &amp; التقارير 2026',
+        'promo_p'        => 'تابع تطور مبيعاتك وتفضيلات قرائك.',
+        'promo_btn'      => 'عرض الرسوم البيانية ←',
+        'qa_epuise'      => 'نفد المخزون',
+        'qa_docs'        => 'الوثائق',
+        'qa_analyses'    => 'التحليلات',
+        'qa_ventes'      => 'المبيعات',
+        'qa_users'       => 'المستخدمون',
+        'qa_prets'       => 'الاستعارات',
+        'qa_inbox'       => 'صندوق الوارد',
+        'tb_sales'       => 'آخر المبيعات',
+        'tb_sales_link'  => 'عرض الكل ←',
+        'tb_loans'       => 'نشاط الاستعارات',
+        'tb_loans_link'  => 'عرض الكل ←',
+        'th_user'        => 'المستخدم',
+        'th_date'        => 'التاريخ',
+        'th_amount'      => 'المبلغ',
+        'th_status'      => 'الحالة',
+        'th_book'        => 'الكتاب',
+        'th_reader'      => 'القارئ',
+    ],
+];
+$p     = $pg[$lang] ?? $pg['fr'];
+$isRtl = ($lang === 'ar');
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location:../client/library.php");
@@ -47,20 +150,18 @@ $alerts_result = $conn->query("
     display: flex;
     min-height: 100vh;
     background: #F5F0E8;
-    /* nav height = 66px */
     padding-top: 66px;
+    direction: <?= $isRtl ? 'rtl' : 'ltr' ?>;
 }
 
 .adm-main {
     flex: 1;
-    /* sidebar width = 255px (variable --sidebar-width dans sidebar.php) */
     margin-left:0;
     padding: 36px 36px 60px;
     min-width: 0;
     transition: margin-left .28s cubic-bezier(.4,0,.2,1);
 }
 
-/* Quand sidebar collapsed */
 .sidebar-is-collapsed .adm-main {
     margin-left: 66px;
 }
@@ -73,6 +174,7 @@ $alerts_result = $conn->query("
     margin-bottom: 28px;
     flex-wrap: wrap;
     gap: 12px;
+    flex-direction: <?= $isRtl ? 'row-reverse' : 'row' ?>;
 }
 .dash-title {
     font-family: 'Playfair Display', serif;
@@ -95,6 +197,7 @@ $alerts_result = $conn->query("
     padding: 6px 12px;
     white-space: nowrap;
 }
+
 /* Card Stock Épuisé */
 .qa-card.qa-danger {
     border-color: rgba(239,68,68,.3);
@@ -108,7 +211,6 @@ $alerts_result = $conn->query("
 .qa-card.qa-danger .qa-icon-wrap svg { stroke: #dc2626; color: #dc2626; }
 .qa-card.qa-danger .qa-label { color: #dc2626; font-weight: 700; }
 .qa-card.qa-danger:hover { border-color: #EF4444; box-shadow: 0 6px 20px rgba(239,68,68,.15); }
- 
 html.dark .qa-card.qa-danger { background: #220E0E; border-color: rgba(239,68,68,.25); }
 
 /* ── Stats grid ── */
@@ -126,6 +228,7 @@ html.dark .qa-card.qa-danger { background: #220E0E; border-color: rgba(239,68,68
     border-top: 3px solid #C4A46B;
     position: relative;
     overflow: hidden;
+    text-align: <?= $isRtl ? 'right' : 'left' ?>;
 }
 .stat-card.g { border-top-color: #4ade80; }
 .stat-card.b { border-top-color: #60a5fa; }
@@ -141,7 +244,7 @@ html.dark .qa-card.qa-danger { background: #220E0E; border-color: rgba(239,68,68
 .stat-lbl {
     font-size: 10px;
     color: #9A8C7E;
-    letter-spacing: 1px;
+    letter-spacing: <?= $isRtl ? '0' : '1px' ?>;
     text-transform: uppercase;
     margin-bottom: 8px;
 }
@@ -171,17 +274,20 @@ html.dark .qa-card.qa-danger { background: #220E0E; border-color: rgba(239,68,68
     border: 1px solid rgba(196,164,107,.25);
     gap: 16px;
     flex-wrap: wrap;
+    flex-direction: <?= $isRtl ? 'row-reverse' : 'row' ?>;
 }
 .promo-banner h4 {
     font-family: 'Playfair Display', serif;
     font-size: 17px;
     margin: 0 0 3px;
     color: #C4A46B;
+    text-align: <?= $isRtl ? 'right' : 'left' ?>;
 }
 .promo-banner p {
     font-size: 12px;
     opacity: .7;
     margin: 0;
+    text-align: <?= $isRtl ? 'right' : 'left' ?>;
 }
 .promo-btn {
     background: #C4A46B;
@@ -258,7 +364,6 @@ html.dark .qa-card.qa-danger { background: #220E0E; border-color: rgba(239,68,68
     border-radius: 10px;
     border: 1.5px solid #FFFDF9;
 }
-/* Card spéciale Analyses */
 .qa-card.qa-featured {
     border-color: rgba(74,222,128,.4);
     background: #f0fdf4;
@@ -288,6 +393,7 @@ html.dark .qa-card.qa-danger { background: #220E0E; border-color: rgba(239,68,68
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-direction: <?= $isRtl ? 'row-reverse' : 'row' ?>;
 }
 .tb-title {
     font-family: 'Playfair Display', serif;
@@ -306,11 +412,11 @@ html.dark .qa-card.qa-danger { background: #220E0E; border-color: rgba(239,68,68
 table { width: 100%; border-collapse: collapse; }
 th {
     padding: 10px 14px;
-    text-align: left;
+    text-align: <?= $isRtl ? 'right' : 'left' ?>;
     font-size: 10px;
     color: #9A8C7E;
     text-transform: uppercase;
-    letter-spacing: .5px;
+    letter-spacing: <?= $isRtl ? '0' : '.5px' ?>;
     background: #FAF8F4;
     border-bottom: 1px solid #EDE5D4;
 }
@@ -319,6 +425,7 @@ td {
     font-size: 12px;
     color: #2C1F0E;
     border-bottom: 1px solid #F5F0E8;
+    text-align: <?= $isRtl ? 'right' : 'left' ?>;
 }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: #FDF8F0; }
@@ -349,75 +456,73 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
 </style>
 
 <div class="adm-wrap">
-
     <div class="adm-main">
 
-        <!-- ── En-tête ── -->
+        <!-- En-tête -->
         <div class="dash-header">
             <div>
-                <div class="dash-title">Tableau de Bord</div>
-                <div class="dash-sub">Bienvenue dans l'espace de gestion AuraLib</div>
+                <div class="dash-title"><?= $p['page_title'] ?></div>
+                <div class="dash-sub"><?= $p['page_sub'] ?></div>
             </div>
             <span class="dash-date">
                 <?= ucfirst(strftime('%A %d %B %Y')) ?>
             </span>
         </div>
-<a href="stock_epuise.php" class="qa-card qa-danger">
-    <?php
-    $nb_epuises = $conn->query("SELECT COUNT(*) c FROM documents WHERE exemplaires_disponibles <= 0")->fetch_assoc()['c'] ?? 0;
-    if ($nb_epuises > 0):
-    ?>
-        <span class="qa-badge"><?= $nb_epuises ?></span>
-    <?php endif; ?>
-    <div class="qa-icon-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-    </div>
-    <span class="qa-label">Épuisé</span>
-</a>
-        
-        <!-- ── Stats ── -->
+
+        <!-- Card stock épuisé -->
+        <a href="stock_epuise.php" class="qa-card qa-danger">
+            <?php
+            $nb_epuises = $conn->query("SELECT COUNT(*) c FROM documents WHERE exemplaires_disponibles <= 0")->fetch_assoc()['c'] ?? 0;
+            if ($nb_epuises > 0):
+            ?>
+                <span class="qa-badge"><?= $nb_epuises ?></span>
+            <?php endif; ?>
+            <div class="qa-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <span class="qa-label"><?= $p['qa_epuise'] ?></span>
+        </a>
+
+        <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-lbl">Total Documents</div>
+                <div class="stat-lbl"><?= $p['stat_docs'] ?></div>
                 <div class="stat-val"><?= $total_docs ?></div>
-                <div class="stat-sub">dans le catalogue</div>
+                <div class="stat-sub"><?= $p['stat_docs_sub'] ?></div>
             </div>
             <div class="stat-card g">
-                <div class="stat-lbl">Lecteurs Inscrits</div>
+                <div class="stat-lbl"><?= $p['stat_users'] ?></div>
                 <div class="stat-val"><?= $total_users ?></div>
-                <div class="stat-sub">comptes actifs</div>
+                <div class="stat-sub"><?= $p['stat_users_sub'] ?></div>
             </div>
             <div class="stat-card b">
-                <div class="stat-lbl">Emprunts en cours</div>
+                <div class="stat-lbl"><?= $p['stat_loans'] ?></div>
                 <div class="stat-val"><?= $total_loans ?></div>
-                <div class="stat-sub">en circulation</div>
+                <div class="stat-sub"><?= $p['stat_loans_sub'] ?></div>
             </div>
             <div class="stat-card r">
-                <div class="stat-lbl">Recettes (Ventes)</div>
+                <div class="stat-lbl"><?= $p['stat_rev'] ?></div>
                 <div class="stat-val"><?= number_format($revenue, 0, ',', ' ') ?></div>
-                <div class="stat-sub">DA encaissés</div>
+                <div class="stat-sub"><?= $p['stat_rev_sub'] ?></div>
             </div>
         </div>
 
-        <!-- ── Promo banner ── -->
+        <!-- Promo banner -->
         <div class="promo-banner">
             <div>
-                <h4>Analyses &amp; Rapports 2026</h4>
-                <p>Visualisez l'évolution de vos ventes et les préférences de vos lecteurs.</p>
+                <h4><?= $p['promo_h4'] ?></h4>
+                <p><?= $p['promo_p'] ?></p>
             </div>
-            <a href="stats.php" class="promo-btn">Voir les Graphiques →</a>
+            <a href="stats.php" class="promo-btn"><?= $p['promo_btn'] ?></a>
         </div>
 
-        <!-- ══════════════════════════════════════
-             QUICK ACTIONS — icônes SVG luxury
-        ══════════════════════════════════════ -->
+        <!-- Quick Actions -->
         <div class="qa-grid">
 
-            <!-- Livre -->
             <a href="gerer_documents.php" class="qa-card">
                 <div class="qa-icon-wrap">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -428,10 +533,9 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
                         <line x1="12" y1="14" x2="14" y2="14"/>
                     </svg>
                 </div>
-                <span class="qa-label">documents</span>
+                <span class="qa-label"><?= $p['qa_docs'] ?></span>
             </a>
 
-            <!-- Analyses -->
             <a href="stats.php" class="qa-card qa-featured">
                 <div class="qa-icon-wrap">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -441,10 +545,9 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
                         <line x1="2"  y1="20" x2="22" y2="20"/>
                     </svg>
                 </div>
-                <span class="qa-label">Analyses</span>
+                <span class="qa-label"><?= $p['qa_analyses'] ?></span>
             </a>
 
-            <!-- Ventes -->
             <a href="all_orders.php" class="qa-card">
                 <div class="qa-icon-wrap">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -453,10 +556,9 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
                         <path d="M16 10a4 4 0 0 1-8 0"/>
                     </svg>
                 </div>
-                <span class="qa-label">Ventes</span>
+                <span class="qa-label"><?= $p['qa_ventes'] ?></span>
             </a>
 
-            <!-- Utilisateurs -->
             <a href="users.php" class="qa-card">
                 <div class="qa-icon-wrap">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -466,10 +568,9 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                     </svg>
                 </div>
-                <span class="qa-label">Utilisateurs</span>
+                <span class="qa-label"><?= $p['qa_users'] ?></span>
             </a>
 
-            <!-- Prêts -->
             <a href="gerer_emprunts.php" class="qa-card">
                 <div class="qa-icon-wrap">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -479,10 +580,9 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
                         <circle cx="12" cy="12" r="3" stroke-dasharray="2"/>
                     </svg>
                 </div>
-                <span class="qa-label">Prêts</span>
+                <span class="qa-label"><?= $p['qa_prets'] ?></span>
             </a>
 
-            <!-- Messages -->
             <a href="messages.php" class="qa-card">
                 <?php if ($nb_messages > 0): ?>
                     <span class="qa-badge"><?= $nb_messages ?></span>
@@ -494,26 +594,26 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
                         <line x1="9" y1="14" x2="13" y2="14"/>
                     </svg>
                 </div>
-                <span class="qa-label">Boite de reception </span>
+                <span class="qa-label"><?= $p['qa_inbox'] ?></span>
             </a>
 
         </div>
 
-        <!-- ── Tables ── -->
+        <!-- Tables -->
         <div class="tables-grid">
 
             <div class="table-box">
                 <div class="tb-head">
-                    <span class="tb-title">Dernières Ventes</span>
-                    <a href="all_orders.php" class="tb-link">Voir tout →</a>
+                    <span class="tb-title"><?= $p['tb_sales'] ?></span>
+                    <a href="all_orders.php" class="tb-link"><?= $p['tb_sales_link'] ?></a>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <th>utilisateur</th>
-                            <th>Date</th>
-                            <th>Montant</th>
-                            <th>Statut</th>
+                            <th><?= $p['th_user'] ?></th>
+                            <th><?= $p['th_date'] ?></th>
+                            <th><?= $p['th_amount'] ?></th>
+                            <th><?= $p['th_status'] ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -534,15 +634,15 @@ html.dark .alert-stock   { background: #220E0E; border-color: #401818; }
 
             <div class="table-box">
                 <div class="tb-head">
-                    <span class="tb-title">Flux d'Emprunts</span>
-                    <a href="gerer_emprunts.php" class="tb-link">Voir tout →</a>
+                    <span class="tb-title"><?= $p['tb_loans'] ?></span>
+                    <a href="gerer_emprunts.php" class="tb-link"><?= $p['tb_loans_link'] ?></a>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <th>Livre</th>
-                            <th>Lecteur</th>
-                            <th>Statut</th>
+                            <th><?= $p['th_book'] ?></th>
+                            <th><?= $p['th_reader'] ?></th>
+                            <th><?= $p['th_status'] ?></th>
                         </tr>
                     </thead>
                     <tbody>

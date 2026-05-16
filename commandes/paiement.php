@@ -826,10 +826,10 @@ if (!$order) {
                         <span class="rk"><?= $p['rk_amount'] ?></span>
                         <span class="rv gold"><?= number_format($total, 0, ',', ' ') ?> DA</span>
                     </div>
-                    <div class="receipt-row">
-                        <span class="rk"><?= $p['rk_status'] ?></span>
-                        <span class="rv" style="color:#2E7D52;"><?= $p['rv_status'] ?></span>
-                    </div>
+                   <div class="receipt-row">
+    <span class="rk"><?= $p['rk_status'] ?></span>
+    <span class="rv" id="receiptStatus"></span>
+</div>
                 </div>
 
                 <!-- This actually submits to finaliser_paiement.php -->
@@ -957,6 +957,17 @@ if (!$order) {
 
                 const label = selectedMethod === 'baridi' ? LABELS.baridi : LABELS.cash;
                 document.getElementById('receiptMethod').textContent = label;
+const statusEl = document.getElementById('receiptStatus');
+
+if (selectedMethod === 'baridi') {
+    statusEl.innerHTML = '✔️ Validé';
+    statusEl.style.color = '#2E7D52';
+} else {
+    statusEl.innerHTML = '⏳ En attente de paiement';
+    statusEl.style.color = '#B8924A';
+}
+
+
                 document.getElementById('finalMethod').value = selectedMethod;
             }, 1400);
         }
