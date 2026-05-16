@@ -1,6 +1,5 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
-
 include_once "../includes/db.php";
 include_once 'languages.php';
 
@@ -496,47 +495,44 @@ function is_active(string ...$paths): bool {
         </a>
 
         <!-- ── NAV LINKS ── -->
-        <div class="nav-links">
-            <a href="<?= $base ?>/client/library.php"
-               class="nav-link <?= is_active('library') ? 'active' : '' ?>">
-                <?= $text['home'] ?>
+     <div class="nav-links">
+    <a href="<?= $base ?>/client/library.php" class="nav-link <?= is_active('library') ? 'active' : '' ?>">
+        <?= $text['home'] ?>
+    </a>
+
+    <?php if ($is_logged_in): ?>
+        <?php if ($user_role === 'admin'): ?>
+            <a href="<?= $base ?>/admin/admin_dashboard.php" class="nav-link gold-badge <?= is_active('admin_dashboard') ? 'active' : '' ?>">
+                Dashboard
+            </a>
+        <?php else: ?>
+            <a href="<?= $base ?>/emprunts/mes_emprunts.php" class="nav-link <?= is_active('emprunt') ? 'active' : '' ?>">
+                <?= $text['borrowed'] ?>
+            </a>
+            <a href="<?= $base ?>/commandes/commande_list.php" class="nav-link <?= is_active('commande') ? 'active' : '' ?>">
+                <?= $text['purchased'] ?>
             </a>
 
-            <?php if ($is_logged_in): ?>
-                <?php if ($user_role === 'admin'): ?>
-                    <a href="<?= $base ?>/admin/admin_dashboard.php"
-                       class="nav-link gold-badge <?= is_active('admin_dashboard') ? 'active' : '' ?>">
-                        Dashboard
-                    </a>
-                <?php else: ?>
-                    <a href="<?= $base ?>/emprunts/mes_emprunts.php"
-                       class="nav-link <?= is_active('emprunt', 'mes_emprunt') ? 'active' : '' ?>">
-                        <?= $text['borrowed'] ?>
-                    </a>
-                    <a href="<?= $base ?>/commandes/commande_list.php"
-                       class="nav-link <?= is_active('commande') ? 'active' : '' ?>">
-                        <?= $text['purchased'] ?>
-                    </a>
-                    <a href="/MEMOIR/cart/panier.php"
-                       class="nav-link <?= is_active('panier') ? 'active' : '' ?>">
-                        <i class="fa-solid fa-cart-shopping" style="font-size:11px;margin-right:4px"></i>
-                        <?= $text['cart'] ?? 'Panier' ?>
-                        <?php if ($cart_count > 0): ?>
-                            <span style="background:var(--gold);color:#2C1F0E;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"><?= $cart_count ?></span>
-                        <?php endif; ?>
-                    </a>
+            
+
+            <a href="/MEMOIR/cart/panier.php" class="nav-link <?= is_active('panier') ? 'active' : '' ?>">
+                <i class="fa-solid fa-cart-shopping" style="font-size:11px;margin-right:4px"></i>
+                <?= $text['cart'] ?? 'Panier' ?>
+                <?php if ($cart_count > 0): ?>
+                    <span style="background:var(--gold);color:#2C1F0E;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"><?= $cart_count ?></span>
                 <?php endif; ?>
-            <?php endif; ?>
+            </a>
+            <?php include_once 'header_wishlist_snippet.php'; ?>
+        <?php endif; ?>
+    <?php endif; ?>
 
-            <a href="<?= $base ?>/client/about.php"
-               class="nav-link <?= is_active('about') ? 'active' : '' ?>">
-                <?= $text['about'] ?>
-            </a>
-            <a href="<?= $base ?>/client/contact.php"
-               class="nav-link <?= is_active('contact') ? 'active' : '' ?>">
-                <?= $text['contact'] ?>
-            </a>
-        </div>
+    <a href="<?= $base ?>/client/about.php" class="nav-link <?= is_active('about') ? 'active' : '' ?>">
+        <?= $text['about'] ?>
+    </a>
+    <a href="<?= $base ?>/client/contact.php" class="nav-link <?= is_active('contact') ? 'active' : '' ?>">
+        <?= $text['contact'] ?>
+    </a>
+</div>
 
         <!-- ── RIGHT SIDE ── -->
         <div class="nav-right">
