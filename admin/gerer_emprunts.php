@@ -8,11 +8,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
     exit;
 }
 
-// Auto-update retards
-$conn->query("UPDATE emprunt SET statut = 'retard' 
-              WHERE date_retour_prevue < CURDATE() 
-              AND statut = 'acceptée' 
-              AND date_fin IS NULL");
+// ══ FIX 1 : Auto-update retards — vérification robuste ══
+// On cible uniquement les emprunts actifs (acceptée) dont la date_retour_prevue est dépassée
+$conn->query("
+    UPDATE emprunt 
+    SET statut = 'retard' 
+    WHERE date_retour_prevue < CURDATE() 
+      AND statut = 'acceptée' 
+      AND (date_fin IS NULL OR date_fin = '')
+");
 
 // Messages flash
 $msg    = $_GET['msg'] ?? '';
@@ -34,7 +38,7 @@ foreach (['en attente','acceptée','retard','rendu','refusée'] as $s) {
     $stats[$s] = (int)($r->fetch_assoc()['n'] ?? 0);
 }
 
-// Emprunts
+// ══ FIX 2 : SELECT étendu — on récupère date_fin pour l'affichage conditionnel ══
 $result = $conn->query("
     SELECT e.*, u.firstname, u.lastname, d.titre, d.exemplaires_disponibles
     FROM emprunt e 
@@ -285,14 +289,32 @@ td {
 }
 .user-book i { color: var(--gold); font-size: 10px; flex-shrink: 0; }
 
-/* Stock */
-.stock-ok   { display:inline-flex; align-items:center; gap:5px; color:#276749; font-size:11px; font-weight:700; }
-.stock-zero { display:inline-flex; align-items:center; gap:5px; color:var(--danger); font-size:11px; font-weight:700; }
-.stock-ok i, .stock-zero i { font-size:10px; }
-
-/* Dates */
-.date-main  { font-size:13px; font-weight:600; color:var(--page-text); }
-.date-late  { font-size:10px; color:var(--danger); font-weight:700; margin-top:2px; display:block; }
+/* ══ FIX 3 : Colonne "Période d'Emprunt" fusionnée ══ */
+.periode-cell { display: flex; flex-direction: column; gap: 4px; }
+.periode-row  { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+.periode-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--page-muted);
+    width: 36px; flex-shrink: 0;
+}
+.periode-date { font-weight: 600; color: var(--page-text); }
+.periode-date.danger { color: var(--danger); }
+.periode-arrow {
+    font-size: 9px; color: var(--gold); flex-shrink: 0;
+}
+.date-late {
+    font-size: 10px; color: var(--danger); font-weight: 700;
+    margin-top: 2px; display: block;
+}
+/* Badge "Rendu réel" */
+.date-reelle-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(39,103,73,.09);
+    border: 1px solid rgba(39,103,73,.22);
+    color: var(--success);
+    padding: 2px 8px; border-radius: 6px;
+    font-size: 10px; font-weight: 700;
+}
 
 /* Amende */
 .amende-badge {
@@ -473,12 +495,13 @@ td {
                 <tr>
                     <th>#</th>
                     <th>Lecteur &amp; Document</th>
-                    <th>Stock</th>
-                    <th>Demande</th>
-                    <th>Retour prévu</th>
-                    <th>Amende</th>
+                    <!-- FIX 2 : colonne Stock supprimée -->
+                    <!-- FIX 2 : "Demande" + "Retour prévu" fusionnées en "Période d'Emprunt" -->
+                    <th>Période d'Emprunt</th>
                     <th>Statut</th>
                     <th>Actions</th>
+                    <!-- FIX 2 : Amende déplacée en dernière colonne -->
+                    <th>Amende</th>
                 </tr>
             </thead>
             <tbody>
@@ -486,7 +509,7 @@ td {
             $rows = $result->fetch_all(MYSQLI_ASSOC);
             if (empty($rows)): ?>
             <tr class="empty-row">
-                <td colspan="8">
+                <td colspan="6">
                     <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
                     <h3>Aucun emprunt enregistré</h3>
                 </td>
@@ -505,6 +528,11 @@ td {
                 if ($row['statut'] === 'retard' && !empty($row['date_retour_prevue'])) {
                     $jours_retard = (int)(new DateTime())->diff(new DateTime($row['date_retour_prevue']))->days;
                 }
+                // FIX 3 : date de fin réelle si rendu, sinon date prévue
+                $est_rendu = $row['statut'] === 'rendu';
+                $date_fin_affichee = $est_rendu && !empty($row['date_fin'])
+                    ? $row['date_fin']
+                    : $row['date_retour_prevue'];
             ?>
             <tr>
                 <td class="td-id">#<?= str_pad($row['id_emprunt'], 3, '0', STR_PAD_LEFT) ?></td>
@@ -517,51 +545,47 @@ td {
                     </div>
                 </td>
 
+                <!-- ══ FIX 2+3 : Colonne "Période d'Emprunt" fusionnée + affichage conditionnel ══ -->
                 <td>
-                    <?php if ((int)$row['exemplaires_disponibles'] > 0): ?>
-                        <span class="stock-ok">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <?= $row['exemplaires_disponibles'] ?> dispo
-                        </span>
-                    <?php else: ?>
-                        <span class="stock-zero">
-                            <i class="fa-solid fa-circle-xmark"></i>
-                            Épuisé
-                        </span>
-                    <?php endif; ?>
-                </td>
+                    <div class="periode-cell">
+                        <!-- Ligne 1 : Date de début -->
+                        <div class="periode-row">
+                            <span class="periode-label">Début</span>
+                            <span class="periode-date">
+                                <?= $row['date_debut'] ? date('d/m/Y', strtotime($row['date_debut'])) : '—' ?>
+                            </span>
+                        </div>
 
-                <td>
-                    <span class="date-main">
-                        <?= $row['date_debut'] ? date('d/m/Y', strtotime($row['date_debut'])) : '—' ?>
-                    </span>
-                </td>
-
-                <td>
-                    <?php if ($row['date_retour_prevue']): ?>
-                        <span class="date-main" style="<?= $row['statut']==='retard' ? 'color:var(--danger)' : '' ?>">
-                            <?= date('d/m/Y', strtotime($row['date_retour_prevue'])) ?>
-                        </span>
+                        <!-- Ligne 2 : Date de fin (réelle si rendu, prévue sinon) -->
+                        <?php if ($date_fin_affichee): ?>
+                        <div class="periode-row">
+                            <span class="periode-label" style="color:<?= $est_rendu ? 'var(--success)' : ($row['statut']==='retard' ? 'var(--danger)' : 'var(--page-muted)') ?>">
+                                <?= $est_rendu ? 'Rendu' : 'Retour' ?>
+                            </span>
+                            <?php if ($est_rendu): ?>
+                                <span class="date-reelle-badge">
+                                    <i class="fa-solid fa-circle-check" style="font-size:9px"></i>
+                                    <?= date('d/m/Y', strtotime($date_fin_affichee)) ?>
+                                </span>
+                            <?php else: ?>
+                                <span class="periode-date <?= $row['statut']==='retard' ? 'danger' : '' ?>">
+                                    <?= date('d/m/Y', strtotime($date_fin_affichee)) ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
                         <?php if ($row['statut'] === 'retard'): ?>
                             <span class="date-late">
                                 <i class="fa-solid fa-clock" style="font-size:9px"></i>
                                 <?= $jours_retard ?> j de retard
                             </span>
                         <?php endif; ?>
-                    <?php else: ?>
-                        <span class="dash">—</span>
-                    <?php endif; ?>
-                </td>
-
-                <td>
-                    <?php if ($row['amende'] > 0): ?>
-                        <span class="amende-badge">
-                            <i class="fa-solid fa-coins" style="font-size:10px"></i>
-                            <?= number_format($row['amende'], 0) ?> DA
-                        </span>
-                    <?php else: ?>
-                        <span class="dash">—</span>
-                    <?php endif; ?>
+                        <?php else: ?>
+                        <div class="periode-row">
+                            <span class="periode-label">Retour</span>
+                            <span class="dash">—</span>
+                        </div>
+                        <?php endif; ?>
+                    </div>
                 </td>
 
                 <td>
@@ -595,6 +619,18 @@ td {
                         <span class="dash">—</span>
                     <?php endif; ?>
                     </div>
+                </td>
+
+                <!-- ══ FIX 2 : Amende en dernière colonne ══ -->
+                <td>
+                    <?php if ($row['amende'] > 0): ?>
+                        <span class="amende-badge">
+                            <i class="fa-solid fa-coins" style="font-size:10px"></i>
+                            <?= number_format($row['amende'], 0) ?> DA
+                        </span>
+                    <?php else: ?>
+                        <span class="dash">—</span>
+                    <?php endif; ?>
                 </td>
             </tr>
             <?php endforeach; endif; ?>

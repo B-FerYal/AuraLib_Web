@@ -1,13 +1,17 @@
 <?php
 // ══════════════════════════════════════════════════════════════════
-//  AuraLib · notifications.php  (côté client)
-//  Affiche les notifications de l'utilisateur connecté
+//  AuraLib · admin/notifications.php
+//  Affiche les notifications de l'administrateur connecté
 // ══════════════════════════════════════════════════════════════════
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once "../includes/db.php";
 
 if (!isset($_SESSION['id_user'])) {
     header("Location: ../auth/login.php");
+    exit;
+}
+if (($_SESSION['role'] ?? 'client') !== 'admin') {
+    header("Location: ../client/notifications.php");
     exit;
 }
 
@@ -42,7 +46,7 @@ if (isset($_GET['action'])) {
     exit;
 }
 
-// ── Include header APRÈS les actions (évite "headers already sent") ──
+// ── Include header ────────────────────────────────────────────────
 include "../includes/header.php"; // fournit $text, $lang, $conn
 
 // ── 2. Récupérer les notifications (non-lues d'abord) ─────────────
@@ -68,7 +72,7 @@ $lbl = [
     'mark_all'    => $is_ar ? 'تحديد الكل كمقروء'               : 'Tout marquer comme lu',
     'delete_all'  => $is_ar ? 'حذف الكل'                        : 'Tout supprimer',
     'empty_title' => $is_ar ? 'لا توجد إشعارات'                 : 'Aucune notification',
-    'empty_sub'   => $is_ar ? 'ستظهر إشعاراتك هنا'              : 'Vos rappels et alertes apparaîtront ici.',
+    'empty_sub'   => $is_ar ? 'ستظهر إشعاراتك هنا'              : 'Vos alertes système apparaîtront ici.',
     'details'     => $is_ar ? 'عرض التفاصيل'                    : 'Voir les détails',
     'mark_read'   => $is_ar ? 'وضع علامة مقروء'                 : 'Marquer comme lu',
     'delete'      => $is_ar ? 'حذف'                             : 'Supprimer',
@@ -83,7 +87,7 @@ $lbl = [
 <meta charset="UTF-8">
 <?php include '../includes/dark_init.php'; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuraLib · <?= $lbl['title'] ?></title>
+<title>AuraLib Admin · <?= $lbl['title'] ?></title>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
@@ -425,13 +429,40 @@ html[dir="rtl"] .notif-card.unread {
             <h1 class="hero-title">
                 Vos <span>Alertes</span>
             </h1>
+            <!-- Badge Admin discret -->
+            <span style="
+                display:inline-flex;align-items:center;gap:6px;align-self:flex-start;
+                padding:4px 12px;border-radius:30px;
+                background:rgba(196,164,107,.10);
+                border:1.5px solid rgba(196,164,107,.28);
+                color:rgba(196,164,107,.75);
+                font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+            ">
+                <i class="fa-solid fa-shield-halved" style="font-size:9px"></i>
+                Admin
+            </span>
         </div>
-        <?php if ($non_lues > 0): ?>
-        <div class="hero-badge">
-            <span class="dot"></span>
-            <?= $non_lues ?> <?= $lbl['non_lues'] ?>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px;">
+            <?php if ($non_lues > 0): ?>
+            <div class="hero-badge">
+                <span class="dot"></span>
+                <?= $non_lues ?> <?= $lbl['non_lues'] ?>
+            </div>
+            <?php endif; ?>
+            <a href="admin_dashboard.php" style="
+                display:inline-flex;align-items:center;gap:8px;
+                padding:9px 20px;border-radius:30px;
+                background:rgba(196,164,107,.08);
+                border:1.5px solid rgba(196,164,107,.25);
+                color:rgba(196,164,107,.7);
+                font-size:12px;font-weight:700;text-decoration:none;
+                transition:all .25s;
+            " onmouseover="this.style.background='rgba(196,164,107,.18)';this.style.color='#C4A46B'"
+               onmouseout="this.style.background='rgba(196,164,107,.08)';this.style.color='rgba(196,164,107,.7)'">
+                <i class="fa-solid fa-arrow-left" style="font-size:10px"></i>
+                Retour au Dashboard
+            </a>
         </div>
-        <?php endif; ?>
     </div>
 </div>
 

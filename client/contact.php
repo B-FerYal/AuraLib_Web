@@ -176,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send'])) {
     color: #C4A46B; font-size: 11px; font-weight: 700;
     letter-spacing: <?= $isRtl ? '0' : '2px' ?>;
     text-transform: uppercase; padding: 6px 18px;
-    border-radius: 30px; margin-bottom: 20px;
+    border-radius: 30px; margin-bottom: 20px; margin-top: 45px;
     font-family: <?= $isRtl ? "'Tajawal', sans-serif" : "inherit" ?>;
 }
 .contact-hero h1 {

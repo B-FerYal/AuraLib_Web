@@ -30,6 +30,13 @@ $display_name     = htmlspecialchars($user['firstname'] ?? $_SESSION['firstname'
 $display_email    = htmlspecialchars($user['email'] ?? '');
 $display_fullname = htmlspecialchars(trim(($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? '')));
 
+// ── Unread notifications count ─────────────────────────────────────
+$notif_count = 0;
+if ($is_logged_in && isset($conn)) {
+    $res_notif = $conn->query("SELECT COUNT(*) as cnt FROM notifications WHERE id_user=$id_user AND lu=0");
+    if ($res_notif) $notif_count = (int)($res_notif->fetch_assoc()['cnt'] ?? 0);
+}
+
 $current_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 function is_active(string ...$paths): bool {
     global $current_uri;
@@ -149,8 +156,46 @@ function is_active(string ...$paths): bool {
             font-weight: 600;
         }
 
-        .nav-right { display: flex; align-items: center; gap: 10px; }
-        .vsep { width: 1px; height: 20px; background: rgba(196,164,107,.2); flex-shrink: 0; }
+        .nav-right { display: flex; align-items: center; gap: 6px; }
+        .vsep { width: 1px; height: 20px; background: rgba(196,164,107,.2); flex-shrink: 0; margin: 0 4px; }
+
+        /* ════ UNIFIED NAV ICON BUTTONS (bell, cart, etc.) ════════ */
+        .nav-icon-btn {
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(196,164,107,.08);
+            border: 1px solid rgba(196,164,107,.18);
+            color: rgba(237,229,212,.55);
+            text-decoration: none; flex-shrink: 0;
+            transition: background .18s, border-color .18s, color .18s, transform .18s;
+        }
+        .nav-icon-btn i { font-size: 14px; pointer-events: none; }
+        .nav-icon-btn:hover {
+            background: rgba(196,164,107,.16);
+            border-color: rgba(196,164,107,.4);
+            color: var(--gold);
+            transform: scale(1.06);
+        }
+        .nav-icon-btn.nav-icon-active {
+            background: rgba(196,164,107,.14);
+            border-color: rgba(196,164,107,.38);
+            color: var(--gold);
+        }
+        /* Red badge (notifications) */
+        .nav-icon-badge {
+            position: absolute; top: -4px; right: -4px;
+            background: #ef4444; color: #fff;
+            font-size: 9px; font-weight: 800;
+            min-width: 16px; height: 16px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 3px; border: 1.5px solid var(--nav-bg);
+            line-height: 1; pointer-events: none;
+        }
+        /* Gold badge (cart) */
+        .nav-icon-badge--gold {
+            background: var(--gold); color: #2C1F0E;
+        }
 
         /* ════ LANGUAGE DROPDOWN ════════════════════ */
         .lang-dropdown { position: relative; display: inline-block; }
@@ -512,17 +557,6 @@ function is_active(string ...$paths): bool {
             <a href="<?= $base ?>/commandes/commande_list.php" class="nav-link <?= is_active('commande') ? 'active' : '' ?>">
                 <?= $text['purchased'] ?>
             </a>
-
-            
-
-            <a href="/MEMOIR/cart/panier.php" class="nav-link <?= is_active('panier') ? 'active' : '' ?>">
-                <i class="fa-solid fa-cart-shopping" style="font-size:11px;margin-right:4px"></i>
-                <?= $text['cart'] ?? 'Panier' ?>
-                <?php if ($cart_count > 0): ?>
-                    <span style="background:var(--gold);color:#2C1F0E;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"><?= $cart_count ?></span>
-                <?php endif; ?>
-            </a>
-            <?php include_once 'header_wishlist_snippet.php'; ?>
         <?php endif; ?>
     <?php endif; ?>
 
@@ -534,19 +568,17 @@ function is_active(string ...$paths): bool {
     </a>
 </div>
 
-        <!-- ── RIGHT SIDE ── -->
+        <!-- ══ RIGHT SIDE ══════════════════════════════════════════ -->
         <div class="nav-right">
 
+            <!-- 1. Admin search bar (admin only) -->
             <?php if ($user_role === 'admin'): ?>
-            <!-- ── Admin Search Bar ── -->
             <div class="adm-search-wrap" style="position:relative;">
                 <div class="adm-search-form">
-                    <input class="adm-search-input"
-                           id="adm-search-input"
+                    <input class="adm-search-input" id="adm-search-input"
                            type="search"
                            placeholder="Rechercher docs, utilisateurs, emprunts…"
-                           autocomplete="off"
-                           aria-label="Recherche admin">
+                           autocomplete="off" aria-label="Recherche admin">
                     <button class="adm-search-btn" type="button">
                         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" width="17" height="17">
                             <circle cx="8.5" cy="8.5" r="5.5"/>
@@ -559,7 +591,7 @@ function is_active(string ...$paths): bool {
             <div class="vsep"></div>
             <?php endif; ?>
 
-            <!-- Language dropdown -->
+            <!-- 2. Language -->
             <div class="lang-dropdown" id="langDropdown">
                 <div class="lang-trigger" id="langTrigger">
                     <i class="fa-solid fa-globe" style="font-size:12px"></i>
@@ -574,102 +606,131 @@ function is_active(string ...$paths): bool {
                     $keep = $_GET; unset($keep['lang']);
                     $qs   = count($keep) ? '&' . http_build_query($keep) : '';
                     ?>
-                    <a href="?lang=fr<?= $qs ?>" class="lang-item <?= $lang==='fr' ? 'active' : '' ?>">
-                        <span class="lang-flag">🇫🇷</span> Français
-                    </a>
-                    <a href="?lang=en<?= $qs ?>" class="lang-item <?= $lang==='en' ? 'active' : '' ?>">
-                        <span class="lang-flag">🇬🇧</span> English
-                    </a>
-                    <a href="?lang=ar<?= $qs ?>" class="lang-item <?= $lang==='ar' ? 'active' : '' ?>">
-                        <span class="lang-flag">🇩🇿</span> العربية
-                    </a>
+                    <a href="?lang=fr<?= $qs ?>" class="lang-item <?= $lang==='fr'?'active':'' ?>"><span class="lang-flag">🇫🇷</span> Français</a>
+                    <a href="?lang=en<?= $qs ?>" class="lang-item <?= $lang==='en'?'active':'' ?>"><span class="lang-flag">🇬🇧</span> English</a>
+                    <a href="?lang=ar<?= $qs ?>" class="lang-item <?= $lang==='ar'?'active':'' ?>"><span class="lang-flag">🇩🇿</span> العربية</a>
                 </div>
             </div>
 
-            <div class="vsep"></div>
-
-            <!-- Dark mode toggle — single toggle, key: auralib_theme -->
+            <!-- 3. Dark mode toggle -->
             <label class="theme-switch" title="Mode sombre">
                 <input type="checkbox" id="darkToggle">
                 <span class="sw-track"></span>
                 <span class="sw-thumb"></span>
             </label>
 
-            <div class="vsep"></div>
-
             <?php if ($is_logged_in): ?>
 
+            <div class="vsep"></div>
 
+            <!-- 4. Notification bell -->
+            <?php
+            $notif_url = ($user_role === 'admin')
+                ? $base . '/admin/notifications.php'
+                : $base . '/client/notifications.php';
+            ?>
+            <a href="<?= $notif_url ?>" class="nav-icon-btn <?= str_contains($current_uri, 'notifications') ? 'nav-icon-active' : '' ?>" title="Notifications">
+                <i class="fa-regular fa-bell"></i>
+                <?php if ($notif_count > 0): ?>
+                <span class="nav-icon-badge"><?= $notif_count > 99 ? '99+' : $notif_count ?></span>
+                <?php endif; ?>
+            </a>
 
-                <!-- Profile dropdown -->
-                <div class="profile-wrap" id="profileWrap">
-                    <div class="profile-trigger" id="profileTrigger">
-                        <div class="nav-avatar"><?= $first_letter ?></div>
-                        <div class="nav-greeting">
-                            <span class="nav-hello">Bonjour</span>
-                            <span class="nav-username"><?= $display_name ?></span>
-                        </div>
-                        <i class="fa-solid fa-chevron-down profile-caret"></i>
+            <!-- 5. Wishlist heart (client only) — snippet injecte son propre HTML -->
+            <?php if ($user_role === 'client'): ?>
+            <?php include_once 'header_wishlist_snippet.php'; ?>
+            <?php endif; ?>
+
+            <!-- 6. Cart (client only) -->
+            <?php if ($user_role === 'client'): ?>
+            <a href="<?= $base ?>/cart/panier.php"
+               class="nav-icon-btn <?= is_active('panier') ? 'nav-icon-active' : '' ?>"
+               title="<?= $text['cart'] ?? 'Panier' ?>">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <?php if ($cart_count > 0): ?>
+                <span class="nav-icon-badge nav-icon-badge--gold"><?= $cart_count ?></span>
+                <?php endif; ?>
+            </a>
+            <?php endif; ?>
+
+            <div class="vsep"></div>
+
+            <!-- 7. Profile dropdown -->
+            <div class="profile-wrap" id="profileWrap">
+                <div class="profile-trigger" id="profileTrigger">
+                    <div class="nav-avatar"><?= $first_letter ?></div>
+                    <div class="nav-greeting">
+                        <span class="nav-hello">Bonjour</span>
+                        <span class="nav-username"><?= $display_name ?></span>
                     </div>
-
-                    <div class="profile-dropdown" id="profileDropdown">
-                        <div class="dd-head">
-                            <div class="dd-av"><?= $first_letter ?></div>
-                            <div class="dd-info">
-                                <div class="dd-fullname"><?= $display_fullname ?: $display_name ?></div>
-                                <div class="dd-role"><?= ucfirst($user_role) ?></div>
-                                <?php if ($display_email): ?>
-                                    <div class="dd-email"><?= $display_email ?></div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-
-                        <div class="dd-body">
-                            <a href="<?= $base ?>/client/profile.php" class="dd-item">
-                                <i class="fa-regular fa-user"></i> Mon Profil
-                            </a>
-
-                            <?php if ($user_role === 'client'): ?>
-                            <a href="<?= $base ?>/emprunts/mes_emprunts.php" class="dd-item">
-                                <i class="fa-regular fa-clock"></i> Mes Emprunts
-                            </a>
-                            <a href="<?= $base ?>/commandes/commande_list.php" class="dd-item">
-                                <i class="fa-solid fa-receipt"></i> Mes Commandes
-                            </a>
-                            <a href="<?= $base ?>/cart/panier.php" class="dd-item">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                                Mon Panier
-                                <?php if ($cart_count > 0): ?>
-                                    <span style="margin-left:auto;background:var(--gold);color:#2C1F0E;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;"><?= $cart_count ?></span>
-                                <?php endif; ?>
-                            </a>
-                            <?php endif; ?>
-
-                            <?php if ($user_role === 'admin'): ?>
-                            <a href="<?= $base ?>/admin/admin_dashboard.php" class="dd-item">
-                                <i class="fa-solid fa-gauge-high"></i> Dashboard Admin
-                            </a>
-                            <a href="<?= $base ?>/admin/gerer_documents.php" class="dd-item">
-                                <i class="fa-solid fa-book"></i> Gérer Documents
-                            </a>
-                            <?php endif; ?>
-
-                            <div class="dd-sep"></div>
-
-                            <a href="<?= $base ?>/client/notifications.php" class="dd-item">
-                                <i class="fa-regular fa-bell"></i> Notifications
-                            </a>
-
-                            <div class="dd-sep"></div>
-
-                            <a href="<?= $base ?>/auth/logout.php" class="dd-item dd-logout">
-                                <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
-                            </a>
-                        </div>
-                    </div>
+                    <i class="fa-solid fa-chevron-down profile-caret"></i>
                 </div>
 
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dd-head">
+                        <div class="dd-av"><?= $first_letter ?></div>
+                        <div class="dd-info">
+                            <div class="dd-fullname"><?= $display_fullname ?: $display_name ?></div>
+                            <div class="dd-role"><?= ucfirst($user_role) ?></div>
+                            <?php if ($display_email): ?>
+                            <div class="dd-email"><?= $display_email ?></div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="dd-body">
+
+                        <!-- Mon Profil -->
+                        <a href="<?= $base ?>/client/profile.php" class="dd-item">
+                            <i class="fa-regular fa-user"></i> Mon Profil
+                        </a>
+
+                        <?php if ($user_role === 'admin'): ?>
+                        <!-- Admin items -->
+                        <a href="<?= $base ?>/admin/admin_dashboard.php" class="dd-item">
+                            <i class="fa-solid fa-gauge-high"></i> Dashboard Admin
+                        </a>
+                        <a href="<?= $base ?>/admin/gerer_documents.php" class="dd-item">
+                            <i class="fa-regular fa-file-lines"></i> Gérer Documents
+                        </a>
+                        <?php else: ?>
+                        <!-- Client items -->
+                        <a href="<?= $base ?>/emprunts/mes_emprunts.php" class="dd-item">
+                            <i class="fa-regular fa-clock"></i> Mes Emprunts
+                        </a>
+                        <a href="<?= $base ?>/commandes/commande_list.php" class="dd-item">
+                            <i class="fa-solid fa-receipt"></i> Mes Commandes
+                        </a>
+                        <a href="<?= $base ?>/cart/panier.php" class="dd-item">
+                            <i class="fa-solid fa-cart-shopping"></i> Mon Panier
+                            <?php if ($cart_count > 0): ?>
+                            <span style="margin-left:auto;background:var(--gold);color:#2C1F0E;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;"><?= $cart_count ?></span>
+                            <?php endif; ?>
+                        </a>
+                        <?php endif; ?>
+
+                        <div class="dd-sep"></div>
+
+                        <!-- Notifications -->
+                        <a href="<?= $notif_url ?>" class="dd-item">
+                            <i class="fa-regular fa-bell"></i> Notifications
+                            <?php if ($notif_count > 0): ?>
+                            <span style="margin-left:auto;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;"><?= $notif_count ?></span>
+                            <?php endif; ?>
+                        </a>
+
+                        <div class="dd-sep"></div>
+
+                        <a href="<?= $base ?>/auth/logout.php" class="dd-item dd-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <?php else: ?>
+                <!-- Not logged in -->
+                <div class="vsep"></div>
                 <a href="<?= $base ?>/auth/login.php" class="btn-login"><?= $text['login'] ?? 'Connexion' ?></a>
                 <a href="<?= $base ?>/auth/signup.php" class="btn-signup"><?= $text['signup'] ?? "S'inscrire" ?></a>
             <?php endif; ?>
