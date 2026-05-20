@@ -14,6 +14,7 @@ $pg = [
         'click_hint'   => 'Cliquer sur une tranche',
         'cat_prefix'   => '📈 Revenus — ',
         'btn_all'      => '↩ Tout',
+        'btn_back'     => '← Retour au Dashboard',
         'stat_active'  => 'Emprunts Actifs',
         'stat_late'    => 'En Retard',
         'stat_pending' => 'En Attente',
@@ -29,6 +30,7 @@ $pg = [
         'click_hint'   => 'Click a slice',
         'cat_prefix'   => '📈 Revenue — ',
         'btn_all'      => '↩ All',
+        'btn_back'     => '← Back to Dashboard',
         'stat_active'  => 'Active Loans',
         'stat_late'    => 'Overdue',
         'stat_pending' => 'Pending',
@@ -44,6 +46,7 @@ $pg = [
         'click_hint'   => 'انقر على فئة',
         'cat_prefix'   => '📈 إيرادات — ',
         'btn_all'      => 'الكل ↩',
+        'btn_back'     => 'العودة للوحة التحكم ←',
         'stat_active'  => 'استعارات نشطة',
         'stat_late'    => 'متأخرة',
         'stat_pending' => 'قيد الانتظار',
@@ -294,9 +297,14 @@ html.dark .stat-val   { color: var(--page-text); }
 </style>
 
 <!-- HERO -->
-<div class="stats-hero">
-    <div class="stats-hero-title"><?= $p['dash_title'] ?></div>
-    <div class="stats-hero-sub"><?= $p['dash_sub'] ?></div>
+<div class="stats-hero" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;flex-direction:<?= $isRtl?'row-reverse':'row' ?>">
+    <div>
+        <div class="stats-hero-title"><?= $p['dash_title'] ?></div>
+        <div class="stats-hero-sub"><?= $p['dash_sub'] ?></div>
+    </div>
+    <a href="/MEMOIR/admin/admin_dashboard.php" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:50px;font-size:12px;font-weight:700;color:rgba(196,164,107,.8);background:rgba(196,164,107,.1);border:1.5px solid rgba(196,164,107,.25);text-decoration:none;transition:all .22s;flex-shrink:0;font-family:var(--font-ui)">
+        <?= $p['btn_back'] ?>
+    </a>
 </div>
 
 <div class="adm-wrap">
