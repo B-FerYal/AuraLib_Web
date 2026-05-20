@@ -1,0 +1,48 @@
+[33me32cd6b[m[33m ([m[1;36mHEAD[m[33m)[m HEAD@{0}: commit: my local changes before pull
+[33mc7191fc[m HEAD@{1}: pull origin main --rebase (pick): fix search dropdown and layout
+[33m36d0796[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{2}: pull origin main --rebase (start): checkout 36d0796e8347f7e7d644f7c9cc519dfc69e558c1
+[33mf08b1f9[m[33m ([m[1;32mmain[m[33m)[m HEAD@{3}: commit: fix search dropdown and layout
+[33m6a448b4[m HEAD@{4}: pull origin main --rebase (finish): returning to refs/heads/main
+[33m6a448b4[m HEAD@{5}: pull origin main --rebase (pick): fix search dropdown and layout
+[33mc4632c5[m HEAD@{6}: pull origin main --rebase (start): checkout c4632c5cc709d609f497a86a514241fe6346098b
+[33m4b6f3e8[m HEAD@{7}: pull origin main --rebase (finish): returning to refs/heads/main
+[33m4b6f3e8[m HEAD@{8}: pull origin main --rebase (pick): fix search dropdown and layout
+[33mdcfe6be[m HEAD@{9}: pull origin main --rebase (start): checkout dcfe6bea2f4d19b7fcc763ac13edb5f12a3d0f37
+[33mdfff100[m HEAD@{10}: commit: fix search dropdown and layout
+[33m82c9484[m HEAD@{11}: commit: fix search dropdown and btns
+[33m421baeb[m HEAD@{12}: pull origin main --rebase (finish): returning to refs/heads/main
+[33m421baeb[m HEAD@{13}: pull origin main --rebase (pick): fix panier
+[33m7c717b2[m HEAD@{14}: pull origin main --rebase (start): checkout 7c717b25a51ccfa0770b5b7688ba9bdcaaa1a6e0
+[33mc938197[m HEAD@{15}: commit: fix panier
+[33mc2ca78c[m HEAD@{16}: reset: moving to HEAD
+[33mc2ca78c[m HEAD@{17}: rebase (abort): returning to refs/heads/main
+[33mbfd5103[m HEAD@{18}: commit: fix recherche and reloud pages
+[33m523ce44[m HEAD@{19}: pull origin main --rebase (start): checkout 523ce44fbbd0e90c802057f0f8cd872b3e74abdf
+[33mc2ca78c[m HEAD@{20}: commit: fix bare de recharch and relod pages
+[33mec674f0[m HEAD@{21}: reset: moving to ec674f0
+[33m523ce44[m HEAD@{22}: commit: just pour fix errs
+[33mec674f0[m HEAD@{23}: pull origin main --rebase: Fast-forward
+[33m75f8553[m HEAD@{24}: commit (merge): Mise à jour restock
+[33mbf2756e[m HEAD@{25}: commit (merge): Ajout de la logique load more
+[33m7f5f354[m HEAD@{26}: commit: modifer voir tout dans library.php
+[33me4f2b6e[m HEAD@{27}: reset: moving to origin/main
+[33me4f2b6e[m HEAD@{28}: rebase (finish): returning to refs/heads/main
+[33me4f2b6e[m HEAD@{29}: commit: Fixing conflict before pull
+[33m58614ae[m HEAD@{30}: pull origin main --rebase (start): checkout 58614ae7747358eecbaf58724c3104dd8e957b9e
+[33m2d58f85[m HEAD@{31}: commit: Mise à jour library
+[33me997383[m HEAD@{32}: commit: Finalisation du design ID et synchronisation
+[33m0d8e64b[m HEAD@{33}: reset: moving to HEAD
+[33m0d8e64b[m HEAD@{34}: pull origin main: Fast-forward
+[33mf4f6a4e[m HEAD@{35}: reset: moving to HEAD
+[33mf4f6a4e[m HEAD@{36}: pull: Fast-forward
+[33m1da783e[m HEAD@{37}: rebase (finish): returning to refs/heads/main
+[33m1da783e[m HEAD@{38}: commit: Fixed admin roles
+[33m10b9b7d[m HEAD@{39}: pull origin main --rebase (start): checkout 10b9b7dcdfd26393720294d1f2950b667685d590
+[33m1b4a8db[m HEAD@{40}: commit: Mise à jour all_orders pour ma collègue
+[33m1e5413a[m HEAD@{41}: commit: Mise à jour all_orders pour ma collègue
+[33m385808f[m HEAD@{42}: commit: Mise à jour admin dashboard
+[33m0d69d2b[m HEAD@{43}: commit: Mise à jour signup pour ma collègue
+[33m9c21002[m HEAD@{44}: pull origin main --rebase (finish): returning to refs/heads/main
+[33m9c21002[m HEAD@{45}: pull origin main --rebase (pick): Projet AuraLib - Debut
+[33mc8fa35e[m HEAD@{46}: pull origin main --rebase (start): checkout c8fa35e572246b82df5f4144fabee86d641a08cd
+[33m2867d1d[m HEAD@{47}: commit (initial): Projet AuraLib - Debut
