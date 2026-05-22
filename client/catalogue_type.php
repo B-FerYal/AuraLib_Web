@@ -35,11 +35,11 @@ switch ($avail) {
 
 /* ── sort ── */
 $order = match($sort) {
-    'title'    => 'd.titre ASC',
-    'price_asc'=> 'd.prix ASC',
+    'title'     => 'd.titre ASC',
+    'price_asc' => 'd.prix ASC',
     'price_desc'=> 'd.prix DESC',
-    'oldest'   => 'd.id_doc ASC',
-    default    => 'd.id_doc DESC',
+    'oldest'    => 'd.id_doc ASC',
+    default     => 'd.id_doc DESC',
 };
 
 /* ── total count ── */
@@ -54,7 +54,7 @@ $sql = "SELECT d.*, t.libelle_type
         WHERE d.id_type = $type_id $avail_cond
         ORDER BY $order
         LIMIT $per OFFSET $offset";
-$result  = $conn->query($sql);
+$result    = $conn->query($sql);
 $documents = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
 function resolveImg($d) {
@@ -64,7 +64,7 @@ function resolveImg($d) {
 }
 
 function buildUrl($params) {
-    $base = $_SERVER['PHP_SELF'] . '?';
+    $base    = $_SERVER['PHP_SELF'] . '?';
     $current = ['type' => $_GET['type'] ?? '', 'avail' => $_GET['avail'] ?? 'all',
                  'sort' => $_GET['sort'] ?? 'newest', 'page' => $_GET['page'] ?? 1];
     return $base . http_build_query(array_merge($current, $params));
@@ -81,6 +81,7 @@ function buildUrl($params) {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
 <link rel="stylesheet" href="/MEMOIR/css/aura-base.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 /* ══ PAGE-SPECIFIC: Cat Hero Banner ══ */
 .cat-hero { background: linear-gradient(135deg, #1A0E05 0%, #2E1D08 50%, #1A0E05 100%); padding: 60px 5% 50px; position: relative; overflow: hidden; }
@@ -114,6 +115,85 @@ html.dark .cat-toolbar.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.35); }
 
 /* ══ PAGE-SPECIFIC: Main container ══ */
 .cat-main { max-width: 1380px; margin: 0 auto; padding: 36px 5% 80px; }
+
+/* ══ Circular Pagination — AuraLib style ══ */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 52px;
+    flex-wrap: wrap;
+}
+.pg-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .22s cubic-bezier(.4,0,.2,1);
+    /* light mode: crème foncé comme la screenshot */
+    background: #2C1F0E;
+    color: #EDE5D4;
+    border: 1.5px solid rgba(196,164,107,.18);
+    box-shadow: 0 2px 10px rgba(44,31,14,.25);
+    line-height: 1;
+}
+/* light mode override */
+body:not(.dark-mode) .pg-btn {
+    background: #2C1F0E;
+    color: #EDE5D4;
+    border-color: rgba(196,164,107,.2);
+}
+html.dark .pg-btn {
+    background: #1E1610;
+    color: #C4A46B;
+    border-color: rgba(196,164,107,.15);
+    box-shadow: 0 2px 10px rgba(0,0,0,.4);
+}
+.pg-btn:hover:not(.active):not(.disabled) {
+    background: #3A2A14;
+    border-color: rgba(196,164,107,.4);
+    color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 16px rgba(44,31,14,.35);
+}
+html.dark .pg-btn:hover:not(.active):not(.disabled) {
+    background: #2C1F0E;
+    border-color: rgba(196,164,107,.35);
+    color: var(--gold2);
+}
+/* active = gold circle (matching screenshot's red → use gold for AuraLib) */
+.pg-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1A0E05;
+    box-shadow: 0 4px 18px rgba(196,164,107,.45);
+    transform: scale(1.1);
+    pointer-events: none;
+}
+.pg-btn.disabled {
+    opacity: .3;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.pg-ellipsis {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--page-muted);
+    letter-spacing: 1px;
+}
 </style>
 </head>
 <body>
@@ -151,9 +231,9 @@ html.dark .cat-toolbar.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.35); }
         <span style="font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--page-muted);padding-right:4px;">Filtrer :</span>
         <?php
         $pills = [
-            'all'    => ['label'=>'Tout',           'cls'=>'ap-all'],
-            'buy'    => ['label'=>'Achat',          'cls'=>'ap-buy'],
-            'borrow' => ['label'=>'Emprunt',        'cls'=>'ap-borrow'],
+            'all'    => ['label'=>'Tout',                'cls'=>'ap-all'],
+            'buy'    => ['label'=>'Achat',               'cls'=>'ap-buy'],
+            'borrow' => ['label'=>'Emprunt',             'cls'=>'ap-borrow'],
             'both'   => ['label'=>'Achat &amp; Emprunt', 'cls'=>'ap-both'],
         ];
         foreach ($pills as $val => $p):
@@ -229,7 +309,7 @@ html.dark .cat-toolbar.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.35); }
                     <span class="avail-tag tag-borrow"><i class="fa-regular fa-clock" style="font-size:8px"></i> Emprunt</span>
                     <?php endif; ?>
                 </div>
-                <?php if ($is_logged_in && $user_role==='client'): ?>
+                <?php if ($is_logged_in && $user_role === 'client'): ?>
                 <button class="wish-btn" onclick="event.preventDefault();toggleWishlist(this,<?= (int)$d['id_doc'] ?>)" title="Favoris">
                     <i class="fa-regular fa-heart"></i>
                 </button>
@@ -252,24 +332,17 @@ html.dark .cat-toolbar.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.35); }
                 <?php if ($user_role === 'client'): ?>
                 <div class="card-actions">
                     <?php if ($is_both): ?>
-                    <div class="btn-both-wrap">
-                        <button class="btn-card btn-both full" onclick="toggleBothMenu(this, <?= (int)$d['id_doc'] ?>)">
-                            <i class="fa-solid fa-plus"></i> Choisir
-                        </button>
-                        <div class="both-menu" id="both-menu-<?= (int)$d['id_doc'] ?>">
-                            <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="both-opt">
-                                <i class="fa-regular fa-clock"></i><span>Emprunter</span>
-                            </a>
-                            <div class="both-opt" style="padding:0;">
-                                <form action="../cart/add_to_cart.php" method="POST" style="width:100%;">
-                                    <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
-                                    <button type="submit" style="all:unset;display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;font-family:var(--font-ui);font-size:11px;font-weight:600;color:var(--page-text);cursor:pointer;">
-                                        <i class="fa-solid fa-cart-plus" style="color:var(--gold);font-size:12px;"></i><span>Acheter</span>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                        <?php // ═══ FIX 1: Two direct buttons instead of "Choisir" dropdown menu ═══ ?>
+                        <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>"
+                           class="btn-card btn-borrow">
+                            <i class="fa-regular fa-clock"></i> Emprunter
+                        </a>
+                        <form action="../cart/add_to_cart.php" method="POST" style="flex:1;display:flex">
+                            <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
+                            <button type="submit" class="btn-card btn-buy">
+                                <i class="fa-solid fa-cart-plus"></i> Acheter
+                            </button>
+                        </form>
                     <?php else: ?>
                         <?php if ($can_borrow): ?>
                         <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>"
@@ -292,35 +365,44 @@ html.dark .cat-toolbar.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.35); }
                 <a href="/MEMOIR/auth/login.php" class="btn-card btn-borrow full">
                     <i class="fa-solid fa-right-to-bracket"></i> Connexion requise
                 </a>
+
                 <?php elseif ($user_role === 'admin'): ?>
                 <div class="admin-actions">
                     <a href="/MEMOIR/admin/modifier_document.php?id=<?= (int)$d['id_doc'] ?>"
-                       class="btn-admin btn-edit"><i class="fa-solid fa-pen"></i> Modifier</a>
-                    <a href="/MEMOIR/admin/delete_doc.php?id=<?= (int)$d['id_doc'] ?>"
-                       onclick="return confirm('Supprimer ce document ?')"
-                       class="btn-admin btn-delete"><i class="fa-solid fa-trash"></i> Supprimer</a>
+                       class="btn-admin btn-edit">
+                        <i class="fa-solid fa-pen"></i> Modifier
+                    </a>
+                    <?php // ═══ FIX 2: SweetAlert instead of browser confirm ═══ ?>
+                    <button onclick="confirmDeleteDoc(<?= (int)$d['id_doc'] ?>)"
+                            class="btn-admin btn-delete">
+                        <i class="fa-solid fa-trash"></i> Supprimer
+                    </button>
                 </div>
                 <?php endif; ?>
+
             </div>
         </div>
         <?php endforeach; ?>
         <?php endif; ?>
     </div>
 
-    <!-- ══ PAGINATION ══ -->
+    <!-- ══ FIX 3: Circular Pagination ══ -->
     <?php if ($total_pages > 1): ?>
     <div class="pagination" id="pagination">
-        <!-- prev -->
+
+        <!-- prev arrow -->
         <?php if ($page > 1): ?>
-        <a href="<?= buildUrl(['page' => $page - 1]) ?>" class="pg-btn">
-            <i class="fa-solid fa-chevron-left" style="font-size:10px"></i>
+        <a href="<?= buildUrl(['page' => $page - 1]) ?>" class="pg-btn" title="Page précédente">
+            <i class="fa-solid fa-chevron-left" style="font-size:11px"></i>
         </a>
         <?php else: ?>
-        <span class="pg-btn disabled"><i class="fa-solid fa-chevron-left" style="font-size:10px"></i></span>
+        <span class="pg-btn disabled">
+            <i class="fa-solid fa-chevron-left" style="font-size:11px"></i>
+        </span>
         <?php endif; ?>
 
         <?php
-        // Smart pagination: always show first, last, current±2, with ellipsis
+        // Smart window: first, last, current±2, with ellipsis
         $window = 2;
         $shown  = [];
         for ($i = 1; $i <= $total_pages; $i++) {
@@ -329,24 +411,27 @@ html.dark .cat-toolbar.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.35); }
             }
         }
         $prev = null;
-        foreach ($shown as $p):
-            if ($prev !== null && $p - $prev > 1): ?>
+        foreach ($shown as $pg_num):
+            if ($prev !== null && $pg_num - $prev > 1): ?>
             <span class="pg-ellipsis">…</span>
         <?php endif; ?>
-        <a href="<?= buildUrl(['page' => $p]) ?>"
-           class="pg-btn <?= $p === $page ? 'active' : '' ?>">
-            <?= $p ?>
+        <a href="<?= buildUrl(['page' => $pg_num]) ?>"
+           class="pg-btn <?= $pg_num === $page ? 'active' : '' ?>">
+            <?= $pg_num ?>
         </a>
-        <?php $prev = $p; endforeach; ?>
+        <?php $prev = $pg_num; endforeach; ?>
 
-        <!-- next -->
+        <!-- next arrow -->
         <?php if ($page < $total_pages): ?>
-        <a href="<?= buildUrl(['page' => $page + 1]) ?>" class="pg-btn">
-            <i class="fa-solid fa-chevron-right" style="font-size:10px"></i>
+        <a href="<?= buildUrl(['page' => $page + 1]) ?>" class="pg-btn" title="Page suivante">
+            <i class="fa-solid fa-chevron-right" style="font-size:11px"></i>
         </a>
         <?php else: ?>
-        <span class="pg-btn disabled"><i class="fa-solid fa-chevron-right" style="font-size:10px"></i></span>
+        <span class="pg-btn disabled">
+            <i class="fa-solid fa-chevron-right" style="font-size:11px"></i>
+        </span>
         <?php endif; ?>
+
     </div>
     <?php endif; ?>
 
@@ -367,11 +452,11 @@ let currentAvail = '<?= $avail ?>';
 let currentSort  = '<?= $sort ?>';
 let currentPage  = <?= $page ?>;
 
-const grid        = document.getElementById('catGrid');
-const paginationEl= document.getElementById('pagination');
-const resultCount = document.getElementById('resultCount');
-const pageInfo    = document.getElementById('pageInfo');
-const heroCount   = document.getElementById('heroCount');
+const grid         = document.getElementById('catGrid');
+const paginationEl = document.getElementById('pagination');
+const resultCount  = document.getElementById('resultCount');
+const pageInfo     = document.getElementById('pageInfo');
+const heroCount    = document.getElementById('heroCount');
 
 function fetchGrid(avail, sort, page) {
     if (grid) { grid.style.opacity = '.4'; grid.style.pointerEvents = 'none'; }
@@ -382,11 +467,11 @@ function fetchGrid(avail, sort, page) {
     fetch(url)
         .then(r => r.json())
         .then(data => {
-            if (grid)         grid.innerHTML        = data.grid_html;
-            if (paginationEl) paginationEl.innerHTML= data.pagination_html;
-            if (resultCount)  resultCount.innerHTML = data.result_count_html;
-            if (pageInfo)     pageInfo.innerHTML    = data.page_info_html;
-            if (heroCount)    heroCount.innerHTML   = data.hero_count_html;
+            if (grid)         grid.innerHTML         = data.grid_html;
+            if (paginationEl) paginationEl.innerHTML = data.pagination_html;
+            if (resultCount)  resultCount.innerHTML  = data.result_count_html;
+            if (pageInfo)     pageInfo.innerHTML     = data.page_info_html;
+            if (heroCount)    heroCount.innerHTML    = data.hero_count_html;
             if (grid) { grid.style.opacity = ''; grid.style.pointerEvents = ''; }
             /* update URL sans reload */
             const u = new URL(window.location.href);
@@ -394,7 +479,7 @@ function fetchGrid(avail, sort, page) {
             u.searchParams.set('sort',  sort);
             u.searchParams.set('page',  page);
             history.replaceState({}, '', u.toString());
-            document.getElementById('toolbar').scrollIntoView({behavior:'smooth',block:'start'});
+            document.getElementById('toolbar').scrollIntoView({behavior:'smooth', block:'start'});
         })
         .catch(() => {
             if (grid) { grid.style.opacity = ''; grid.style.pointerEvents = ''; }
@@ -457,6 +542,26 @@ function toggleWishlist(btn, id_doc) {
         } else {
             btn.classList.remove('wishlisted');
             if (icon) icon.className = 'fa-regular fa-heart';
+        }
+    });
+}
+
+/* ══ FIX 2: SweetAlert delete ══ */
+function confirmDeleteDoc(id) {
+    Swal.fire({
+        title: 'Supprimer ce document ?',
+        text:  'Cette action est irréversible.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText:  'Annuler',
+        confirmButtonColor: '#C0392B',
+        cancelButtonColor:  '#C4A46B',
+        background: '#FFFDF9',
+        color: '#2A1F14',
+    }).then(result => {
+        if (result.isConfirmed) {
+            window.location.href = '/MEMOIR/admin/delete_doc.php?id=' + id;
         }
     });
 }

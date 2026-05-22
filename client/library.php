@@ -32,6 +32,9 @@ $pg = [
         'edit'           => 'Modifier',
         'delete'         => 'Supprimer',
         'delete_confirm' => 'Supprimer ce document ?',
+        'delete_text'    => 'Cette action est irréversible.',   // ← AJOUT
+        'delete_yes'     => 'Oui, supprimer',                   // ← AJOUT
+        'delete_no'      => 'Annuler',                          // ← AJOUT
         'free_loan'      => 'Emprunt gratuit',
         'free'           => 'Gratuit',
         'tag_buy'        => 'Achat',
@@ -68,6 +71,9 @@ $pg = [
         'edit'           => 'Edit',
         'delete'         => 'Delete',
         'delete_confirm' => 'Delete this document?',
+        'delete_text'    => 'This action cannot be undone.',    // ← AJOUT
+        'delete_yes'     => 'Yes, delete',                      // ← AJOUT
+        'delete_no'      => 'Cancel',                           // ← AJOUT
         'free_loan'      => 'Free loan',
         'free'           => 'Free',
         'tag_buy'        => 'Purchase',
@@ -104,6 +110,9 @@ $pg = [
         'edit'           => 'تعديل',
         'delete'         => 'حذف',
         'delete_confirm' => 'حذف هذا الكتاب؟',
+        'delete_text'    => 'لا يمكن التراجع عن هذا الإجراء.',  // ← AJOUT
+        'delete_yes'     => 'نعم، احذف',                         // ← AJOUT
+        'delete_no'      => 'إلغاء',                             // ← AJOUT
         'free_loan'      => 'استعارة مجانية',
         'free'           => 'مجاني',
         'tag_buy'        => 'شراء',
@@ -211,6 +220,7 @@ function resolveImg($d) {
 ?>
 <?php include '../includes/header.php'; ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 /* ══════════════════════════════════════════════
    TOKENS
@@ -614,7 +624,7 @@ html.dark .btn-both { color: var(--gold); }
 .btn-admin { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; border-radius: 9px; font-family: var(--font-ui); font-size: 11px; font-weight: 700; text-decoration: none; transition: all var(--tr); }
 .btn-edit   { background: var(--gold-faint); color: var(--gold); border: 1.5px solid var(--gold-border); }
 .btn-edit:hover { background: rgba(196,164,107,.18); transform: translateY(-1px); }
-.btn-delete { background: rgba(192,57,43,.08); color: var(--danger); border: 1.5px solid rgba(192,57,43,.2); }
+.btn-delete { background: rgba(192,57,43,.08); color: var(--danger); border: 1.5px solid rgba(192,57,43,.2); cursor: pointer; }
 .btn-delete:hover { background: rgba(192,57,43,.15); transform: translateY(-1px); }
 
 
@@ -785,24 +795,16 @@ html.dark .btn-both { color: var(--gold); }
                 <?php if ($is_client): ?>
                 <div class="card-actions">
                     <?php if ($is_both): ?>
-                        <div class="btn-both-wrap">
-                            <button class="btn-card btn-both full" onclick="toggleBothMenu(this, <?= (int)$d['id_doc'] ?>)">
-                                <i class="fa-solid fa-plus"></i> <?= $p['choose'] ?>
+                        <?php // ═══ FIX 1: Two direct buttons instead of "Choisir" dropdown menu ═══ ?>
+                        <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="btn-card btn-borrow">
+                            <i class="fa-regular fa-clock"></i> <?= $p['borrow'] ?>
+                        </a>
+                        <form action="../cart/add_to_cart.php" method="POST" style="flex:1;display:flex">
+                            <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
+                            <button type="submit" class="btn-card btn-buy">
+                                <i class="fa-solid fa-cart-plus"></i> <?= $p['add_cart'] ?>
                             </button>
-                            <div class="both-menu" id="both-menu-<?= (int)$d['id_doc'] ?>">
-                                <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="both-opt">
-                                    <i class="fa-regular fa-clock"></i><span><?= $p['borrow'] ?></span>
-                                </a>
-                                <div class="both-opt" style="padding:0;">
-                                    <form action="../cart/add_to_cart.php" method="POST" style="width:100%;">
-                                        <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
-                                        <button type="submit" style="all:unset;display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;font-family:var(--font-ui);font-size:11px;font-weight:600;color:var(--page-text);cursor:pointer;">
-                                            <i class="fa-solid fa-cart-plus" style="color:var(--gold);font-size:12px;"></i><span><?= $p['add_cart'] ?></span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        </form>
                     <?php else: ?>
                         <?php if ($can_borrow): ?>
                         <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="btn-card btn-borrow <?= !$can_buy?'full':'' ?>">
@@ -852,9 +854,10 @@ html.dark .btn-both { color: var(--gold); }
                     <a href="/MEMOIR/admin/modifier_document.php?id=<?= (int)$d['id_doc'] ?>" class="btn-admin btn-edit">
                         <i class="fa-solid fa-pen"></i> <?= $p['edit'] ?>
                     </a>
-                    <a href="/MEMOIR/admin/delete_doc.php?id=<?= (int)$d['id_doc'] ?>" onclick="return confirm('<?= addslashes($p['delete_confirm']) ?>')" class="btn-admin btn-delete">
+                    <?php // ═══ FIX 2: SweetAlert instead of browser confirm ═══ ?>
+                    <button onclick="confirmDeleteDoc(<?= (int)$d['id_doc'] ?>)" class="btn-admin btn-delete">
                         <i class="fa-solid fa-trash"></i> <?= $p['delete'] ?>
-                    </a>
+                    </button>
                 </div>
                 <?php endif; ?>
 
@@ -1152,6 +1155,32 @@ function toggleWishlist(btn, id_doc) {
         } else {
             btn.classList.remove('wishlisted');
             if (icon) icon.className = 'fa-regular fa-heart';
+        }
+    });
+}
+
+/* ══ FIX 2: SweetAlert delete confirmation ══ */
+const SWAL_DEL = {
+    title : <?= json_encode($p['delete_confirm']) ?>,
+    text  : <?= json_encode($p['delete_text']) ?>,
+    yes   : <?= json_encode($p['delete_yes']) ?>,
+    no    : <?= json_encode($p['delete_no']) ?>,
+};
+function confirmDeleteDoc(id) {
+    Swal.fire({
+        title: SWAL_DEL.title,
+        text:  SWAL_DEL.text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: SWAL_DEL.yes,
+        cancelButtonText:  SWAL_DEL.no,
+        confirmButtonColor: '#C0392B',
+        cancelButtonColor:  '#C4A46B',
+        background: '#FFFDF9',
+        color: '#2A1F14',
+    }).then(result => {
+        if (result.isConfirmed) {
+            window.location.href = '/MEMOIR/admin/gerer_documents.php?delete=' + id;
         }
     });
 }
