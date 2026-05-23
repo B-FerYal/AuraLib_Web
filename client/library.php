@@ -1,4 +1,9 @@
 <?php
+include "../includes/db.php";
+$is_logged_in = isset($_SESSION['id_user']);
+$id_user      = $is_logged_in ? (int)$_SESSION['id_user'] : 0;
+$user_role    = strtolower(trim($_SESSION['role'] ?? 'client'));
+$is_client    = $is_logged_in && $user_role !== 'admin';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
