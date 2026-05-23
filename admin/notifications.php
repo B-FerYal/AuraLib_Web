@@ -17,6 +17,44 @@ if (($_SESSION['role'] ?? 'client') !== 'admin') {
 
 $id_user = (int)$_SESSION['id_user'];
 
+// ── 0. Génération automatique des notifications admin ─────────────
+// Emprunts en retard sans notification existante → créer une notif
+$sql_retards = "
+    SELECT e.id_emprunt, e.amende,
+           DATEDIFF(CURDATE(), e.date_retour_prevue) AS jours_retard,
+           d.titre,
+           u.firstname, u.lastname
+    FROM emprunt e
+    JOIN documents d ON d.id_doc  = e.id_doc
+    JOIN users     u ON u.id      = e.id_user
+    WHERE e.statut = 'retard'
+      AND NOT EXISTS (
+          SELECT 1 FROM notifications n
+          WHERE n.id_user = ?
+            AND n.lien LIKE CONCAT('%emprunt_id=', e.id_emprunt)
+      )
+";
+$stmt_r = $conn->prepare($sql_retards);
+$stmt_r->bind_param('i', $id_user);
+$stmt_r->execute();
+$retards = $stmt_r->get_result();
+
+while ($row_r = $retards->fetch_assoc()) {
+    $titre_n   = "⚠️ Retard · Emprunt #{$row_r['id_emprunt']}";
+    $message_n = "{$row_r['firstname']} {$row_r['lastname']} a dépassé la date de retour "
+               . "du document « {$row_r['titre']} ».\n"
+               . "Retard : {$row_r['jours_retard']} jour(s) — Amende : {$row_r['amende']} DA.\n"
+               . "Veuillez prendre les mesures nécessaires.";
+    $lien_n    = "/MEMOIR/admin/gestion_emprunts.php?emprunt_id={$row_r['id_emprunt']}";
+
+    $ins = $conn->prepare(
+        "INSERT INTO notifications (id_user, type, titre, message, lien) VALUES (?, 'warning', ?, ?, ?)"
+    );
+    $ins->bind_param('isss', $id_user, $titre_n, $message_n, $lien_n);
+    $ins->execute();
+}
+// ──────────────────────────────────────────────────────────────────
+
 // ── 1. Traitement des actions — AVANT tout output HTML ────────────
 if (isset($_GET['action'])) {
     $action   = $_GET['action'];
