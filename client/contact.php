@@ -329,7 +329,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send'])) {
                 <div class="info-icon">📧</div>
                 <div class="info-body">
                     <h4><?= $p['email_label'] ?></h4>
-                    <p><a href="mailto:contact@auralib.dz">contact@auralib.dz</a></p>
+                    <p><a href="mailto:auralib_dz@gmail.com">auralib_dz@gmail.com</a></p>
                     <p style="margin-top:3px"><?= $p['email_reply'] ?></p>
                 </div>
             </div>
