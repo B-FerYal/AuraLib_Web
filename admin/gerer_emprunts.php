@@ -2,14 +2,175 @@
 session_start();
 require_once "../includes/db.php";
 require_once '../includes/head.php';
+include_once '../includes/languages.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
     header("Location: ../auth/login.php");
     exit;
 }
 
-// ══ FIX 1 : Auto-update retards — vérification robuste ══
-// On cible uniquement les emprunts actifs (acceptée) dont la date_retour_prevue est dépassée
+// ── نصوص الصفحة حسب اللغة ──────────────────────────────
+$pg = [
+    'fr' => [
+        'page_title'      => 'AuraLib · Gestion des Emprunts',
+        'breadcrumb_dash' => 'Dashboard',
+        'breadcrumb_page' => 'Emprunts',
+        'hero_title'      => 'Gestion des',
+        'hero_title_span' => 'Emprunts',
+        'btn_back'        => 'Retour au Dashboard',
+        'today'           => "Aujourd'hui",
+        // Stats
+        'stat_pending'    => 'En attente',
+        'stat_accepted'   => 'Acceptés',
+        'stat_late'       => 'En retard',
+        'stat_returned'   => 'Rendus',
+        'stat_refused'    => 'Refusés',
+        // Flash messages
+        'flash_accepted'  => 'Emprunt accepté — stock mis à jour.',
+        'flash_refused'   => 'Emprunt refusé.',
+        'flash_returned'  => 'Livre retourné — stock restauré.',
+        'flash_fine'      => 'Amende :',
+        'flash_no_stock'  => "Impossible d'accepter : stock épuisé pour ce document.",
+        'flash_invalid'   => 'Action non autorisée pour ce statut.',
+        'flash_error'     => 'Une erreur est survenue.',
+        // Table headers
+        'th_id'           => '#',
+        'th_reader'       => 'Lecteur &amp; Document',
+        'th_period'       => "Période d'Emprunt",
+        'th_status'       => 'Statut',
+        'th_actions'      => 'Actions',
+        'th_fine'         => 'Amende',
+        // Table content
+        'lbl_start'       => 'Début',
+        'lbl_return'      => 'Retour',
+        'lbl_returned'    => 'Rendu',
+        'days_late'       => 'j de retard',
+        // Status labels
+        'st_pending'      => 'En attente',
+        'st_accepted'     => 'Acceptée',
+        'st_late'         => 'Retard',
+        'st_returned'     => 'Rendu',
+        'st_refused'      => 'Refusée',
+        // Action buttons
+        'btn_accept'      => 'Accepter',
+        'btn_refuse'      => 'Refuser',
+        'btn_mark_return' => 'Marquer Rendu',
+        'confirm_refuse'  => 'Refuser cet emprunt ?',
+        'confirm_return'  => 'Confirmer le retour de ce livre ?',
+        'tooltip_no_stock'=> 'Stock épuisé',
+        'tooltip_accept'  => 'Accepter cet emprunt',
+        // Empty state
+        'empty'           => 'Aucun emprunt enregistré',
+        'da'              => 'DA',
+    ],
+    'en' => [
+        'page_title'      => 'AuraLib · Loan Management',
+        'breadcrumb_dash' => 'Dashboard',
+        'breadcrumb_page' => 'Loans',
+        'hero_title'      => 'Loan',
+        'hero_title_span' => 'Management',
+        'btn_back'        => 'Back to Dashboard',
+        'today'           => 'Today',
+        // Stats
+        'stat_pending'    => 'Pending',
+        'stat_accepted'   => 'Accepted',
+        'stat_late'       => 'Late',
+        'stat_returned'   => 'Returned',
+        'stat_refused'    => 'Refused',
+        // Flash messages
+        'flash_accepted'  => 'Loan accepted — stock updated.',
+        'flash_refused'   => 'Loan refused.',
+        'flash_returned'  => 'Book returned — stock restored.',
+        'flash_fine'      => 'Fine:',
+        'flash_no_stock'  => 'Cannot accept: no stock available for this document.',
+        'flash_invalid'   => 'Action not allowed for this status.',
+        'flash_error'     => 'An error occurred.',
+        // Table headers
+        'th_id'           => '#',
+        'th_reader'       => 'Reader &amp; Document',
+        'th_period'       => 'Loan Period',
+        'th_status'       => 'Status',
+        'th_actions'      => 'Actions',
+        'th_fine'         => 'Fine',
+        // Table content
+        'lbl_start'       => 'Start',
+        'lbl_return'      => 'Return',
+        'lbl_returned'    => 'Returned',
+        'days_late'       => 'd late',
+        // Status labels
+        'st_pending'      => 'Pending',
+        'st_accepted'     => 'Accepted',
+        'st_late'         => 'Late',
+        'st_returned'     => 'Returned',
+        'st_refused'      => 'Refused',
+        // Action buttons
+        'btn_accept'      => 'Accept',
+        'btn_refuse'      => 'Refuse',
+        'btn_mark_return' => 'Mark Returned',
+        'confirm_refuse'  => 'Refuse this loan?',
+        'confirm_return'  => 'Confirm book return?',
+        'tooltip_no_stock'=> 'Out of stock',
+        'tooltip_accept'  => 'Accept this loan',
+        // Empty state
+        'empty'           => 'No loans recorded',
+        'da'              => 'DA',
+    ],
+    'ar' => [
+        'page_title'      => 'AuraLib · إدارة الاستعارات',
+        'breadcrumb_dash' => 'لوحة التحكم',
+        'breadcrumb_page' => 'الاستعارات',
+        'hero_title'      => 'إدارة',
+        'hero_title_span' => 'الاستعارات',
+        'btn_back'        => 'العودة للوحة التحكم',
+        'today'           => 'اليوم',
+        // Stats
+        'stat_pending'    => 'في الانتظار',
+        'stat_accepted'   => 'مقبولة',
+        'stat_late'       => 'متأخرة',
+        'stat_returned'   => 'مُعادة',
+        'stat_refused'    => 'مرفوضة',
+        // Flash messages
+        'flash_accepted'  => 'تم قبول الاستعارة — تم تحديث المخزون.',
+        'flash_refused'   => 'تم رفض الاستعارة.',
+        'flash_returned'  => 'تم إعادة الكتاب — تم استعادة المخزون.',
+        'flash_fine'      => 'الغرامة:',
+        'flash_no_stock'  => 'لا يمكن القبول: المخزون نافد لهذا المستند.',
+        'flash_invalid'   => 'الإجراء غير مسموح لهذا الوضع.',
+        'flash_error'     => 'حدث خطأ.',
+        // Table headers
+        'th_id'           => '#',
+        'th_reader'       => 'القارئ والمستند',
+        'th_period'       => 'فترة الاستعارة',
+        'th_status'       => 'الحالة',
+        'th_actions'      => 'الإجراءات',
+        'th_fine'         => 'الغرامة',
+        // Table content
+        'lbl_start'       => 'البداية',
+        'lbl_return'      => 'الإعادة',
+        'lbl_returned'    => 'أُعيد',
+        'days_late'       => 'يوم تأخير',
+        // Status labels
+        'st_pending'      => 'في الانتظار',
+        'st_accepted'     => 'مقبولة',
+        'st_late'         => 'متأخرة',
+        'st_returned'     => 'مُعادة',
+        'st_refused'      => 'مرفوضة',
+        // Action buttons
+        'btn_accept'      => 'قبول',
+        'btn_refuse'      => 'رفض',
+        'btn_mark_return' => 'تسجيل الإعادة',
+        'confirm_refuse'  => 'رفض هذه الاستعارة؟',
+        'confirm_return'  => 'تأكيد إعادة هذا الكتاب؟',
+        'tooltip_no_stock'=> 'المخزون نافد',
+        'tooltip_accept'  => 'قبول هذه الاستعارة',
+        // Empty state
+        'empty'           => 'لا توجد استعارات مسجلة',
+        'da'              => 'دج',
+    ],
+];
+$p = $pg[$lang] ?? $pg['fr'];
+
+// ── Auto-update retards ──────────────────────────────────
 $conn->query("
     UPDATE emprunt 
     SET statut = 'retard' 
@@ -18,27 +179,27 @@ $conn->query("
       AND (date_fin IS NULL OR date_fin = '')
 ");
 
-// Messages flash
+// ── Flash messages ───────────────────────────────────────
 $msg    = $_GET['msg'] ?? '';
 $amende = (int)($_GET['amende'] ?? 0);
 
 $flash_messages = [
-    'accepted'       => ['type' => 'success', 'text' => 'Emprunt accepté — stock mis à jour.'],
-    'refused'        => ['type' => 'warning', 'text' => 'Emprunt refusé.'],
-    'returned'       => ['type' => 'success', 'text' => 'Livre retourné — stock restauré.' . ($amende > 0 ? " Amende : <strong>{$amende} DA</strong>" : '')],
-    'no_stock'       => ['type' => 'danger',  'text' => 'Impossible d\'accepter : stock épuisé pour ce document.'],
-    'invalid_status' => ['type' => 'warning', 'text' => 'Action non autorisée pour ce statut.'],
-    'error'          => ['type' => 'danger',  'text' => 'Une erreur est survenue.'],
+    'accepted'       => ['type' => 'success', 'text' => $p['flash_accepted']],
+    'refused'        => ['type' => 'warning', 'text' => $p['flash_refused']],
+    'returned'       => ['type' => 'success', 'text' => $p['flash_returned'] . ($amende > 0 ? " {$p['flash_fine']} <strong>{$amende} {$p['da']}</strong>" : '')],
+    'no_stock'       => ['type' => 'danger',  'text' => $p['flash_no_stock']],
+    'invalid_status' => ['type' => 'warning', 'text' => $p['flash_invalid']],
+    'error'          => ['type' => 'danger',  'text' => $p['flash_error']],
 ];
 
-// Stats rapides
+// ── Stats rapides ────────────────────────────────────────
 $stats = [];
 foreach (['en attente','acceptée','retard','rendu','refusée'] as $s) {
     $r = $conn->query("SELECT COUNT(*) as n FROM emprunt WHERE statut = '$s'");
     $stats[$s] = (int)($r->fetch_assoc()['n'] ?? 0);
 }
 
-// ══ FIX 2 : SELECT étendu — on récupère date_fin pour l'affichage conditionnel ══
+// ── Query ────────────────────────────────────────────────
 $result = $conn->query("
     SELECT e.*, u.firstname, u.lastname, d.titre, d.exemplaires_disponibles
     FROM emprunt e 
@@ -53,14 +214,16 @@ $result = $conn->query("
         END, 
         e.id_emprunt DESC
 ");
+
+$dir = $lang === 'ar' ? 'rtl' : 'ltr';
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="<?= $lang ?>" dir="<?= $dir ?>">
 <head>
 <meta charset="UTF-8">
 <?php include '../includes/dark_init.php'; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuraLib · Gestion des Emprunts</title>
+<title><?= $p['page_title'] ?></title>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
@@ -113,6 +276,11 @@ body {
     padding-top: var(--nav-h);
     transition: background .35s, color .35s;
 }
+<?php if ($lang === 'ar'): ?>
+body { font-family: 'Noto Sans Arabic', var(--font-ui); }
+th, td { text-align: right; }
+.hero-inner, .actions-cell, .periode-row, .stat-pill { flex-direction: row-reverse; }
+<?php endif; ?>
 
 @keyframes fadeUp {
     from { opacity:0; transform:translateY(16px); }
@@ -175,7 +343,6 @@ body {
     font-size: 11px; color: rgba(253,250,245,.4); letter-spacing: .5px;
 }
 
-/* Back button */
 .btn-back {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 10px 20px; border-radius: 50px;
@@ -229,7 +396,7 @@ html.dark .flash.success { background: rgba(39,103,73,.18); }
 html.dark .flash.warning { background: rgba(146,64,14,.18); }
 html.dark .flash.danger  { background: rgba(192,57,43,.18); }
 
-/* ══ MAIN TABLE WRAPPER ══ */
+/* ══ TABLE WRAPPER ══ */
 .table-wrap {
     max-width: 1340px; margin: 24px auto 60px;
     padding: 0 5%;
@@ -278,35 +445,26 @@ td {
 }
 .td-id { font-size: 11px; color: var(--page-muted); font-weight: 600; letter-spacing: .5px; }
 
-/* User + doc cell */
-.user-name {
-    font-weight: 700; font-size: 14px; color: var(--page-text);
-    margin-bottom: 3px;
-}
+.user-name { font-weight: 700; font-size: 14px; color: var(--page-text); margin-bottom: 3px; }
 .user-book {
     display: flex; align-items: center; gap: 6px;
     font-size: 11px; color: var(--page-muted); line-height: 1.3;
 }
 .user-book i { color: var(--gold); font-size: 10px; flex-shrink: 0; }
 
-/* ══ FIX 3 : Colonne "Période d'Emprunt" fusionnée ══ */
 .periode-cell { display: flex; flex-direction: column; gap: 4px; }
 .periode-row  { display: flex; align-items: center; gap: 7px; font-size: 12px; }
 .periode-label {
     font-size: 9px; font-weight: 700; letter-spacing: 1px;
     text-transform: uppercase; color: var(--page-muted);
-    width: 36px; flex-shrink: 0;
+    width: 42px; flex-shrink: 0;
 }
 .periode-date { font-weight: 600; color: var(--page-text); }
 .periode-date.danger { color: var(--danger); }
-.periode-arrow {
-    font-size: 9px; color: var(--gold); flex-shrink: 0;
-}
 .date-late {
     font-size: 10px; color: var(--danger); font-weight: 700;
     margin-top: 2px; display: block;
 }
-/* Badge "Rendu réel" */
 .date-reelle-badge {
     display: inline-flex; align-items: center; gap: 5px;
     background: rgba(39,103,73,.09);
@@ -316,7 +474,6 @@ td {
     font-size: 10px; font-weight: 700;
 }
 
-/* Amende */
 .amende-badge {
     display: inline-flex; align-items: center; gap: 5px;
     background: rgba(184,131,42,.12);
@@ -414,9 +571,7 @@ td {
 }
 
 /* ══ EMPTY STATE ══ */
-.empty-row td {
-    text-align: center; padding: 70px 20px;
-}
+.empty-row td { text-align: center; padding: 70px 20px; }
 .empty-icon { font-size: 40px; color: var(--page-border); margin-bottom: 14px; }
 .empty-row h3 { font-family: var(--font-serif); font-size:22px; color:var(--page-muted); }
 </style>
@@ -431,17 +586,17 @@ td {
         <div class="hero-left">
             <div class="hero-breadcrumb">
                 <a href="/MEMOIR/admin/admin_dashboard.php">
-                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                    <i class="fa-solid fa-gauge-high"></i> <?= $p['breadcrumb_dash'] ?>
                 </a>
                 <i class="fa-solid fa-chevron-right"></i>
-                <span>Emprunts</span>
+                <span><?= $p['breadcrumb_page'] ?></span>
             </div>
-            <h1 class="hero-title">Gestion des <span>Emprunts</span></h1>
-            <span class="hero-date">Aujourd'hui · <?= date('d F Y') ?></span>
+            <h1 class="hero-title"><?= $p['hero_title'] ?> <span><?= $p['hero_title_span'] ?></span></h1>
+            <span class="hero-date"><?= $p['today'] ?> · <?= date('d F Y') ?></span>
         </div>
         <a href="/MEMOIR/admin/admin_dashboard.php" class="btn-back">
             <i class="fa-solid fa-arrow-left" style="font-size:10px"></i>
-            Retour au Dashboard
+            <?= $p['btn_back'] ?>
         </a>
     </div>
 </div>
@@ -450,27 +605,27 @@ td {
 <div class="stats-bar">
     <div class="stat-pill">
         <span class="stat-dot" style="background:#F59E0B"></span>
-        <span class="stat-label">En attente</span>
+        <span class="stat-label"><?= $p['stat_pending'] ?></span>
         <span class="stat-num"><?= $stats['en attente'] ?></span>
     </div>
     <div class="stat-pill">
         <span class="stat-dot" style="background:#276749"></span>
-        <span class="stat-label">Acceptés</span>
+        <span class="stat-label"><?= $p['stat_accepted'] ?></span>
         <span class="stat-num"><?= $stats['acceptée'] ?></span>
     </div>
     <div class="stat-pill">
         <span class="stat-dot" style="background:var(--danger)"></span>
-        <span class="stat-label">En retard</span>
+        <span class="stat-label"><?= $p['stat_late'] ?></span>
         <span class="stat-num"><?= $stats['retard'] ?></span>
     </div>
     <div class="stat-pill">
         <span class="stat-dot" style="background:var(--page-muted)"></span>
-        <span class="stat-label">Rendus</span>
+        <span class="stat-label"><?= $p['stat_returned'] ?></span>
         <span class="stat-num"><?= $stats['rendu'] ?></span>
     </div>
     <div class="stat-pill">
         <span class="stat-dot" style="background:#880E4F"></span>
-        <span class="stat-label">Refusés</span>
+        <span class="stat-label"><?= $p['stat_refused'] ?></span>
         <span class="stat-num"><?= $stats['refusée'] ?></span>
     </div>
 </div>
@@ -493,15 +648,12 @@ td {
         <table>
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Lecteur &amp; Document</th>
-                    <!-- FIX 2 : colonne Stock supprimée -->
-                    <!-- FIX 2 : "Demande" + "Retour prévu" fusionnées en "Période d'Emprunt" -->
-                    <th>Période d'Emprunt</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                    <!-- FIX 2 : Amende déplacée en dernière colonne -->
-                    <th>Amende</th>
+                    <th><?= $p['th_id'] ?></th>
+                    <th><?= $p['th_reader'] ?></th>
+                    <th><?= $p['th_period'] ?></th>
+                    <th><?= $p['th_status'] ?></th>
+                    <th><?= $p['th_actions'] ?></th>
+                    <th><?= $p['th_fine'] ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -511,7 +663,7 @@ td {
             <tr class="empty-row">
                 <td colspan="6">
                     <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
-                    <h3>Aucun emprunt enregistré</h3>
+                    <h3><?= $p['empty'] ?></h3>
                 </td>
             </tr>
             <?php else:
@@ -524,11 +676,18 @@ td {
                     'refusée'    => 's-refusee',
                     default      => 's-rendu'
                 };
+                $statut_lbl = match($row['statut']) {
+                    'en attente' => $p['st_pending'],
+                    'acceptée'   => $p['st_accepted'],
+                    'retard'     => $p['st_late'],
+                    'rendu'      => $p['st_returned'],
+                    'refusée'    => $p['st_refused'],
+                    default      => $row['statut']
+                };
                 $jours_retard = 0;
                 if ($row['statut'] === 'retard' && !empty($row['date_retour_prevue'])) {
                     $jours_retard = (int)(new DateTime())->diff(new DateTime($row['date_retour_prevue']))->days;
                 }
-                // FIX 3 : date de fin réelle si rendu, sinon date prévue
                 $est_rendu = $row['statut'] === 'rendu';
                 $date_fin_affichee = $est_rendu && !empty($row['date_fin'])
                     ? $row['date_fin']
@@ -545,22 +704,19 @@ td {
                     </div>
                 </td>
 
-                <!-- ══ FIX 2+3 : Colonne "Période d'Emprunt" fusionnée + affichage conditionnel ══ -->
                 <td>
                     <div class="periode-cell">
-                        <!-- Ligne 1 : Date de début -->
                         <div class="periode-row">
-                            <span class="periode-label">Début</span>
+                            <span class="periode-label"><?= $p['lbl_start'] ?></span>
                             <span class="periode-date">
                                 <?= $row['date_debut'] ? date('d/m/Y', strtotime($row['date_debut'])) : '—' ?>
                             </span>
                         </div>
 
-                        <!-- Ligne 2 : Date de fin (réelle si rendu, prévue sinon) -->
                         <?php if ($date_fin_affichee): ?>
                         <div class="periode-row">
                             <span class="periode-label" style="color:<?= $est_rendu ? 'var(--success)' : ($row['statut']==='retard' ? 'var(--danger)' : 'var(--page-muted)') ?>">
-                                <?= $est_rendu ? 'Rendu' : 'Retour' ?>
+                                <?= $est_rendu ? $p['lbl_returned'] : $p['lbl_return'] ?>
                             </span>
                             <?php if ($est_rendu): ?>
                                 <span class="date-reelle-badge">
@@ -576,12 +732,12 @@ td {
                         <?php if ($row['statut'] === 'retard'): ?>
                             <span class="date-late">
                                 <i class="fa-solid fa-clock" style="font-size:9px"></i>
-                                <?= $jours_retard ?> j de retard
+                                <?= $jours_retard ?> <?= $p['days_late'] ?>
                             </span>
                         <?php endif; ?>
                         <?php else: ?>
                         <div class="periode-row">
-                            <span class="periode-label">Retour</span>
+                            <span class="periode-label"><?= $p['lbl_return'] ?></span>
                             <span class="dash">—</span>
                         </div>
                         <?php endif; ?>
@@ -590,7 +746,7 @@ td {
 
                 <td>
                     <span class="badge <?= $statut_css ?>">
-                        <?= ucfirst($row['statut']) ?>
+                        <?= $statut_lbl ?>
                     </span>
                 </td>
 
@@ -599,20 +755,20 @@ td {
                     <?php if ($row['statut'] === 'en attente'): ?>
                         <a href="action_emprunts.php?id=<?= $row['id_emprunt'] ?>&action=accepter"
                            class="btn-action btn-approve <?= (int)$row['exemplaires_disponibles'] <= 0 ? 'disabled' : '' ?>"
-                           title="<?= (int)$row['exemplaires_disponibles'] <= 0 ? 'Stock épuisé' : 'Accepter cet emprunt' ?>">
-                            <i class="fa-solid fa-check"></i> Accepter
+                           title="<?= (int)$row['exemplaires_disponibles'] <= 0 ? $p['tooltip_no_stock'] : $p['tooltip_accept'] ?>">
+                            <i class="fa-solid fa-check"></i> <?= $p['btn_accept'] ?>
                         </a>
                         <a href="action_emprunts.php?id=<?= $row['id_emprunt'] ?>&action=refuser"
                            class="btn-action btn-refuse"
-                           onclick="return confirm('Refuser cet emprunt ?')">
-                            <i class="fa-solid fa-xmark"></i> Refuser
+                           onclick="return confirm('<?= addslashes($p['confirm_refuse']) ?>')">
+                            <i class="fa-solid fa-xmark"></i> <?= $p['btn_refuse'] ?>
                         </a>
 
                     <?php elseif (in_array($row['statut'], ['acceptée','retard'])): ?>
                         <a href="action_emprunts.php?id=<?= $row['id_emprunt'] ?>&action=rendre"
                            class="btn-action btn-return"
-                           onclick="return confirm('Confirmer le retour de ce livre ?')">
-                            <i class="fa-solid fa-rotate-left"></i> Marquer Rendu
+                           onclick="return confirm('<?= addslashes($p['confirm_return']) ?>')">
+                            <i class="fa-solid fa-rotate-left"></i> <?= $p['btn_mark_return'] ?>
                         </a>
 
                     <?php else: ?>
@@ -621,12 +777,11 @@ td {
                     </div>
                 </td>
 
-                <!-- ══ FIX 2 : Amende en dernière colonne ══ -->
                 <td>
                     <?php if ($row['amende'] > 0): ?>
                         <span class="amende-badge">
                             <i class="fa-solid fa-coins" style="font-size:10px"></i>
-                            <?= number_format($row['amende'], 0) ?> DA
+                            <?= number_format($row['amende'], 0) ?> <?= $p['da'] ?>
                         </span>
                     <?php else: ?>
                         <span class="dash">—</span>

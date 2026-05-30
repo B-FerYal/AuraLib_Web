@@ -1,7 +1,6 @@
 <?php
 // ══════════════════════════════════════════════════════════════════
 //  AuraLib · admin/notifications.php
-//  Affiche les notifications de l'administrateur connecté
 // ══════════════════════════════════════════════════════════════════
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once "../includes/db.php";
@@ -17,16 +16,125 @@ if (($_SESSION['role'] ?? 'client') !== 'admin') {
 
 $id_user = (int)$_SESSION['id_user'];
 
+// ── Include header first to get $lang ────────────────────────────
+include "../includes/header.php";
+include_once '../includes/languages.php';
+
+// ── نصوص الصفحة حسب اللغة ──────────────────────────────────────
+$pg = [
+    'fr' => [
+        'page_title'      => 'AuraLib Admin · Notifications',
+        'eyebrow'         => 'Notifications',
+        'hero_title'      => 'Vos',
+        'hero_span'       => 'Alertes',
+        'admin_badge'     => 'Admin',
+        'btn_back'        => 'Retour au Dashboard',
+        'non_lues'        => 'non lues',
+        'filter_all'      => 'Toutes',
+        'filter_unread'   => 'Non lues',
+        'mark_all'        => 'Tout marquer comme lu',
+        'delete_all'      => 'Tout supprimer',
+        'confirm_del_all' => 'Supprimer toutes les notifications ?',
+        'confirm_del_one' => 'Supprimer cette notification ?',
+        'details'         => 'Voir les détails',
+        'mark_read'       => 'Marquer comme lu',
+        'delete'          => 'Supprimer',
+        'empty_title'     => 'Aucune notification',
+        'empty_sub'       => 'Vos alertes système apparaîtront ici.',
+        'sep_read'        => 'Lu',
+        'time_instant'    => "à l'instant",
+        'time_ago'        => 'il y a',
+        'time_d'          => 'j',
+        'time_h'          => 'h',
+        'time_m'          => 'min',
+        'date_fmt'        => 'd/m/Y à H:i',
+        // Auto-generated late loan notification texts
+        'notif_late_title'=> "⚠️ Retard · Emprunt #",
+        'notif_late_msg1' => " a dépassé la date de retour du document « ",
+        'notif_late_msg2' => " ».\nRetard : ",
+        'notif_late_msg3' => " jour(s) — Amende : ",
+        'notif_late_msg4' => " DA.\nVeuillez prendre les mesures nécessaires.",
+    ],
+    'en' => [
+        'page_title'      => 'AuraLib Admin · Notifications',
+        'eyebrow'         => 'Notifications',
+        'hero_title'      => 'Your',
+        'hero_span'       => 'Alerts',
+        'admin_badge'     => 'Admin',
+        'btn_back'        => 'Back to Dashboard',
+        'non_lues'        => 'unread',
+        'filter_all'      => 'All',
+        'filter_unread'   => 'Unread',
+        'mark_all'        => 'Mark all as read',
+        'delete_all'      => 'Delete all',
+        'confirm_del_all' => 'Delete all notifications?',
+        'confirm_del_one' => 'Delete this notification?',
+        'details'         => 'View details',
+        'mark_read'       => 'Mark as read',
+        'delete'          => 'Delete',
+        'empty_title'     => 'No notifications',
+        'empty_sub'       => 'Your system alerts will appear here.',
+        'sep_read'        => 'Read',
+        'time_instant'    => 'just now',
+        'time_ago'        => '',
+        'time_d'          => 'd ago',
+        'time_h'          => 'h ago',
+        'time_m'          => 'min ago',
+        'date_fmt'        => 'd/m/Y H:i',
+        // Auto-generated late loan notification texts
+        'notif_late_title'=> "⚠️ Late Return · Loan #",
+        'notif_late_msg1' => " has exceeded the return date for « ",
+        'notif_late_msg2' => " ».\nDelay: ",
+        'notif_late_msg3' => " day(s) — Fine: ",
+        'notif_late_msg4' => " DA.\nPlease take the necessary action.",
+    ],
+    'ar' => [
+        'page_title'      => 'AuraLib Admin · الإشعارات',
+        'eyebrow'         => 'الإشعارات',
+        'hero_title'      => 'تنبيهاتك',
+        'hero_span'       => '',
+        'admin_badge'     => 'مشرف',
+        'btn_back'        => 'العودة للوحة التحكم',
+        'non_lues'        => 'غير مقروءة',
+        'filter_all'      => 'الكل',
+        'filter_unread'   => 'غير المقروءة',
+        'mark_all'        => 'تحديد الكل كمقروء',
+        'delete_all'      => 'حذف الكل',
+        'confirm_del_all' => 'حذف جميع الإشعارات؟',
+        'confirm_del_one' => 'حذف هذا الإشعار؟',
+        'details'         => 'عرض التفاصيل',
+        'mark_read'       => 'وضع علامة مقروء',
+        'delete'          => 'حذف',
+        'empty_title'     => 'لا توجد إشعارات',
+        'empty_sub'       => 'ستظهر إشعاراتك هنا.',
+        'sep_read'        => 'مقروءة',
+        'time_instant'    => 'الآن',
+        'time_ago'        => 'منذ',
+        'time_d'          => 'يوم',
+        'time_h'          => 'ساعة',
+        'time_m'          => 'دقيقة',
+        'date_fmt'        => 'd/m/Y H:i',
+        // Auto-generated late loan notification texts
+        'notif_late_title'=> "⚠️ تأخير · استعارة #",
+        'notif_late_msg1' => " تجاوز تاريخ إعادة « ",
+        'notif_late_msg2' => " ».\nالتأخير: ",
+        'notif_late_msg3' => " يوم — الغرامة: ",
+        'notif_late_msg4' => " دج.\nيرجى اتخاذ الإجراءات اللازمة.",
+    ],
+];
+$p     = $pg[$lang] ?? $pg['fr'];
+$is_ar = ($lang === 'ar');
+$dir   = $is_ar ? 'rtl' : 'ltr';
+
 // ── 0. Génération automatique des notifications admin ─────────────
-// Emprunts en retard sans notification existante → créer une notif
 $sql_retards = "
     SELECT e.id_emprunt, e.amende,
            DATEDIFF(CURDATE(), e.date_retour_prevue) AS jours_retard,
            d.titre,
            u.firstname, u.lastname
     FROM emprunt e
-    JOIN documents d ON d.id_doc  = e.id_doc
-    JOIN users     u ON u.id      = e.id_user
+    JOIN documents d ON d.id_doc = e.id_doc
+    JOIN users     u ON u.id     = e.id_user
     WHERE e.statut = 'retard'
       AND NOT EXISTS (
           SELECT 1 FROM notifications n
@@ -40,11 +148,12 @@ $stmt_r->execute();
 $retards = $stmt_r->get_result();
 
 while ($row_r = $retards->fetch_assoc()) {
-    $titre_n   = "⚠️ Retard · Emprunt #{$row_r['id_emprunt']}";
-    $message_n = "{$row_r['firstname']} {$row_r['lastname']} a dépassé la date de retour "
-               . "du document « {$row_r['titre']} ».\n"
-               . "Retard : {$row_r['jours_retard']} jour(s) — Amende : {$row_r['amende']} DA.\n"
-               . "Veuillez prendre les mesures nécessaires.";
+    $titre_n   = $p['notif_late_title'] . $row_r['id_emprunt'];
+    $message_n = $row_r['firstname'] . ' ' . $row_r['lastname']
+               . $p['notif_late_msg1'] . $row_r['titre']
+               . $p['notif_late_msg2'] . $row_r['jours_retard']
+               . $p['notif_late_msg3'] . $row_r['amende']
+               . $p['notif_late_msg4'];
     $lien_n    = "/MEMOIR/admin/gestion_emprunts.php?emprunt_id={$row_r['id_emprunt']}";
 
     $ins = $conn->prepare(
@@ -53,9 +162,8 @@ while ($row_r = $retards->fetch_assoc()) {
     $ins->bind_param('isss', $id_user, $titre_n, $message_n, $lien_n);
     $ins->execute();
 }
-// ──────────────────────────────────────────────────────────────────
 
-// ── 1. Traitement des actions — AVANT tout output HTML ────────────
+// ── 1. Actions ────────────────────────────────────────────────────
 if (isset($_GET['action'])) {
     $action   = $_GET['action'];
     $id_notif = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -64,17 +172,14 @@ if (isset($_GET['action'])) {
         $stmt = $conn->prepare("UPDATE notifications SET lu=1 WHERE id=? AND id_user=?");
         $stmt->bind_param('ii', $id_notif, $id_user);
         $stmt->execute();
-
     } elseif ($action === 'delete' && $id_notif) {
         $stmt = $conn->prepare("DELETE FROM notifications WHERE id=? AND id_user=?");
         $stmt->bind_param('ii', $id_notif, $id_user);
         $stmt->execute();
-
     } elseif ($action === 'mark_all_read') {
         $stmt = $conn->prepare("UPDATE notifications SET lu=1 WHERE id_user=?");
         $stmt->bind_param('i', $id_user);
         $stmt->execute();
-
     } elseif ($action === 'delete_all') {
         $stmt = $conn->prepare("DELETE FROM notifications WHERE id_user=?");
         $stmt->bind_param('i', $id_user);
@@ -84,10 +189,7 @@ if (isset($_GET['action'])) {
     exit;
 }
 
-// ── Include header ────────────────────────────────────────────────
-include "../includes/header.php"; // fournit $text, $lang, $conn
-
-// ── 2. Récupérer les notifications (non-lues d'abord) ─────────────
+// ── 2. Récupérer les notifications ────────────────────────────────
 $stmt = $conn->prepare(
     "SELECT * FROM notifications WHERE id_user=? ORDER BY lu ASC, created_at DESC"
 );
@@ -102,41 +204,19 @@ while ($r = $result->fetch_assoc()) {
     if (!$r['lu']) $non_lues++;
     $rows[] = $r;
 }
-
-// ── 3. Labels multilingue ─────────────────────────────────────────
-$is_ar = ($lang ?? 'fr') === 'ar';
-$lbl = [
-    'title'       => $is_ar ? 'الإشعارات'                       : 'Notifications',
-    'mark_all'    => $is_ar ? 'تحديد الكل كمقروء'               : 'Tout marquer comme lu',
-    'delete_all'  => $is_ar ? 'حذف الكل'                        : 'Tout supprimer',
-    'empty_title' => $is_ar ? 'لا توجد إشعارات'                 : 'Aucune notification',
-    'empty_sub'   => $is_ar ? 'ستظهر إشعاراتك هنا'              : 'Vos alertes système apparaîtront ici.',
-    'details'     => $is_ar ? 'عرض التفاصيل'                    : 'Voir les détails',
-    'mark_read'   => $is_ar ? 'وضع علامة مقروء'                 : 'Marquer comme lu',
-    'delete'      => $is_ar ? 'حذف'                             : 'Supprimer',
-    'non_lues'    => $is_ar ? 'غير مقروءة'                      : 'non lues',
-    'filter_all'  => $is_ar ? 'الكل'                            : 'Toutes',
-    'filter_unread' => $is_ar ? 'غير المقروءة'                  : 'Non lues',
-];
 ?>
 <!DOCTYPE html>
-<html lang="<?= $lang ?? 'fr' ?>" dir="<?= $is_ar ? 'rtl' : 'ltr' ?>">
+<html lang="<?= $lang ?>" dir="<?= $dir ?>">
 <head>
 <meta charset="UTF-8">
 <?php include '../includes/dark_init.php'; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuraLib Admin · <?= $lbl['title'] ?></title>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title><?= $p['page_title'] ?></title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
-<script>
-(function(){
-    if(localStorage.getItem('auralib_theme')==='dark')
-        document.documentElement.classList.add('dark');
-})();
-</script>
 <style>
-/* ══ TOKENS (cohérents avec le reste d'AuraLib) ══ */
+/* ══ TOKENS ══ */
 :root {
     --gold:        #C4A46B;
     --gold2:       #D4B47B;
@@ -144,6 +224,8 @@ $lbl = [
     --gold-faint:  rgba(196,164,107,.08);
     --gold-border: rgba(196,164,107,.25);
     --amber:       #B8832A;
+    --ink:         #1A0E05;
+    --ink2:        #2E1D08;
     --page-bg:     #F2EDE3;
     --page-white:  #FDFAF5;
     --page-text:   #2A1F14;
@@ -154,7 +236,7 @@ $lbl = [
     --warning:     #92400E;
     --info:        #0369A1;
     --font-serif:  'EB Garamond', Georgia, serif;
-    --font-ui:     'Plus Jakarta Sans', sans-serif;
+    --font-ui:     <?= $is_ar ? "'Tajawal', sans-serif" : "'Plus Jakarta Sans', sans-serif" ?>;
     --nav-h:       62px;
     --shadow-sm:   0 3px 10px rgba(42,31,20,.07);
     --shadow-md:   0 8px 28px rgba(42,31,20,.11);
@@ -169,7 +251,6 @@ html.dark {
     --page-muted: #9A8C7E;
     --page-border:#3A2E1E;
 }
-
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 body {
     font-family: var(--font-ui);
@@ -179,44 +260,41 @@ body {
     padding-top: var(--nav-h);
     transition: background .35s, color .35s;
 }
+<?php if ($is_ar): ?>
+.hero-inner,
+.toolbar,
+.bulk-actions,
+.notif-header,
+.confirmed-text { flex-direction: row-reverse; }
+.notif-card.unread {
+    border-left: 1px solid var(--page-border) !important;
+    border-right: 3.5px solid var(--gold) !important;
+}
+<?php endif; ?>
 
-/* ══ ANIMATIONS ══ */
-@keyframes fadeUp {
-    from { opacity:0; transform:translateY(18px); }
-    to   { opacity:1; transform:translateY(0); }
-}
-@keyframes cardIn {
-    from { opacity:0; transform:translateX(-12px); }
-    to   { opacity:1; transform:translateX(0); }
-}
-@keyframes pulse-dot {
-    0%,100% { transform:scale(1); opacity:1; }
-    50%      { transform:scale(1.4); opacity:.7; }
-}
+@keyframes fadeUp  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes cardIn  { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:translateX(0)} }
+@keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.7} }
 
-/* ══ PAGE HERO ══ */
+/* ══ HERO ══ */
 .page-hero {
-    background: linear-gradient(135deg, #1A0E05 0%, #2E1D08 55%, #1A0E05 100%);
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 55%, var(--ink) 100%);
     padding: 38px 5% 34px;
     position: relative; overflow: hidden;
 }
 .page-hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 70% 100% at 15% 50%,
-                rgba(196,164,107,.10) 0%, transparent 65%);
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 100% at 15% 50%, rgba(196,164,107,.10) 0%, transparent 65%);
     pointer-events: none;
 }
 .page-hero::after {
-    content: '';
-    position: absolute; bottom:0; left:0; right:0; height:1px;
+    content: ''; position: absolute; bottom:0; left:0; right:0; height:1px;
     background: linear-gradient(90deg, transparent, rgba(196,164,107,.28), transparent);
 }
 .hero-inner {
     max-width: 860px; margin: 0 auto;
     display: flex; align-items: flex-end;
-    justify-content: space-between; gap: 20px;
-    flex-wrap: wrap;
+    justify-content: space-between; gap: 20px; flex-wrap: wrap;
     animation: fadeUp .5s ease both;
 }
 .hero-left { display:flex; flex-direction:column; gap:8px; }
@@ -235,44 +313,55 @@ body {
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-.hero-badge {
+.admin-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    align-self: flex-start; padding: 4px 12px; border-radius: 30px;
+    background: rgba(196,164,107,.10); border: 1.5px solid rgba(196,164,107,.28);
+    color: rgba(196,164,107,.75); font-size: 10px; font-weight: 800;
+    letter-spacing: 2px; text-transform: uppercase;
+}
+.hero-right { display:flex; flex-direction:column; align-items:flex-end; gap:12px; }
+.hero-unread-badge {
     display: inline-flex; align-items: center; gap: 7px;
     padding: 6px 14px; border-radius: 30px;
-    background: rgba(192,57,43,.18);
-    border: 1.5px solid rgba(192,57,43,.35);
+    background: rgba(192,57,43,.18); border: 1.5px solid rgba(192,57,43,.35);
     color: #ef9090; font-size: 12px; font-weight: 700;
-    align-self: flex-start;
 }
-.hero-badge .dot {
+.hero-unread-badge .dot {
     width: 7px; height: 7px; border-radius: 50%;
     background: #ef4444;
     animation: pulse-dot 1.5s ease-in-out infinite;
 }
+.btn-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 20px; border-radius: 30px;
+    background: rgba(196,164,107,.08); border: 1.5px solid rgba(196,164,107,.25);
+    color: rgba(196,164,107,.7); font-size: 12px; font-weight: 700;
+    text-decoration: none; transition: all var(--tr);
+}
+.btn-back:hover {
+    background: rgba(196,164,107,.18); color: var(--gold);
+    border-color: rgba(196,164,107,.5); transform: translateY(-1px);
+}
 
 /* ══ TOOLBAR ══ */
 .toolbar {
-    max-width: 860px; margin: 24px auto 0;
-    padding: 0 5%;
+    max-width: 860px; margin: 24px auto 0; padding: 0 5%;
     display: flex; align-items: center;
-    justify-content: space-between; gap: 14px;
-    flex-wrap: wrap;
+    justify-content: space-between; gap: 14px; flex-wrap: wrap;
     animation: fadeUp .5s .1s ease both;
 }
-.filter-tabs {
-    display: flex; gap: 6px;
-}
+.filter-tabs { display:flex; gap:6px; }
 .filter-tab {
     padding: 7px 16px; border-radius: 30px;
     font-size: 12px; font-weight: 600;
     border: 1.5px solid var(--page-border);
-    background: var(--page-white);
-    color: var(--page-muted);
+    background: var(--page-white); color: var(--page-muted);
     cursor: pointer; transition: all var(--tr);
 }
 .filter-tab.active,
 .filter-tab:hover {
-    background: var(--gold-faint);
-    border-color: var(--gold-border);
+    background: var(--gold-faint); border-color: var(--gold-border);
     color: var(--gold-deep);
 }
 html.dark .filter-tab { background: var(--page-white); }
@@ -288,167 +377,121 @@ html.dark .filter-tab:hover { color: var(--gold); }
     transition: all var(--tr); cursor: pointer;
 }
 .btn-bulk-read {
-    background: var(--gold-faint);
-    border-color: var(--gold-border);
-    color: var(--gold-deep);
+    background: var(--gold-faint); border-color: var(--gold-border); color: var(--gold-deep);
 }
-.btn-bulk-read:hover {
-    background: rgba(196,164,107,.18);
-    color: var(--gold);
-}
+.btn-bulk-read:hover { background: rgba(196,164,107,.18); color: var(--gold); }
 .btn-bulk-del {
-    background: rgba(192,57,43,.07);
-    border-color: rgba(192,57,43,.22);
-    color: var(--danger);
+    background: rgba(192,57,43,.07); border-color: rgba(192,57,43,.22); color: var(--danger);
 }
-.btn-bulk-del:hover {
-    background: rgba(192,57,43,.14);
-}
-html.dark .btn-bulk-read { color:var(--gold); }
+.btn-bulk-del:hover { background: rgba(192,57,43,.14); }
+html.dark .btn-bulk-read { color: var(--gold); }
 
-/* ══ LISTE ══ */
+/* ══ LIST ══ */
 .notif-list {
     max-width: 860px; margin: 22px auto 60px;
-    padding: 0 5%;
-    display: flex; flex-direction: column; gap: 12px;
+    padding: 0 5%; display:flex; flex-direction:column; gap:12px;
 }
 
-/* ══ CARTE NOTIFICATION ══ */
+/* ══ CARD ══ */
 .notif-card {
-    background: var(--page-white);
-    border: 1px solid var(--page-border);
-    border-radius: var(--radius);
-    padding: 20px 22px;
+    background: var(--page-white); border: 1px solid var(--page-border);
+    border-radius: var(--radius); padding: 20px 22px;
     display: flex; align-items: flex-start; gap: 16px;
     position: relative; overflow: hidden;
-    transition: transform var(--tr), box-shadow var(--tr), opacity .3s;
-    animation: cardIn .4s ease both;
-    box-shadow: var(--shadow-sm);
+    transition: transform var(--tr), box-shadow var(--tr);
+    animation: cardIn .4s ease both; box-shadow: var(--shadow-sm);
 }
-.notif-card:hover {
-    transform: translateX(4px);
-    box-shadow: var(--shadow-md);
-}
-/* Pastille colorée gauche pour non-lues */
-.notif-card.unread {
-    border-left: 3.5px solid var(--gold);
-}
-html[dir="rtl"] .notif-card.unread {
-    border-left: 1px solid var(--page-border);
-    border-right: 3.5px solid var(--gold);
-}
-/* Shimmer subtil sur non-lue */
+.notif-card:hover { transform: translateX(4px); box-shadow: var(--shadow-md); }
+.notif-card.unread { border-left: 3.5px solid var(--gold); }
 .notif-card.unread::before {
-    content: '';
-    position: absolute; top:0; left:0; right:0; height:2px;
+    content: ''; position:absolute; top:0; left:0; right:0; height:2px;
     background: linear-gradient(90deg, transparent, rgba(196,164,107,.3), transparent);
 }
+.notif-card:nth-child(1) { animation-delay:.04s; }
+.notif-card:nth-child(2) { animation-delay:.08s; }
+.notif-card:nth-child(3) { animation-delay:.12s; }
+.notif-card:nth-child(4) { animation-delay:.16s; }
+.notif-card:nth-child(5) { animation-delay:.20s; }
+.notif-card:nth-child(6) { animation-delay:.24s; }
 
-/* delays d'animation */
-.notif-card:nth-child(1)  { animation-delay: .04s; }
-.notif-card:nth-child(2)  { animation-delay: .08s; }
-.notif-card:nth-child(3)  { animation-delay: .12s; }
-.notif-card:nth-child(4)  { animation-delay: .16s; }
-.notif-card:nth-child(5)  { animation-delay: .20s; }
-.notif-card:nth-child(6)  { animation-delay: .24s; }
-
-/* ── Icône type ── */
+/* ── Icon ── */
 .notif-icon {
     width: 44px; height: 44px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-size: 17px; flex-shrink: 0;
 }
-.t-info    { background:rgba(3,105,161,.12);  color:var(--info);    }
+.t-info    { background:rgba(3,105,161,.12);  color:var(--info); }
 .t-success { background:rgba(39,103,73,.12);  color:var(--success); }
 .t-warning { background:rgba(146,64,14,.12);  color:var(--warning); }
-.t-danger  { background:rgba(192,57,43,.12);  color:var(--danger);  }
+.t-danger  { background:rgba(192,57,43,.12);  color:var(--danger); }
 
-/* ── Contenu ── */
+/* ── Body ── */
 .notif-body { flex:1; min-width:0; }
 .notif-header { display:flex; align-items:center; gap:10px; margin-bottom:5px; flex-wrap:wrap; }
-.notif-title {
-    font-weight: 700; font-size: 14px;
-    color: var(--page-text); line-height: 1.3;
-}
+.notif-title { font-weight:700; font-size:14px; color:var(--page-text); line-height:1.3; }
 .unread-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--gold); flex-shrink: 0;
+    width:7px; height:7px; border-radius:50%; background:var(--gold); flex-shrink:0;
     animation: pulse-dot 2s ease-in-out infinite;
 }
-.notif-msg {
-    font-size: 13px; color: var(--page-muted);
-    line-height: 1.6; margin-bottom: 10px;
-}
+.notif-msg { font-size:13px; color:var(--page-muted); line-height:1.6; margin-bottom:10px; }
 .notif-link {
-    display: inline-flex; align-items: center; gap: 5px;
-    color: var(--gold); font-size: 11px; font-weight: 700;
-    text-decoration: none; letter-spacing: .3px;
-    transition: color var(--tr);
+    display:inline-flex; align-items:center; gap:5px;
+    color:var(--gold); font-size:11px; font-weight:700;
+    text-decoration:none; letter-spacing:.3px; transition:color var(--tr);
 }
-.notif-link:hover { color: var(--gold2); }
+.notif-link:hover { color:var(--gold2); }
 .notif-time {
-    display: block; font-size: 10px;
-    color: rgba(154,140,126,.6); margin-top: 8px;
-    letter-spacing: .5px;
+    display:block; font-size:10px;
+    color:rgba(154,140,126,.6); margin-top:8px; letter-spacing:.5px;
 }
 
-/* ── Actions ── */
-.notif-actions {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 8px; flex-shrink: 0;
-}
+/* ── Action buttons ── */
+.notif-actions { display:flex; flex-direction:column; align-items:center; gap:8px; flex-shrink:0; }
 .btn-notif-action {
-    width: 32px; height: 32px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; text-decoration: none;
-    border: 1.5px solid var(--page-border);
-    background: var(--page-bg);
-    color: var(--page-muted);
+    width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; text-decoration:none;
+    border:1.5px solid var(--page-border);
+    background:var(--page-bg); color:var(--page-muted);
     transition: all var(--tr);
 }
 .btn-notif-action:hover { transform:scale(1.1); }
 .btn-mark:hover  { border-color:var(--gold-border); color:var(--gold); background:var(--gold-faint); }
 .btn-trash:hover { border-color:rgba(192,57,43,.3); color:var(--danger); background:rgba(192,57,43,.07); }
 
-/* ══ SEPARATEUR "LU / NON-LU" ══ */
+/* ══ SEPARATOR ══ */
 .section-sep {
-    display: flex; align-items: center; gap: 12px;
-    max-width: 860px; margin: 0 auto;
-    padding: 0 5%;
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
-    color: var(--page-muted);
+    display:flex; align-items:center; gap:12px;
+    max-width:860px; margin:0 auto; padding:0 5%;
+    font-size:10px; font-weight:700; letter-spacing:2px;
+    text-transform:uppercase; color:var(--page-muted);
 }
-.section-sep::before,.section-sep::after {
+.section-sep::before, .section-sep::after {
     content:''; flex:1; height:1px; background:var(--page-border);
 }
 
 /* ══ EMPTY STATE ══ */
 .empty-state {
-    max-width: 860px; margin: 60px auto;
-    padding: 0 5%;
-    text-align: center;
-    animation: fadeUp .6s ease both;
+    max-width:860px; margin:60px auto; padding:0 5%;
+    text-align:center; animation:fadeUp .6s ease both;
 }
 .empty-icon-wrap {
-    width: 90px; height: 90px; border-radius: 50%;
-    background: linear-gradient(135deg, #1A0E05, #2E1D08);
-    border: 2px solid var(--gold-border);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 24px;
-    box-shadow: var(--shadow-gold);
+    width:90px; height:90px; border-radius:50%;
+    background: linear-gradient(135deg, var(--ink), var(--ink2));
+    border:2px solid var(--gold-border);
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 24px; box-shadow:var(--shadow-gold);
 }
-.empty-icon-wrap i { font-size: 34px; color: var(--gold); opacity:.6; }
+.empty-icon-wrap i { font-size:34px; color:var(--gold); opacity:.6; }
 .empty-title {
-    font-family: var(--font-serif);
-    font-size: 28px; color: var(--page-text);
-    margin-bottom: 10px;
+    font-family:var(--font-serif); font-size:28px;
+    color:var(--page-text); margin-bottom:10px;
 }
-.empty-sub { font-size: 14px; color: var(--page-muted); line-height: 1.6; }
+.empty-sub { font-size:14px; color:var(--page-muted); line-height:1.6; }
 
-/* ══ RESPONSIVE ══ */
 @media (max-width: 600px) {
     .hero-inner { flex-direction:column; align-items:flex-start; }
+    .hero-right { align-items:flex-start; }
     .notif-card { flex-wrap:wrap; }
     .notif-actions { flex-direction:row; width:100%; justify-content:flex-end; }
 }
@@ -462,43 +505,26 @@ html[dir="rtl"] .notif-card.unread {
         <div class="hero-left">
             <div class="hero-eyebrow">
                 <i class="fa-solid fa-bell" style="font-size:9px"></i>
-                <?= $lbl['title'] ?>
+                <?= $p['eyebrow'] ?>
             </div>
             <h1 class="hero-title">
-                Vos <span>Alertes</span>
+                <?= $p['hero_title'] ?><?php if ($p['hero_span']): ?> <span><?= $p['hero_span'] ?></span><?php endif; ?>
             </h1>
-            <!-- Badge Admin discret -->
-            <span style="
-                display:inline-flex;align-items:center;gap:6px;align-self:flex-start;
-                padding:4px 12px;border-radius:30px;
-                background:rgba(196,164,107,.10);
-                border:1.5px solid rgba(196,164,107,.28);
-                color:rgba(196,164,107,.75);
-                font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
-            ">
+            <span class="admin-badge">
                 <i class="fa-solid fa-shield-halved" style="font-size:9px"></i>
-                Admin
+                <?= $p['admin_badge'] ?>
             </span>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px;">
+        <div class="hero-right">
             <?php if ($non_lues > 0): ?>
-            <div class="hero-badge">
+            <div class="hero-unread-badge">
                 <span class="dot"></span>
-                <?= $non_lues ?> <?= $lbl['non_lues'] ?>
+                <?= $non_lues ?> <?= $p['non_lues'] ?>
             </div>
             <?php endif; ?>
-            <a href="admin_dashboard.php" style="
-                display:inline-flex;align-items:center;gap:8px;
-                padding:9px 20px;border-radius:30px;
-                background:rgba(196,164,107,.08);
-                border:1.5px solid rgba(196,164,107,.25);
-                color:rgba(196,164,107,.7);
-                font-size:12px;font-weight:700;text-decoration:none;
-                transition:all .25s;
-            " onmouseover="this.style.background='rgba(196,164,107,.18)';this.style.color='#C4A46B'"
-               onmouseout="this.style.background='rgba(196,164,107,.08)';this.style.color='rgba(196,164,107,.7)'">
-                <i class="fa-solid fa-arrow-left" style="font-size:10px"></i>
-                Retour au Dashboard
+            <a href="admin_dashboard.php" class="btn-back">
+                <i class="fa-solid fa-arrow-<?= $is_ar ? 'right' : 'left' ?>" style="font-size:10px"></i>
+                <?= $p['btn_back'] ?>
             </a>
         </div>
     </div>
@@ -507,63 +533,59 @@ html[dir="rtl"] .notif-card.unread {
 <!-- ══ TOOLBAR ══ -->
 <?php if ($total > 0): ?>
 <div class="toolbar">
-    <!-- Filtres JS -->
     <div class="filter-tabs">
         <button class="filter-tab active" onclick="filterCards('all', this)">
-            <?= $lbl['filter_all'] ?> (<?= $total ?>)
+            <?= $p['filter_all'] ?> (<?= $total ?>)
         </button>
         <?php if ($non_lues > 0): ?>
         <button class="filter-tab" onclick="filterCards('unread', this)">
-            <?= $lbl['filter_unread'] ?> (<?= $non_lues ?>)
+            <?= $p['filter_unread'] ?> (<?= $non_lues ?>)
         </button>
         <?php endif; ?>
     </div>
-
-    <!-- Actions groupées -->
     <div class="bulk-actions">
         <?php if ($non_lues > 0): ?>
         <a href="?action=mark_all_read" class="btn-bulk btn-bulk-read">
             <i class="fa-solid fa-check-double" style="font-size:10px"></i>
-            <?= $lbl['mark_all'] ?>
+            <?= $p['mark_all'] ?>
         </a>
         <?php endif; ?>
         <a href="?action=delete_all"
            class="btn-bulk btn-bulk-del"
-           onclick="return confirm('<?= $is_ar ? 'حذف جميع الإشعارات؟' : 'Supprimer toutes les notifications ?' ?>')">
+           onclick="return confirm('<?= addslashes($p['confirm_del_all']) ?>')">
             <i class="fa-solid fa-trash-can" style="font-size:10px"></i>
-            <?= $lbl['delete_all'] ?>
+            <?= $p['delete_all'] ?>
         </a>
     </div>
 </div>
 <?php endif; ?>
 
-<!-- ══ LISTE ══ -->
+<!-- ══ LIST ══ -->
 <div class="notif-list" id="notifList">
 
 <?php if ($total === 0): ?>
-    <!-- ══ EMPTY STATE ══ -->
     <div class="empty-state">
         <div class="empty-icon-wrap">
             <i class="fa-regular fa-bell-slash"></i>
         </div>
-        <h2 class="empty-title"><?= $lbl['empty_title'] ?></h2>
-        <p class="empty-sub"><?= $lbl['empty_sub'] ?></p>
+        <h2 class="empty-title"><?= $p['empty_title'] ?></h2>
+        <p class="empty-sub"><?= $p['empty_sub'] ?></p>
     </div>
 
 <?php else:
-    $already_showed_sep = false;
+    $sep_shown = false;
     foreach ($rows as $i => $row):
-        // Séparateur entre non-lues et lues
-        if (!$already_showed_sep && $row['lu'] == 1 && $non_lues > 0):
-            $already_showed_sep = true;
+
+        // ── Separator between unread / read ──
+        if (!$sep_shown && $row['lu'] == 1 && $non_lues > 0):
+            $sep_shown = true;
 ?>
-</div><!-- ferme la liste avant le sep -->
-<div class="section-sep" style="margin:16px auto;">Lu</div>
+</div>
+<div class="section-sep" style="margin:16px auto;"><?= $p['sep_read'] ?></div>
 <div class="notif-list" id="notifList2">
 <?php endif; ?>
 
 <?php
-    // Icône selon le type
     $icon = match($row['type']) {
         'success' => 'fa-circle-check',
         'warning' => 'fa-triangle-exclamation',
@@ -571,60 +593,54 @@ html[dir="rtl"] .notif-card.unread {
         default   => 'fa-circle-info',
     };
     $is_unread = (int)$row['lu'] === 0;
-    $time_diff = (new DateTime())->diff(new DateTime($row['created_at']));
-    if ($time_diff->days > 0)         $time_label = $time_diff->days . ' j';
-    elseif ($time_diff->h > 0)        $time_label = $time_diff->h . ' h';
-    elseif ($time_diff->i > 0)        $time_label = $time_diff->i . ' min';
-    else                               $time_label = "à l'instant";
+
+    // ── Time-ago label ──
+    $diff = (new DateTime())->diff(new DateTime($row['created_at']));
+    if ($diff->days > 0)
+        $time_label = $p['time_ago'] . ' ' . $diff->days . ' ' . $p['time_d'];
+    elseif ($diff->h > 0)
+        $time_label = $p['time_ago'] . ' ' . $diff->h   . ' ' . $p['time_h'];
+    elseif ($diff->i > 0)
+        $time_label = $p['time_ago'] . ' ' . $diff->i   . ' ' . $p['time_m'];
+    else
+        $time_label = $p['time_instant'];
 ?>
+<div class="notif-card <?= $is_unread ? 'unread' : 'read' ?>" data-read="<?= $row['lu'] ?>">
 
-<div class="notif-card <?= $is_unread ? 'unread' : 'read' ?>"
-     data-read="<?= $row['lu'] ?>">
-
-    <!-- Icône -->
     <div class="notif-icon t-<?= htmlspecialchars($row['type']) ?>">
         <i class="fa-solid <?= $icon ?>"></i>
     </div>
 
-    <!-- Corps -->
     <div class="notif-body">
         <div class="notif-header">
-            <?php if ($is_unread): ?>
-            <span class="unread-dot"></span>
-            <?php endif; ?>
+            <?php if ($is_unread): ?><span class="unread-dot"></span><?php endif; ?>
             <span class="notif-title"><?= htmlspecialchars($row['titre']) ?></span>
         </div>
-
-        <p class="notif-msg">
-            <?= nl2br(htmlspecialchars($row['message'])) ?>
-        </p>
-
+        <p class="notif-msg"><?= nl2br(htmlspecialchars($row['message'])) ?></p>
         <?php if (!empty($row['lien'])): ?>
         <a href="<?= htmlspecialchars($row['lien']) ?>" class="notif-link">
-            <?= $lbl['details'] ?> <i class="fa-solid fa-arrow-right" style="font-size:9px"></i>
+            <?= $p['details'] ?> <i class="fa-solid fa-arrow-right" style="font-size:9px"></i>
         </a>
         <?php endif; ?>
-
         <span class="notif-time">
             <i class="fa-regular fa-clock" style="font-size:9px"></i>
-            <?= date('d/m/Y à H:i', strtotime($row['created_at'])) ?>
-            &nbsp;·&nbsp; il y a <?= $time_label ?>
+            <?= date($p['date_fmt'], strtotime($row['created_at'])) ?>
+            &nbsp;·&nbsp; <?= $time_label ?>
         </span>
     </div>
 
-    <!-- Actions -->
     <div class="notif-actions">
         <?php if ($is_unread): ?>
         <a href="?action=mark_read&id=<?= $row['id'] ?>"
            class="btn-notif-action btn-mark"
-           title="<?= $lbl['mark_read'] ?>">
+           title="<?= $p['mark_read'] ?>">
             <i class="fa-solid fa-check"></i>
         </a>
         <?php endif; ?>
         <a href="?action=delete&id=<?= $row['id'] ?>"
            class="btn-notif-action btn-trash"
-           title="<?= $lbl['delete'] ?>"
-           onclick="return confirm('<?= $is_ar ? 'حذف هذا الإشعار؟' : 'Supprimer cette notification ?' ?>')">
+           title="<?= $p['delete'] ?>"
+           onclick="return confirm('<?= addslashes($p['confirm_del_one']) ?>')">
             <i class="fa-solid fa-trash-can"></i>
         </a>
     </div>
@@ -634,16 +650,13 @@ html[dir="rtl"] .notif-card.unread {
 </div>
 
 <script>
-// ── Filtre côté client (sans rechargement) ────────────────────────
 function filterCards(type, btn) {
     document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-
     document.querySelectorAll('.notif-card').forEach(card => {
         if (type === 'all') {
             card.style.display = '';
         } else {
-            // unread = data-read="0"
             card.style.display = (card.dataset.read === '0') ? '' : 'none';
         }
     });
