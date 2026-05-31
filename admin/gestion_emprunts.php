@@ -180,7 +180,7 @@ include '../includes/header.php';
 <meta charset="UTF-8">
 <?php include '../includes/dark_init.php'; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuraLib Admin · <?= $l['title'] ?> #<?= $emprunt_id ?></title>
+<title>AuraLib Admin · <?= $l['title'] ?> ARL-<?= str_pad($emprunt_id,4,'0',STR_PAD_LEFT) ?>-<?= date('Y') ?></title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="/MEMOIR/css/dark-mode.css">
 <style>
@@ -556,7 +556,7 @@ body {
                 Administration · <?= $l['title'] ?>
             </div>
             <div class="hero-title">
-                <?= $l['emprunt_num'] ?> <span>#<?= $emprunt_id ?></span>
+                <?= $l['emprunt_num'] ?> <span>ARL-<?= str_pad($emprunt_id,4,'0',STR_PAD_LEFT) ?>-<?= date('Y') ?></span>
             </div>
             <div class="admin-badge">
                 <i class="fa-solid fa-user-shield" style="font-size:9px"></i> Admin
@@ -679,7 +679,7 @@ body {
         <div class="lux-card">
             <div class="lux-card-head">
                 <i class="fa-solid fa-clock-rotate-left"></i>
-                <div class="lux-card-head-title"><?= $l['title'] ?> #<?= $emprunt_id ?></div>
+                <div class="lux-card-head-title"><?= $l['title'] ?> ARL-<?= str_pad($emprunt_id,4,'0',STR_PAD_LEFT) ?>-<?= date('Y') ?></div>
             </div>
             <div class="details-body">
 
@@ -742,9 +742,11 @@ body {
 
                 <div class="info-row">
                     <span class="info-lbl">
-                        <i class="fa-solid fa-hashtag"></i> ID Emprunt
+                        <i class="fa-solid fa-tag"></i> Référence
                     </span>
-                    <span class="info-val" style="color:var(--page-muted)">#<?= $emprunt_id ?></span>
+                    <span class="info-val" style="font-family:var(--font-serif);font-size:15px;color:var(--gold-deep);letter-spacing:.5px">
+                        ARL-<?= str_pad($emprunt_id, 4, '0', STR_PAD_LEFT) ?>-<?= date('Y') ?>
+                    </span>
                 </div>
 
             </div>

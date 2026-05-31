@@ -232,7 +232,7 @@ while ($row = $emprunts->fetch_assoc()) {
             $msg = "Vous avez dépassé la date de retour du document « {$titre_livre} ».\n"
                  . "Retard actuel : {$jours_retard} jour(s) — Amende : {$amende_due} DA.\n"
                  . "Veuillez retourner le document dès que possible.";
-            insertNotif($conn, $id_user, 'danger', $titre_notif, $msg, '/MEMOIR/client/mes_emprunts.php');
+            insertNotif($conn, $id_user, 'danger', $titre_notif, $msg, '/MEMOIR/emprunts/mes_emprunts.php');
 
             // A4. Email retard
             $body = emailTemplate(
@@ -258,7 +258,7 @@ while ($row = $emprunts->fetch_assoc()) {
             $msg = "Votre emprunt du document « {$titre_livre} » expire dans 2 jours "
                  . "(le " . $date_retour->format('d/m/Y') . "). "
                  . "Pensez à le retourner pour éviter toute amende.";
-            insertNotif($conn, $id_user, 'warning', $titre_notif, $msg, '/MEMOIR/client/mes_emprunts.php');
+            insertNotif($conn, $id_user, 'warning', $titre_notif, $msg, '/MEMOIR/emprunts/mes_emprunts.php');
 
             $body = emailTemplate(
                 $prenom,
@@ -283,7 +283,7 @@ while ($row = $emprunts->fetch_assoc()) {
             $msg = "Votre emprunt du document « {$titre_livre} » arrive à échéance "
                  . "dans 7 jours (le " . $date_retour->format('d/m/Y') . "). "
                  . "Ce rappel est envoyé par précaution.";
-            insertNotif($conn, $id_user, 'info', $titre_notif, $msg, '/MEMOIR/client/mes_emprunts.php');
+            insertNotif($conn, $id_user, 'info', $titre_notif, $msg, '/MEMOIR/emprunts/mes_emprunts.php');
 
             $body = emailTemplate(
                 $prenom,

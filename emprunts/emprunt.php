@@ -207,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $book) {
         confirmButtonColor: '#2C1F0E',
         confirmButtonText: 'Voir mes emprunts'
     }).then(() => {
-        window.location.href = 'mes_emprunts.php';
+        window.location.href = '../client/mes_emprunts.php';
     });
 
 <?php elseif ($error === 'no_stock'): ?>
@@ -229,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $book) {
         confirmButtonColor: '#2C1F0E',
         confirmButtonText: 'Voir mes emprunts'
     }).then(() => {
-        window.location.href = 'mes_emprunts.php';
+        window.location.href = '../client/mes_emprunts.php';
     });
 
 <?php elseif ($error === 'error'): ?>

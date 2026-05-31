@@ -49,7 +49,7 @@ $pg = [
         'time_m'          => 'min',
         'date_fmt'        => 'd/m/Y à H:i',
         // Auto-generated late loan notification texts
-        'notif_late_title'=> "⚠️ Retard · Emprunt #",
+        'notif_late_title'=> "⚠️ Retard · ",
         'notif_late_msg1' => " a dépassé la date de retour du document « ",
         'notif_late_msg2' => " ».\nRetard : ",
         'notif_late_msg3' => " jour(s) — Amende : ",
@@ -82,7 +82,7 @@ $pg = [
         'time_m'          => 'min ago',
         'date_fmt'        => 'd/m/Y H:i',
         // Auto-generated late loan notification texts
-        'notif_late_title'=> "⚠️ Late Return · Loan #",
+        'notif_late_title'=> "⚠️ Late Return · ",
         'notif_late_msg1' => " has exceeded the return date for « ",
         'notif_late_msg2' => " ».\nDelay: ",
         'notif_late_msg3' => " day(s) — Fine: ",
@@ -115,7 +115,7 @@ $pg = [
         'time_m'          => 'دقيقة',
         'date_fmt'        => 'd/m/Y H:i',
         // Auto-generated late loan notification texts
-        'notif_late_title'=> "⚠️ تأخير · استعارة #",
+        'notif_late_title'=> "⚠️ تأخير · ",
         'notif_late_msg1' => " تجاوز تاريخ إعادة « ",
         'notif_late_msg2' => " ».\nالتأخير: ",
         'notif_late_msg3' => " يوم — الغرامة: ",
@@ -148,7 +148,8 @@ $stmt_r->execute();
 $retards = $stmt_r->get_result();
 
 while ($row_r = $retards->fetch_assoc()) {
-    $titre_n   = $p['notif_late_title'] . $row_r['id_emprunt'];
+    $ref_n     = 'ARL-' . str_pad($row_r['id_emprunt'], 4, '0', STR_PAD_LEFT) . '-' . date('Y');
+    $titre_n   = $p['notif_late_title'] . $ref_n;
     $message_n = $row_r['firstname'] . ' ' . $row_r['lastname']
                . $p['notif_late_msg1'] . $row_r['titre']
                . $p['notif_late_msg2'] . $row_r['jours_retard']

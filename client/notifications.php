@@ -61,6 +61,15 @@ while ($r = $result->fetch_assoc()) {
     $rows[] = $r;
 }
 
+// ── FIX : Normalise les liens (évite double path comme /client/emprunts//MEMOIR/...) ──
+foreach ($rows as &$row) {
+    if (!empty($row['lien'])) {
+        // Supprime les doubles slashes sauf http:// ou https://
+        $row['lien'] = preg_replace('#([^:])/{2,}#', '$1/', $row['lien']);
+    }
+}
+unset($row);
+
 // ── 3. Labels multilingue ─────────────────────────────────────────
 $is_ar = ($lang ?? 'fr') === 'ar';
 $lbl = [
@@ -287,7 +296,6 @@ html.dark .btn-bulk-read { color:var(--gold); }
     transform: translateX(4px);
     box-shadow: var(--shadow-md);
 }
-/* Pastille colorée gauche pour non-lues */
 .notif-card.unread {
     border-left: 3.5px solid var(--gold);
 }
@@ -295,14 +303,11 @@ html[dir="rtl"] .notif-card.unread {
     border-left: 1px solid var(--page-border);
     border-right: 3.5px solid var(--gold);
 }
-/* Shimmer subtil sur non-lue */
 .notif-card.unread::before {
     content: '';
     position: absolute; top:0; left:0; right:0; height:2px;
     background: linear-gradient(90deg, transparent, rgba(196,164,107,.3), transparent);
 }
-
-/* delays d'animation */
 .notif-card:nth-child(1)  { animation-delay: .04s; }
 .notif-card:nth-child(2)  { animation-delay: .08s; }
 .notif-card:nth-child(3)  { animation-delay: .12s; }
@@ -438,7 +443,6 @@ html[dir="rtl"] .notif-card.unread {
 <!-- ══ TOOLBAR ══ -->
 <?php if ($total > 0): ?>
 <div class="toolbar">
-    <!-- Filtres JS -->
     <div class="filter-tabs">
         <button class="filter-tab active" onclick="filterCards('all', this)">
             <?= $lbl['filter_all'] ?> (<?= $total ?>)
@@ -450,7 +454,6 @@ html[dir="rtl"] .notif-card.unread {
         <?php endif; ?>
     </div>
 
-    <!-- Actions groupées -->
     <div class="bulk-actions">
         <?php if ($non_lues > 0): ?>
         <a href="?action=mark_all_read" class="btn-bulk btn-bulk-read">
@@ -472,7 +475,6 @@ html[dir="rtl"] .notif-card.unread {
 <div class="notif-list" id="notifList">
 
 <?php if ($total === 0): ?>
-    <!-- ══ EMPTY STATE ══ -->
     <div class="empty-state">
         <div class="empty-icon-wrap">
             <i class="fa-regular fa-bell-slash"></i>
@@ -484,17 +486,15 @@ html[dir="rtl"] .notif-card.unread {
 <?php else:
     $already_showed_sep = false;
     foreach ($rows as $i => $row):
-        // Séparateur entre non-lues et lues
         if (!$already_showed_sep && $row['lu'] == 1 && $non_lues > 0):
             $already_showed_sep = true;
 ?>
-</div><!-- ferme la liste avant le sep -->
+</div>
 <div class="section-sep" style="margin:16px auto;">Lu</div>
 <div class="notif-list" id="notifList2">
 <?php endif; ?>
 
 <?php
-    // Icône selon le type
     $icon = match($row['type']) {
         'success' => 'fa-circle-check',
         'warning' => 'fa-triangle-exclamation',
@@ -512,12 +512,10 @@ html[dir="rtl"] .notif-card.unread {
 <div class="notif-card <?= $is_unread ? 'unread' : 'read' ?>"
      data-read="<?= $row['lu'] ?>">
 
-    <!-- Icône -->
     <div class="notif-icon t-<?= htmlspecialchars($row['type']) ?>">
         <i class="fa-solid <?= $icon ?>"></i>
     </div>
 
-    <!-- Corps -->
     <div class="notif-body">
         <div class="notif-header">
             <?php if ($is_unread): ?>
@@ -543,7 +541,6 @@ html[dir="rtl"] .notif-card.unread {
         </span>
     </div>
 
-    <!-- Actions -->
     <div class="notif-actions">
         <?php if ($is_unread): ?>
         <a href="?action=mark_read&id=<?= $row['id'] ?>"
@@ -565,7 +562,6 @@ html[dir="rtl"] .notif-card.unread {
 </div>
 
 <script>
-// ── Filtre côté client (sans rechargement) ────────────────────────
 function filterCards(type, btn) {
     document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
@@ -574,7 +570,6 @@ function filterCards(type, btn) {
         if (type === 'all') {
             card.style.display = '';
         } else {
-            // unread = data-read="0"
             card.style.display = (card.dataset.read === '0') ? '' : 'none';
         }
     });

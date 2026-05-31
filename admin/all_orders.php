@@ -302,7 +302,7 @@ th, td { text-align: right !important; }
 
 /* ══ PAGE HERO ══ */
 .page-hero {
-    background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 55%, var(--ink) 100%);
+    background: linear-gradient(135deg, #1A0E05 0%, #2E1D08 55%, #1A0E05 100%);
     padding: 36px 5% 32px;
     position: relative; overflow: hidden;
 }
@@ -314,7 +314,7 @@ th, td { text-align: right !important; }
 }
 .page-hero::after {
     content: '';
-    position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+    position: absolute; bottom:0; left:0; right:0; height:1px;
     background: linear-gradient(90deg, transparent, rgba(196,164,107,.3), transparent);
 }
 .hero-inner {
@@ -371,7 +371,7 @@ th, td { text-align: right !important; }
 }
 .stat-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 .stat-label { font-size: 11px; color: var(--page-muted); font-weight: 500; }
-.stat-val {
+.stat-num {
     font-family: var(--font-serif); font-size: 20px; font-weight: 700;
     color: var(--page-text); line-height: 1;
 }
@@ -386,10 +386,10 @@ th, td { text-align: right !important; }
 /* ══ SECTION HEADER ══ */
 .section-head {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 22px 28px;
-    background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 100%);
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #1A0E05 0%, #2E1D08 100%);
     border-radius: 20px 20px 0 0;
-    border-bottom: 1px solid var(--gold-border);
+    border-bottom: 1.5px solid var(--gold-border);
 }
 .section-title {
     font-family: var(--font-serif); font-size: 22px; font-weight: 700;
@@ -415,16 +415,15 @@ th, td { text-align: right !important; }
 
 table { width: 100%; border-collapse: collapse; }
 thead tr {
-    background: linear-gradient(135deg, rgba(196,164,107,.07) 0%, rgba(122,92,58,.05) 100%);
+    background: linear-gradient(135deg, #1A0E05 0%, #2E1D08 100%);
     border-bottom: 1.5px solid var(--gold-border);
 }
 th {
-    padding: 14px 18px;
-    font-size: 10px; font-weight: 700; letter-spacing: 2px;
-    text-transform: uppercase; color: var(--gold-deep);
-    text-align: left; white-space: nowrap;
+    padding: 14px 16px;
+    font-family: var(--font-ui); font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(196,164,107,.65); text-align: left; white-space: nowrap;
 }
-html.dark th { color: var(--gold); }
 tbody tr {
     border-bottom: 1px solid var(--page-border);
     transition: background var(--tr);
@@ -472,44 +471,49 @@ html.dark .order-id { color: var(--gold); }
 .date-cell { font-size: 12px; color: var(--page-muted); line-height: 1.6; white-space: nowrap; }
 .date-cell strong { color: var(--page-text); font-size: 13px; display: block; }
 
-/* ── Status badges ── */
+/* ── Status badges — gerer_emprunts style ── */
+@keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(192,57,43,.45); }
+    70%  { box-shadow: 0 0 0 7px rgba(192,57,43,0); }
+    100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); }
+}
 .status-pill {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 5px 13px; border-radius: 20px;
+    padding: 5px 12px; border-radius: 20px;
     font-size: 10px; font-weight: 700; letter-spacing: .6px;
     text-transform: uppercase; white-space: nowrap;
 }
-.status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.status-pill::before { content:''; width:6px; height:6px; border-radius:50%; flex-shrink:0; }
 .status-pill.paid {
-    background: var(--success-bg); color: var(--success);
-    border: 1.5px solid rgba(39,103,73,.22);
+    background: rgba(39,103,73,.1); border: 1.5px solid rgba(39,103,73,.28); color: var(--success);
 }
 .status-pill.paid::before { background: var(--success); }
 .status-pill.pending {
-    background: var(--pending-bg); color: var(--pending-clr);
-    border: 1.5px solid var(--pending-brd);
+    background: rgba(234,179,8,.1); border: 1.5px solid rgba(234,179,8,.3); color: #92400E;
 }
-.status-pill.pending::before { background: var(--pending-clr); }
+.status-pill.pending::before { background: #F59E0B; }
 
-/* ── Action cell ── */
-.action-cell { display: flex; flex-direction: column; gap: 6px; }
+/* ── Action cell — gerer_emprunts style ── */
+.action-cell { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
 .confirmed-text {
     font-size: 11px; font-weight: 700; color: var(--success);
     display: flex; align-items: center; gap: 5px;
 }
 .btn-invoice {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 7px 14px; border-radius: 50px;
+    padding: 8px 16px; border-radius: 50px;
     font-family: var(--font-ui); font-size: 11px; font-weight: 700;
-    color: var(--gold-deep); border: 1.5px solid var(--gold-border);
-    background: var(--gold-faint); cursor: pointer;
-    transition: all var(--tr); white-space: nowrap;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
+    color: #1A0E05;
+    border: 1.5px solid transparent;
+    box-shadow: var(--shadow-gold);
+    cursor: pointer;
+    transition: all var(--tr); white-space: nowrap; letter-spacing: .2px;
 }
-html.dark .btn-invoice { color: var(--gold); }
 .btn-invoice:hover {
-    background: var(--gold); color: var(--ink);
-    border-color: var(--gold); box-shadow: var(--shadow-gold);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(196,164,107,.4);
 }
 .btn-invoice i { font-size: 10px; }
 
@@ -720,19 +724,19 @@ html.dark .inv-meta { background: var(--page-bg2); }
     <div class="stat-pill">
         <span class="stat-dot" style="background:var(--gold)"></span>
         <span class="stat-label"><?= $p['stat_revenue'] ?></span>
-        <span class="stat-val"><?= number_format($total_revenue, 0, ',', ' ') ?></span>
+        <span class="stat-num"><?= number_format($total_revenue, 0, ',', ' ') ?></span>
         <span class="stat-unit"><?= $p['da'] ?></span>
     </div>
     <div class="stat-pill">
         <span class="stat-dot" style="background:var(--success)"></span>
         <span class="stat-label"><?= $p['stat_profit'] ?></span>
-        <span class="stat-val"><?= number_format($total_profit, 0, ',', ' ') ?></span>
+        <span class="stat-num"><?= number_format($total_profit, 0, ',', ' ') ?></span>
         <span class="stat-unit"><?= $p['da'] ?></span>
     </div>
     <div class="stat-pill">
         <span class="stat-dot" style="background:#60a5fa"></span>
         <span class="stat-label"><?= $p['stat_sold'] ?></span>
-        <span class="stat-val"><?= $total_sold ?></span>
+        <span class="stat-num"><?= $total_sold ?></span>
         <span class="stat-unit"><?= $p['stat_copies'] ?></span>
     </div>
 </div>
@@ -740,11 +744,6 @@ html.dark .inv-meta { background: var(--page-bg2); }
 <!-- ══ TABLE ══ -->
 <div class="table-wrap">
     <div class="table-card">
-        <!-- dark header bar -->
-        <div class="section-head">
-            <span class="section-title"><?= $p['table_title'] ?></span>
-            <span class="section-badge">AuraLib</span>
-        </div>
 
         <div class="table-scroll">
             <table>

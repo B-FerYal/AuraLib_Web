@@ -9,6 +9,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
     exit;
 }
 
+function fmtEmpruntId($id) {
+    return 'ARL-' . str_pad($id, 4, '0', STR_PAD_LEFT) . '-' . date('Y');
+}
+
 // ── نصوص الصفحة حسب اللغة ──────────────────────────────
 $pg = [
     'fr' => [
@@ -34,7 +38,7 @@ $pg = [
         'flash_invalid'   => 'Action non autorisée pour ce statut.',
         'flash_error'     => 'Une erreur est survenue.',
         // Table headers
-        'th_id'           => '#',
+        'th_id'           => 'Référence',
         'th_reader'       => 'Lecteur &amp; Document',
         'th_period'       => "Période d'Emprunt",
         'th_status'       => 'Statut',
@@ -55,6 +59,7 @@ $pg = [
         'btn_accept'      => 'Accepter',
         'btn_refuse'      => 'Refuser',
         'btn_mark_return' => 'Marquer Rendu',
+        'confirm_accept'  => 'Accepter cet emprunt ?',
         'confirm_refuse'  => 'Refuser cet emprunt ?',
         'confirm_return'  => 'Confirmer le retour de ce livre ?',
         'tooltip_no_stock'=> 'Stock épuisé',
@@ -86,7 +91,7 @@ $pg = [
         'flash_invalid'   => 'Action not allowed for this status.',
         'flash_error'     => 'An error occurred.',
         // Table headers
-        'th_id'           => '#',
+        'th_id'           => 'Reference',
         'th_reader'       => 'Reader &amp; Document',
         'th_period'       => 'Loan Period',
         'th_status'       => 'Status',
@@ -107,6 +112,7 @@ $pg = [
         'btn_accept'      => 'Accept',
         'btn_refuse'      => 'Refuse',
         'btn_mark_return' => 'Mark Returned',
+        'confirm_accept'  => 'Accept this loan?',
         'confirm_refuse'  => 'Refuse this loan?',
         'confirm_return'  => 'Confirm book return?',
         'tooltip_no_stock'=> 'Out of stock',
@@ -138,7 +144,7 @@ $pg = [
         'flash_invalid'   => 'الإجراء غير مسموح لهذا الوضع.',
         'flash_error'     => 'حدث خطأ.',
         // Table headers
-        'th_id'           => '#',
+        'th_id'           => 'المرجع',
         'th_reader'       => 'القارئ والمستند',
         'th_period'       => 'فترة الاستعارة',
         'th_status'       => 'الحالة',
@@ -159,6 +165,7 @@ $pg = [
         'btn_accept'      => 'قبول',
         'btn_refuse'      => 'رفض',
         'btn_mark_return' => 'تسجيل الإعادة',
+        'confirm_accept'  => 'قبول هذه الاستعارة؟',
         'confirm_refuse'  => 'رفض هذه الاستعارة؟',
         'confirm_return'  => 'تأكيد إعادة هذا الكتاب؟',
         'tooltip_no_stock'=> 'المخزون نافد',
@@ -413,16 +420,15 @@ html.dark .flash.danger  { background: rgba(192,57,43,.18); }
 /* ══ TABLE ══ */
 table { width: 100%; border-collapse: collapse; }
 thead tr {
-    background: linear-gradient(135deg, rgba(196,164,107,.07) 0%, rgba(122,92,58,.05) 100%);
+    background: linear-gradient(135deg, #1A0E05 0%, #2E1D08 100%);
     border-bottom: 1.5px solid var(--gold-border);
 }
 th {
     padding: 14px 16px;
     font-family: var(--font-ui); font-size: 10px; font-weight: 700;
     letter-spacing: 2px; text-transform: uppercase;
-    color: var(--gold-deep); text-align: left; white-space: nowrap;
+    color: rgba(196,164,107,.65); text-align: left; white-space: nowrap;
 }
-html.dark th { color: var(--gold); }
 
 tbody tr {
     border-bottom: 1px solid var(--page-border);
@@ -443,7 +449,13 @@ td {
     font-size: 13px; color: var(--page-text);
     vertical-align: middle;
 }
-.td-id { font-size: 11px; color: var(--page-muted); font-weight: 600; letter-spacing: .5px; }
+.td-id { padding-left: 20px; }
+.order-id {
+    font-family: var(--font-serif); font-size: 15px; font-weight: 700;
+    color: var(--gold-deep); letter-spacing: .5px; white-space: nowrap;
+    display: inline-block;
+}
+html.dark .order-id { color: var(--gold); }
 
 .user-name { font-weight: 700; font-size: 14px; color: var(--page-text); margin-bottom: 3px; }
 .user-book {
@@ -524,24 +536,22 @@ td {
 .btn-action {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 8px 16px; border-radius: 50px;
-    font-family: var(--font-ui); font-size: 11px; font-weight: 700;
-    text-decoration: none; border: none; cursor: pointer;
+    font-family: var(--font-ui); font-size: 11px; font-weight: 800;
+    text-decoration: none; cursor: pointer;
     transition: all var(--tr); letter-spacing: .2px; white-space: nowrap;
+    border: 1.5px solid transparent;
 }
 .btn-action i { font-size: 10px; }
 
 .btn-approve {
-    background: linear-gradient(135deg, #1A0E05 0%, #2E1D08 100%);
-    color: var(--gold2);
-    border: 1.5px solid rgba(196,164,107,.3);
-    box-shadow: 0 4px 14px rgba(42,31,20,.25);
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
+    color: #1A0E05;
+    box-shadow: var(--shadow-gold);
 }
 .btn-approve:hover {
-    background: linear-gradient(135deg, #2E1D08 0%, #3E2A10 100%);
-    border-color: rgba(196,164,107,.55);
-    color: var(--gold2);
+    background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(42,31,20,.35);
+    box-shadow: 0 10px 28px rgba(196,164,107,.4);
 }
 .btn-approve.disabled {
     opacity: .38; pointer-events: none; cursor: not-allowed;
@@ -550,7 +560,7 @@ td {
 .btn-refuse {
     background: rgba(136,14,79,.07);
     color: #880E4F;
-    border: 1.5px solid rgba(136,14,79,.22);
+    border-color: rgba(136,14,79,.22);
 }
 .btn-refuse:hover {
     background: rgba(136,14,79,.15);
@@ -558,16 +568,16 @@ td {
 }
 
 .btn-return {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
-    color: #1A0E05;
-    border: 1.5px solid transparent;
-    box-shadow: var(--shadow-gold);
-    font-weight: 800;
+    background: linear-gradient(135deg, #1A0E05 0%, #2E1D08 100%);
+    color: var(--gold2);
+    border-color: rgba(196,164,107,.3);
+    box-shadow: 0 4px 14px rgba(42,31,20,.25);
 }
 .btn-return:hover {
-    background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 100%);
+    background: linear-gradient(135deg, #2E1D08 0%, #3E2A10 100%);
+    border-color: rgba(196,164,107,.55);
     transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(196,164,107,.4);
+    box-shadow: 0 8px 24px rgba(42,31,20,.35);
 }
 
 /* ══ EMPTY STATE ══ */
@@ -694,7 +704,7 @@ td {
                     : $row['date_retour_prevue'];
             ?>
             <tr>
-                <td class="td-id">#<?= str_pad($row['id_emprunt'], 3, '0', STR_PAD_LEFT) ?></td>
+                <td class="td-id"><span class="order-id"><?= fmtEmpruntId($row['id_emprunt']) ?></span></td>
 
                 <td>
                     <div class="user-name"><?= htmlspecialchars($row['firstname'].' '.$row['lastname']) ?></div>
@@ -753,21 +763,22 @@ td {
                 <td>
                     <div class="actions-cell">
                     <?php if ($row['statut'] === 'en attente'): ?>
-                        <a href="action_emprunts.php?id=<?= $row['id_emprunt'] ?>&action=accepter"
+                        <a href="#"
                            class="btn-action btn-approve <?= (int)$row['exemplaires_disponibles'] <= 0 ? 'disabled' : '' ?>"
-                           title="<?= (int)$row['exemplaires_disponibles'] <= 0 ? $p['tooltip_no_stock'] : $p['tooltip_accept'] ?>">
+                           title="<?= (int)$row['exemplaires_disponibles'] <= 0 ? $p['tooltip_no_stock'] : $p['tooltip_accept'] ?>"
+                           onclick="showConfirm('<?= addslashes($p['confirm_accept']) ?>','action_emprunts.php?id=<?= $row['id_emprunt'] ?>&action=accepter'); return false;">
                             <i class="fa-solid fa-check"></i> <?= $p['btn_accept'] ?>
                         </a>
-                        <a href="action_emprunts.php?id=<?= $row['id_emprunt'] ?>&action=refuser"
+                        <a href="#"
                            class="btn-action btn-refuse"
-                           onclick="return confirm('<?= addslashes($p['confirm_refuse']) ?>')">
+                           onclick="showConfirm('<?= addslashes($p['confirm_refuse']) ?>','action_emprunts.php?id=<?= $row['id_emprunt'] ?>&action=refuser'); return false;">
                             <i class="fa-solid fa-xmark"></i> <?= $p['btn_refuse'] ?>
                         </a>
 
                     <?php elseif (in_array($row['statut'], ['acceptée','retard'])): ?>
-                        <a href="action_emprunts.php?id=<?= $row['id_emprunt'] ?>&action=rendre"
+                        <a href="#"
                            class="btn-action btn-return"
-                           onclick="return confirm('<?= addslashes($p['confirm_return']) ?>')">
+                           onclick="showConfirm('<?= addslashes($p['confirm_return']) ?>','action_emprunts.php?id=<?= $row['id_emprunt'] ?>&action=rendre'); return false;">
                             <i class="fa-solid fa-rotate-left"></i> <?= $p['btn_mark_return'] ?>
                         </a>
 
@@ -793,6 +804,105 @@ td {
         </table>
     </div>
 </div>
+
+<!-- ══ CONFIRM MODAL ══ -->
+<div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div class="confirm-msg" id="confirmMsg"></div>
+        <div class="confirm-btns">
+            <button class="confirm-btn-oui" id="confirmOui">
+                <i class="fa-solid fa-check"></i> <?= $lang === 'ar' ? 'نعم' : 'Oui' ?>
+            </button>
+            <button class="confirm-btn-non" onclick="closeConfirm()">
+                <i class="fa-solid fa-xmark"></i> <?= $lang === 'ar' ? 'لا' : 'Non' ?>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.confirm-overlay {
+    display: none; position: fixed; inset: 0; z-index: 3000;
+    background: rgba(10,6,2,.72); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-modal {
+    background: var(--page-white);
+    border: 1px solid var(--gold-border);
+    border-radius: 20px;
+    box-shadow: 0 40px 80px rgba(10,6,2,.55), 0 0 0 1px var(--gold-border);
+    padding: 36px 40px 32px;
+    width: 100%; max-width: 380px;
+    text-align: center;
+    animation: confirmIn .25s cubic-bezier(.4,0,.2,1) both;
+}
+@keyframes confirmIn {
+    from { opacity:0; transform: translateY(20px) scale(.96); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+}
+.confirm-icon {
+    width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 18px;
+    background: rgba(184,131,42,.1);
+    border: 1.5px solid rgba(184,131,42,.3);
+    display: flex; align-items: center; justify-content: center;
+}
+.confirm-icon i { color: var(--amber); font-size: 22px; }
+.confirm-msg {
+    font-family: var(--font-serif); font-size: 19px; font-weight: 600;
+    color: var(--page-text); line-height: 1.4; margin-bottom: 28px;
+}
+.confirm-btns { display: flex; gap: 10px; justify-content: center; }
+.confirm-btn-oui {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 11px 28px; border-radius: 50px; border: none; cursor: pointer;
+    font-family: var(--font-ui); font-size: 13px; font-weight: 800;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
+    color: #1A0E05; box-shadow: var(--shadow-gold);
+    transition: all var(--tr); letter-spacing: .2px;
+}
+.confirm-btn-oui:hover {
+    background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(196,164,107,.4);
+}
+.confirm-btn-non {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 11px 28px; border-radius: 50px; cursor: pointer;
+    font-family: var(--font-ui); font-size: 13px; font-weight: 700;
+    background: transparent;
+    border: 1.5px solid var(--page-border);
+    color: var(--page-muted);
+    transition: all var(--tr); letter-spacing: .2px;
+}
+.confirm-btn-non:hover {
+    border-color: var(--danger); color: var(--danger);
+    background: rgba(192,57,43,.06);
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+let _confirmUrl = '';
+function showConfirm(msg, url) {
+    _confirmUrl = url;
+    document.getElementById('confirmMsg').textContent = msg;
+    document.getElementById('confirmOui').onclick = function() { window.location.href = _confirmUrl; };
+    document.getElementById('confirmOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeConfirm() {
+    document.getElementById('confirmOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.getElementById('confirmOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeConfirm();
+});
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeConfirm(); });
+</script>
 
 </body>
 </html>
