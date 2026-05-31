@@ -835,11 +835,12 @@ html.dark .btn-both { color: var(--gold); }
                         $login_buy    = '/MEMOIR/auth/login.php?redirect=' . urlencode('/MEMOIR/cart/add_to_cart.php?id_doc=' . (int)$d['id_doc']);
                     ?>
                     <?php if ($is_both): ?>
-                        <div class="btn-both-wrap">
-                            <a href="<?= $login_borrow ?>" class="btn-card btn-both full">
-                                <i class="fa-solid fa-plus"></i> <?= $p['choose'] ?>
-                            </a>
-                        </div>
+                        <a href="<?= $login_borrow ?>" class="btn-card btn-borrow">
+                            <i class="fa-regular fa-clock"></i> <?= $p['borrow'] ?>
+                        </a>
+                        <a href="<?= $login_buy ?>" class="btn-card btn-buy">
+                            <i class="fa-solid fa-cart-plus"></i> <?= $p['add_cart'] ?>
+                        </a>
                     <?php else: ?>
                         <?php if ($can_borrow): ?>
                         <a href="<?= $login_borrow ?>" class="btn-card btn-borrow <?= !$can_buy ? 'full' : '' ?>">
@@ -928,6 +929,7 @@ const sectionsEl= document.getElementById('catalogue-sections');
 
 let dropTimer = null;
 let currentAvail = '<?= htmlspecialchars($avail) ?>';
+window._currentAvail = currentAvail;
 
 /* ── translated strings passed from PHP ── */
 const SD = {
@@ -959,7 +961,7 @@ function badgeLbl(dp) {
 function buildUrl(q) {
     return 'recherche_dcmnt.php?mode=suggest'
          + '&search=' + encodeURIComponent(q)
-         + '&avail='  + encodeURIComponent(currentAvail)
+         + '&avail='  + encodeURIComponent(window._currentAvail || currentAvail)
          + '&type=0';
 }
 
@@ -979,41 +981,6 @@ function clearSearch() {
     clearBtn.classList.remove('visible');
     closeDrop();
     searchEl.focus();
-}
-
-/* ── filter pills ── */
-function setAvail(val, btn) {
-    currentAvail = val;
-    document.querySelectorAll('.avail-pill').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-
-    /* si search active → relancer la recherche */
-    const searchEl = document.getElementById('search');
-    if (searchEl) {
-        const q = searchEl.value.trim();
-        if (q.length >= 2) { doSearch(q); return; }
-    }
-
-    /* AJAX filter sur les sections catalogue */
-    const sectionsEl = document.getElementById('catalogue-sections');
-    if (!sectionsEl) return;
-    sectionsEl.style.opacity = '.4';
-    sectionsEl.style.pointerEvents = 'none';
-
-    fetch('get_sections.php?avail=' + encodeURIComponent(val))
-        .then(r => r.text())
-        .then(html => {
-            sectionsEl.innerHTML = html;
-            sectionsEl.style.opacity = '';
-            sectionsEl.style.pointerEvents = '';
-            const url = new URL(window.location.href);
-            url.searchParams.set('avail', val);
-            history.replaceState({}, '', url.toString());
-        })
-        .catch(() => {
-            sectionsEl.style.opacity = '';
-            sectionsEl.style.pointerEvents = '';
-        });
 }
 
 /* ── main search ── */
@@ -1123,6 +1090,45 @@ document.addEventListener('click', function(e) {
 });
 
 <?php endif; /* end non-admin search JS */ ?>
+
+/* ══ FILTER PILLS — global, works for admin + client + guest ══ */
+if (typeof window._currentAvail === 'undefined') {
+    window._currentAvail = '<?= htmlspecialchars($avail) ?>';
+}
+function setAvail(val, btn) {
+    window._currentAvail = val;
+    if (typeof currentAvail !== 'undefined') currentAvail = val;
+    document.querySelectorAll('.avail-pill').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+
+    /* si search active (client/guest seulement) → relancer la recherche */
+    var searchInput = document.getElementById('search');
+    if (searchInput && typeof doSearch === 'function') {
+        var q = searchInput.value.trim();
+        if (q.length >= 2) { doSearch(q); return; }
+    }
+
+    /* AJAX — recharge les sections selon le filtre */
+    var sections = document.getElementById('catalogue-sections');
+    if (!sections) return;
+    sections.style.opacity = '.4';
+    sections.style.pointerEvents = 'none';
+
+    fetch('get_sections.php?avail=' + encodeURIComponent(val))
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            sections.innerHTML = html;
+            sections.style.opacity = '';
+            sections.style.pointerEvents = '';
+            var url = new URL(window.location.href);
+            url.searchParams.set('avail', val);
+            history.replaceState({}, '', url.toString());
+        })
+        .catch(function() {
+            sections.style.opacity = '';
+            sections.style.pointerEvents = '';
+        });
+}
 
 /* ══ BOTH MENU TOGGLE ══ */
 function toggleBothMenu(btn, id) {

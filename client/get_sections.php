@@ -1,8 +1,6 @@
 <?php
 /* ════════════════════════════════════════════════════════
    get_sections.php — AJAX: catalogue sections filtrées
-   Retourne le HTML des sections par catégorie
-   selon le filtre avail (all|buy|borrow|both)
 ════════════════════════════════════════════════════════ */
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
@@ -13,10 +11,12 @@ if (!isset($conn)) {
     exit;
 }
 
-$avail   = trim($_GET['avail'] ?? 'all');
-$user_role = $_SESSION['role'] ?? 'client';
-$id_user   = (int)($_SESSION['id_user'] ?? 0);
+$avail        = trim($_GET['avail'] ?? 'all');
+$user_role    = strtolower(trim($_SESSION['role'] ?? ''));
+$id_user      = (int)($_SESSION['id_user'] ?? 0);
 $is_logged_in = isset($_SESSION['id_user']);
+$is_admin     = ($user_role === 'admin');
+$is_client    = $is_logged_in && !$is_admin; // utilisateur, client, or any non-admin role
 
 /* ── build avail condition ── */
 $avail_cond = '';
@@ -27,7 +27,7 @@ switch ($avail) {
 }
 
 /* ── fetch all types ── */
-$q_types = $conn->query("SELECT * FROM types_documents ORDER BY id_type ASC");
+$q_types   = $conn->query("SELECT * FROM types_documents ORDER BY id_type ASC");
 $all_types = $q_types ? $q_types->fetch_all(MYSQLI_ASSOC) : [];
 
 $sections = [];
@@ -42,13 +42,13 @@ foreach ($all_types as $t) {
     $rows  = $r2->fetch_all(MYSQLI_ASSOC);
     $rc2   = $conn->query("SELECT COUNT(*) as n FROM documents d WHERE d.id_type = $tid $avail_cond");
     $total = (int)($rc2->fetch_assoc()['n'] ?? 0);
-    $sections[] = ['id'=>$tid,'label'=>$t['libelle_type'],'docs'=>$rows,'total'=>$total];
+    $sections[] = ['id' => $tid, 'label' => $t['libelle_type'], 'docs' => $rows, 'total' => $total];
 }
 
 function resolveImg($d) {
     $imgPath = "../uploads/" . (int)$d['id_doc'] . ".jpg";
     if (!file_exists($imgPath)) {
-        $imgPath = !empty($d['image_doc']) ? "../uploads/".$d['image_doc'] : "../uploads/default.jpg";
+        $imgPath = !empty($d['image_doc']) ? "../uploads/" . $d['image_doc'] : "../uploads/default.jpg";
     }
     return $imgPath;
 }
@@ -68,7 +68,7 @@ foreach ($sections as $sec):
     <div class="cat-section-head">
         <div class="cat-section-title">
             <h2><?= htmlspecialchars($sec['label']) ?></h2>
-            <span class="cat-section-badge"><?= $sec['total'] ?> doc<?= $sec['total']>1?'s':'' ?></span>
+            <span class="cat-section-badge"><?= $sec['total'] ?> doc<?= $sec['total'] > 1 ? 's' : '' ?></span>
         </div>
         <?php if ($sec['total'] > 4): ?>
         <a class="cat-see-all" href="/MEMOIR/client/catalogue_type.php?type=<?= $tid ?>&label=<?= urlencode($sec['label']) ?>">
@@ -79,8 +79,8 @@ foreach ($sections as $sec):
     <div class="cat-row" id="row-<?= $tid ?>">
         <?php foreach ($sec['docs'] as $d):
             $dp         = $d['disponible_pour'] ?? 'both';
-            $can_buy    = in_array($dp, ['achat','both']);
-            $can_borrow = in_array($dp, ['emprunt','both']);
+            $can_buy    = in_array($dp, ['achat', 'both']);
+            $can_borrow = in_array($dp, ['emprunt', 'both']);
             $is_both    = ($dp === 'both');
             $imgPath    = resolveImg($d);
             $detail_url = "/MEMOIR/client/doc_details.php?id=" . (int)$d['id_doc'];
@@ -95,7 +95,7 @@ foreach ($sections as $sec):
                     <?php if ($can_buy): ?><span class="avail-tag tag-buy"><i class="fa-solid fa-cart-shopping" style="font-size:8px"></i> Achat</span><?php endif; ?>
                     <?php if ($can_borrow): ?><span class="avail-tag tag-borrow"><i class="fa-regular fa-clock" style="font-size:8px"></i> Emprunt</span><?php endif; ?>
                 </div>
-                <?php if ($is_logged_in && $user_role === 'client'): ?>
+                <?php if ($is_client): ?>
                 <button class="wish-btn" onclick="event.preventDefault();toggleWishlist(this,<?= (int)$d['id_doc'] ?>)" title="Favoris">
                     <i class="fa-regular fa-heart"></i>
                 </button>
@@ -106,7 +106,7 @@ foreach ($sections as $sec):
                 <p class="card-author"><i class="fa-solid fa-user-pen"></i> <?= htmlspecialchars($d['auteur'] ?? '') ?></p>
                 <div class="card-price-row">
                     <?php if ($can_buy && (float)$d['prix'] > 0): ?>
-                        <span class="card-price"><?= number_format((float)$d['prix'],0,',',' ') ?><span class="price-unit">DA</span></span>
+                        <span class="card-price"><?= number_format((float)$d['prix'], 0, ',', ' ') ?><span class="price-unit">DA</span></span>
                     <?php elseif ($can_borrow && !$can_buy): ?>
                         <span class="card-free"><i class="fa-solid fa-book-open"></i> Emprunt gratuit</span>
                     <?php else: ?>
@@ -115,50 +115,8 @@ foreach ($sections as $sec):
                 </div>
                 <div class="card-divider"></div>
 
-                <?php if ($user_role === 'client'): ?>
-                <div class="card-actions">
-                    <?php if ($is_both): ?>
-                        <div class="btn-both-wrap">
-                            <button class="btn-card btn-both full" onclick="toggleBothMenu(this, <?= (int)$d['id_doc'] ?>)">
-                                <i class="fa-solid fa-plus"></i> Choisir
-                            </button>
-                            <div class="both-menu" id="both-menu-<?= (int)$d['id_doc'] ?>">
-                                <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="both-opt">
-                                    <i class="fa-regular fa-clock"></i><span>Emprunter</span>
-                                </a>
-                                <div class="both-opt" style="padding:0;">
-                                    <form action="../cart/add_to_cart.php" method="POST" style="width:100%;">
-                                        <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
-                                        <button type="submit" style="all:unset;display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;font-family:var(--font-ui);font-size:11px;font-weight:600;color:var(--page-text);cursor:pointer;">
-                                            <i class="fa-solid fa-cart-plus" style="color:var(--gold);font-size:12px;"></i><span>Acheter</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <?php if ($can_borrow): ?>
-                        <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="btn-card btn-borrow <?= !$can_buy?'full':'' ?>">
-                            <i class="fa-regular fa-clock"></i> Emprunter
-                        </a>
-                        <?php endif; ?>
-                        <?php if ($can_buy): ?>
-                        <form action="../cart/add_to_cart.php" method="POST" style="flex:1;display:flex">
-                            <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
-                            <button type="submit" class="btn-card btn-buy <?= !$can_borrow?'full':'' ?>">
-                                <i class="fa-solid fa-cart-plus"></i> Acheter
-                            </button>
-                        </form>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                </div>
-
-                <?php elseif (!$is_logged_in): ?>
-                <a href="/MEMOIR/auth/login.php" class="btn-card btn-borrow full">
-                    <i class="fa-solid fa-right-to-bracket"></i> Connexion requise
-                </a>
-
-                <?php elseif ($user_role === 'admin'): ?>
+                <?php if ($is_admin): ?>
+                <!-- ── Admin ── -->
                 <div class="admin-actions">
                     <a href="/MEMOIR/admin/modifier_document.php?id=<?= (int)$d['id_doc'] ?>" class="btn-admin btn-edit">
                         <i class="fa-solid fa-pen"></i> Modifier
@@ -167,6 +125,66 @@ foreach ($sections as $sec):
                         <i class="fa-solid fa-trash"></i> Supprimer
                     </a>
                 </div>
+
+                <?php elseif ($is_client): ?>
+                <!-- ── Logged-in user (any role except admin) ── -->
+                <div class="card-actions">
+                    <?php if ($is_both): ?>
+                        <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="btn-card btn-borrow">
+                            <i class="fa-regular fa-clock"></i> Emprunter
+                        </a>
+                        <form action="../cart/add_to_cart.php" method="POST" style="flex:1;display:flex">
+                            <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
+                            <button type="submit" class="btn-card btn-buy">
+                                <i class="fa-solid fa-cart-plus"></i> Acheter
+                            </button>
+                        </form>
+                    <?php else: ?>
+                        <?php if ($can_borrow): ?>
+                        <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="btn-card btn-borrow <?= !$can_buy ? 'full' : '' ?>">
+                            <i class="fa-regular fa-clock"></i> Emprunter
+                        </a>
+                        <?php endif; ?>
+                        <?php if ($can_buy): ?>
+                        <form action="../cart/add_to_cart.php" method="POST" style="flex:1;display:flex">
+                            <input type="hidden" name="id_doc" value="<?= (int)$d['id_doc'] ?>">
+                            <button type="submit" class="btn-card btn-buy <?= !$can_borrow ? 'full' : '' ?>">
+                                <i class="fa-solid fa-cart-plus"></i> Acheter
+                            </button>
+                        </form>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+
+                <?php elseif (!$is_logged_in): ?>
+                <!-- ── Guest (not logged in) ── -->
+                <div class="card-actions">
+                    <?php
+                        $emprunt_url  = '/MEMOIR/emprunts/emprunt.php?id_doc=' . (int)$d['id_doc'];
+                        $login_borrow = '/MEMOIR/auth/login.php?redirect=' . urlencode($emprunt_url);
+                        $login_buy    = '/MEMOIR/auth/login.php?redirect=' . urlencode('/MEMOIR/cart/add_to_cart.php?id_doc=' . (int)$d['id_doc']);
+                    ?>
+                    <?php if ($is_both): ?>
+                        <a href="<?= $login_borrow ?>" class="btn-card btn-borrow">
+                            <i class="fa-regular fa-clock"></i> Emprunter
+                        </a>
+                        <a href="<?= $login_buy ?>" class="btn-card btn-buy">
+                            <i class="fa-solid fa-cart-plus"></i> Acheter
+                        </a>
+                    <?php else: ?>
+                        <?php if ($can_borrow): ?>
+                        <a href="<?= $login_borrow ?>" class="btn-card btn-borrow <?= !$can_buy ? 'full' : '' ?>">
+                            <i class="fa-regular fa-clock"></i> Emprunter
+                        </a>
+                        <?php endif; ?>
+                        <?php if ($can_buy): ?>
+                        <a href="<?= $login_buy ?>" class="btn-card btn-buy <?= !$can_borrow ? 'full' : '' ?>">
+                            <i class="fa-solid fa-cart-plus"></i> Acheter
+                        </a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+
                 <?php endif; ?>
 
             </div>

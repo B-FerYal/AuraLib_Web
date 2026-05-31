@@ -7,7 +7,9 @@ include_once '../includes/languages.php';
 
 $is_logged_in = isset($_SESSION['id_user']);
 $id_user      = $is_logged_in ? (int)$_SESSION['id_user'] : 0;
-$user_role    = $_SESSION['role'] ?? 'client';
+$user_role    = strtolower(trim($_SESSION['role'] ?? 'client'));
+$is_admin     = ($user_role === 'admin');
+$is_client    = $is_logged_in && !$is_admin;
 
 /* ── params ── */
 $type_id = isset($_GET['type']) ? (int)$_GET['type'] : 0;
@@ -123,7 +125,83 @@ html.dark .pg-btn { background:#1E1610; color:#C4A46B; border-color:rgba(196,164
 .pg-btn:hover:not(.active):not(.disabled) { background:#3A2A14; border-color:rgba(196,164,107,.4); color:var(--gold); transform:translateY(-2px); box-shadow:0 5px 16px rgba(44,31,14,.35); }
 .pg-btn.active { background:var(--gold); border-color:var(--gold); color:#1A0E05; box-shadow:0 4px 18px rgba(196,164,107,.45); transform:scale(1.1); pointer-events:none; }
 .pg-btn.disabled { opacity:.3; cursor:not-allowed; pointer-events:none; }
-.pg-ellipsis { width:42px; height:42px; display:inline-flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:var(--page-muted); }
+
+/* ── Result info ── */
+.result-info { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; font-size:12px; color:var(--page-muted); }
+.result-info strong { color:var(--page-text); }
+
+/* ── Grid ── */
+.cat-grid { display:grid !important; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:18px; }
+@media(max-width:900px){ .cat-grid{ grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; } }
+@media(max-width:600px){ .cat-grid{ grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; } }
+
+/* ── Avail pills ── */
+.avail-pill { display:inline-flex; align-items:center; gap:6px; padding:6px 16px; border-radius:50px; font-family:var(--font-ui); font-size:11px; font-weight:600; border:1.5px solid var(--page-border); background:var(--page-white); color:var(--page-muted); cursor:pointer; text-decoration:none; transition:all .25s; white-space:nowrap; user-select:none; }
+.avail-pill:hover { border-color:var(--gold); color:var(--gold-deep); background:var(--gold-faint); }
+.avail-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.ap-all  .avail-dot { background:var(--page-muted); }
+.ap-all.active  { background:var(--gold); border-color:var(--gold); color:#2C1F0E; font-weight:700; box-shadow:var(--shadow-gold); }
+.ap-buy  .avail-dot { background:var(--gold); }
+.ap-buy.active  { background:var(--gold); border-color:var(--gold); color:#2C1F0E; font-weight:700; box-shadow:var(--shadow-gold); }
+.ap-borrow .avail-dot { background:var(--brown); }
+.ap-borrow:hover  { border-color:var(--brown-border); color:var(--brown); background:var(--brown-faint); }
+.ap-borrow.active { background:var(--brown); border-color:var(--brown); color:#fff; font-weight:700; }
+.ap-both .avail-dot { background:linear-gradient(135deg,var(--gold) 50%,var(--brown) 50%); }
+.ap-both.active { background:linear-gradient(110deg,var(--gold) 0%,var(--brown) 100%); border-color:transparent; color:#fff; font-weight:700; }
+
+/* ── Book cards ── */
+@keyframes cardIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+.book-card { background:var(--page-white); border-radius:var(--radius); border:1px solid var(--page-border); overflow:hidden; box-shadow:var(--shadow-sm); display:flex !important; flex-direction:column !important; transition:transform var(--tr),box-shadow var(--tr),border-color var(--tr); animation:cardIn .4s ease both; }
+.book-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-lg); border-color:var(--gold-border); }
+.card-cover { position:relative; overflow:hidden; background:var(--page-bg2); display:block; text-decoration:none; flex-shrink:0; height:280px; }
+.card-cover img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s cubic-bezier(.4,0,.2,1); }
+.book-card:hover .card-cover img { transform:scale(1.06); }
+@media(max-width:600px){ .card-cover { height:210px; } }
+
+.avail-ribbon { position:absolute; top:10px; left:10px; display:flex; flex-direction:column; gap:5px; z-index:2; }
+.avail-tag { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:9px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; backdrop-filter:blur(10px); border:1px solid transparent; }
+.tag-buy    { background:rgba(196,164,107,.9); color:#2C1F0E; border-color:rgba(196,164,107,.4); }
+.tag-borrow { background:rgba(122,92,58,.88);  color:#F5EDD8; border-color:rgba(122,92,58,.4); }
+.wish-btn { position:absolute; bottom:10px; right:10px; z-index:2; width:32px; height:32px; border-radius:50%; background:rgba(44,31,14,.6); backdrop-filter:blur(8px); border:1px solid rgba(196,164,107,.18); color:rgba(196,164,107,.45); font-size:13px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all var(--tr); }
+.wish-btn:hover { color:var(--gold); border-color:var(--gold-border); background:rgba(44,31,14,.85); }
+.wish-btn.wishlisted { color:#ef4444; border-color:#fca5a5; }
+
+.card-body { padding:12px 13px 14px; flex:1; display:flex !important; flex-direction:column !important; }
+.card-title { font-family:var(--font-serif); font-size:15px; font-weight:600; color:var(--page-text); line-height:1.3; margin-bottom:3px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.card-title a { text-decoration:none; color:inherit; }
+.card-title a:hover { color:var(--gold); }
+.card-author { font-size:10px; color:var(--page-muted); margin-bottom:10px; }
+.card-author i { margin-right:3px; font-size:9px; }
+.card-price-row { margin-bottom:10px; }
+.card-price { font-family:var(--font-serif); font-size:18px; font-weight:600; color:var(--amber); }
+html.dark .card-price { color:var(--gold2); }
+.price-unit { font-family:var(--font-ui); font-size:10px; font-weight:400; margin-left:3px; }
+.card-free { font-size:11px; color:var(--page-muted); display:flex; align-items:center; gap:5px; }
+.card-free i { color:var(--gold); font-size:10px; }
+.card-divider { height:1px; background:var(--page-border); margin-bottom:10px; opacity:.6; }
+
+.card-actions { display:flex !important; flex-direction:row !important; gap:6px; margin-top:auto; }
+.btn-card { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 6px; border-radius:9px; font-family:var(--font-ui); font-size:10px; font-weight:700; text-decoration:none; border:none; cursor:pointer; transition:all var(--tr); line-height:1; letter-spacing:.3px; }
+.btn-card i { font-size:10px; }
+.btn-borrow { background:var(--brown-faint); border:1.5px solid var(--brown-border); color:var(--brown); }
+.btn-borrow:hover { background:var(--brown); color:#F5EDD8; border-color:var(--brown); }
+.btn-buy { background:var(--gold-faint); border:1.5px solid var(--gold-border); color:var(--gold-deep); }
+html.dark .btn-buy { color:var(--gold); }
+.btn-buy:hover { background:var(--gold); color:#2C1F0E; border-color:var(--gold); box-shadow:var(--shadow-gold); }
+.btn-card.full { flex:1 1 100%; }
+
+.admin-actions { display:flex !important; flex-direction:row !important; gap:7px; margin-top:auto; }
+.btn-admin { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:9px; border-radius:9px; font-family:var(--font-ui); font-size:11px; font-weight:700; text-decoration:none; transition:all var(--tr); border:1.5px solid transparent; }
+.btn-edit   { background:var(--gold-faint); color:var(--gold); border-color:var(--gold-border); }
+.btn-edit:hover { background:rgba(196,164,107,.18); transform:translateY(-1px); }
+.btn-delete { background:rgba(192,57,43,.08); color:var(--danger); border-color:rgba(192,57,43,.2); cursor:pointer; }
+.btn-delete:hover { background:rgba(192,57,43,.15); transform:translateY(-1px); }
+
+.empty-state { grid-column:1/-1; text-align:center; padding:70px 20px; }
+.empty-icon { font-size:44px; color:var(--page-border); margin-bottom:16px; }
+.empty-state h3 { font-family:var(--font-serif); font-size:22px; color:var(--page-muted); margin-bottom:6px; }
+.empty-state p  { font-size:13px; color:var(--page-muted); }
 </style>
 </head>
 <body>
@@ -220,7 +298,7 @@ html.dark .pg-btn { background:#1E1610; color:#C4A46B; border-color:rgba(196,164
                     <?php if ($can_buy): ?><span class="avail-tag tag-buy"><i class="fa-solid fa-cart-shopping" style="font-size:8px"></i> Achat</span><?php endif; ?>
                     <?php if ($can_borrow): ?><span class="avail-tag tag-borrow"><i class="fa-regular fa-clock" style="font-size:8px"></i> Emprunt</span><?php endif; ?>
                 </div>
-                <?php if ($is_logged_in && $user_role === 'client'): ?>
+                <?php if ($is_client): ?>
                 <button class="wish-btn" onclick="event.preventDefault();toggleWishlist(this,<?= (int)$d['id_doc'] ?>)" title="Favoris">
                     <i class="fa-regular fa-heart"></i>
                 </button>
@@ -239,7 +317,7 @@ html.dark .pg-btn { background:#1E1610; color:#C4A46B; border-color:rgba(196,164
                     <?php endif; ?>
                 </div>
                 <div class="card-divider"></div>
-                <?php if ($user_role === 'client'): ?>
+                <?php if ($is_client): ?>
                 <div class="card-actions">
                     <?php if ($is_both): ?>
                         <a href="../emprunts/emprunt.php?id_doc=<?= (int)$d['id_doc'] ?>" class="btn-card btn-borrow"><i class="fa-regular fa-clock"></i> Emprunter</a>
@@ -260,8 +338,24 @@ html.dark .pg-btn { background:#1E1610; color:#C4A46B; border-color:rgba(196,164
                     <?php endif; ?>
                 </div>
                 <?php elseif (!$is_logged_in): ?>
-                <a href="/MEMOIR/auth/login.php" class="btn-card btn-borrow full"><i class="fa-solid fa-right-to-bracket"></i> Connexion requise</a>
-                <?php elseif ($user_role === 'admin'): ?>
+                <?php
+                    $login_borrow = '/MEMOIR/auth/login.php?redirect=' . urlencode('/MEMOIR/emprunts/emprunt.php?id_doc=' . (int)$d['id_doc']);
+                    $login_buy    = '/MEMOIR/auth/login.php?redirect=' . urlencode('/MEMOIR/cart/add_to_cart.php?id_doc=' . (int)$d['id_doc']);
+                ?>
+                <div class="card-actions">
+                    <?php if ($is_both): ?>
+                        <a href="<?= $login_borrow ?>" class="btn-card btn-borrow"><i class="fa-regular fa-clock"></i> Emprunter</a>
+                        <a href="<?= $login_buy ?>" class="btn-card btn-buy"><i class="fa-solid fa-cart-plus"></i> Acheter</a>
+                    <?php else: ?>
+                        <?php if ($can_borrow): ?>
+                        <a href="<?= $login_borrow ?>" class="btn-card btn-borrow <?= !$can_buy ? 'full' : '' ?>"><i class="fa-regular fa-clock"></i> Emprunter</a>
+                        <?php endif; ?>
+                        <?php if ($can_buy): ?>
+                        <a href="<?= $login_buy ?>" class="btn-card btn-buy <?= !$can_borrow ? 'full' : '' ?>"><i class="fa-solid fa-cart-plus"></i> Acheter</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+                <?php elseif ($is_admin): ?>
                 <div class="admin-actions">
                     <a href="/MEMOIR/admin/modifier_document.php?id=<?= (int)$d['id_doc'] ?>" class="btn-admin btn-edit"><i class="fa-solid fa-pen"></i> Modifier</a>
                     <button onclick="confirmDeleteDoc(<?= (int)$d['id_doc'] ?>)" class="btn-admin btn-delete"><i class="fa-solid fa-trash"></i> Supprimer</button>

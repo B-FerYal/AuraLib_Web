@@ -351,7 +351,7 @@ html.dark .bottom-link { color: rgba(255,255,255,.4); }
             <input type="email" name="email"
                    value="<?= htmlspecialchars($email) ?>"
                    placeholder="nom@exemple.com"
-                   autocomplete="new-password" required>
+                   autocomplete="new-password">
         </div>
 <!-- Password + eye toggle -->
         <div class="form-group">
@@ -360,7 +360,7 @@ html.dark .bottom-link { color: rgba(255,255,255,.4); }
                 <input type="password" name="password" id="passLogin"
                        placeholder="••••••••"
                        class="input-has-eye"
-                       autocomplete="new-password" required>
+                       autocomplete="new-password">
                 <button type="button" class="eye-btn"
                         onclick="toggleEye('passLogin','eyeLogin')"
                         tabindex="-1" title="Afficher/masquer">
@@ -399,6 +399,35 @@ function toggleEye(inputId, iconId) {
         icon.className = 'fa-regular fa-eye';
     }
 }
+
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    // Remove any existing client-side alert
+    var existing = document.getElementById('client-alert');
+    if (existing) existing.remove();
+
+    var email    = document.querySelector('input[name="email"]').value.trim();
+    var password = document.querySelector('input[name="password"]').value;
+
+    if (!email || !password) {
+        e.preventDefault();
+
+        <?php
+        $msg_required = $lang === 'ar'
+            ? 'يرجى ملء جميع الحقول الإلزامية.'
+            : ($lang === 'en' ? 'Please fill out all required fields.' : 'Ce champ est obligatoire.');
+        ?>
+        var msg = <?= json_encode($msg_required) ?>;
+
+        var alert = document.createElement('div');
+        alert.id = 'client-alert';
+        alert.className = 'alert alert-err';
+        alert.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + msg;
+
+        var goldLine = document.querySelector('.gold-line');
+        goldLine.parentNode.insertBefore(alert, goldLine.nextSibling);
+        alert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
 </script>
 </body>
 </html>
